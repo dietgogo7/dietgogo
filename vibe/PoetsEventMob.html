@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi">
+    <title>2026 젊은 작가 - 봄을 여는 4개의 시(詩)선</title>
+    <!-- Fonts: Pretendard (본문/감성) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+    <!-- Tailwind CSS (Prototype Use) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://image.yes24.com/sysimage/Contents/Scripts/m/jquery/jquery-3.5.1.min.js?v=20251022"></script>
+    <link rel="stylesheet" type="text/css"
+        href="https://image.yes24.com/sysimage/yesUI/mobile/comN/trans_commonV4.css?v=20251205">
+    <link rel="stylesheet" type="text/css"
+        href="https://image.yes24.com/sysimage/yesUI/mobile/comN/trans_layoutV4.css?v=20250613">
+    <link rel="stylesheet" type="text/css"
+        href="https://image.yes24.com/sysimage/yesUI/mobile/layout/trans_baseV2.css?v=20250929">
+    <link rel="stylesheet" type="text/css" href="https://image.yes24.com/sysimage/yesUI/mobile/comN/com.css?v=20251205">
+    <link rel="stylesheet" type="text/css"
+        href="https://image.yes24.com/sysimage/yesUI/mobile/comN/elem.css?v=20251205">
+    <link rel="stylesheet" type="text/css"
+        href="https://image.yes24.com/sysimage/yesUI/mobile/welcome/trans_w4.css?v=20251218_c">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        serif: ['Pretendard', 'serif'],
+                    },
+                    colors: {
+                        'y24-blue': '#0080ff', // Yes24 Primary Blue
+                        'y24-dark': '#1e3a8a', // Deep Navy for contrast
+                        'y24-light': '#eff6ff', // Light Blue Background
+                        'poetry-black': '#1a1a1a',
+                        'poetry-gray': '#f8fafc', // Slate-50 (Background)
+                    },
+                    animation: {
+                        'ken-burns': 'kenBurns 25s ease-out infinite alternate',
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                        'marquee': 'marquee 30s linear infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                    },
+                    keyframes: {
+                        kenBurns: {
+                            '0%': { transform: 'scale(1)' },
+                            '100%': { transform: 'scale(1.15)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Global Settings for Polish */
+        body {
+            word-break: keep-all;
+            -webkit-font-smoothing: antialiased;
+            font-size: 11.5px;
+            font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'sans-serif';
+        }
+
+        /* 모바일 본문 텍스트 및 주요 요소 폰트 크기 축소 (10% 감소) */
+        @media (max-width: 600px) {
+            body {
+                font-size: 12px;
+            }
+            h1, .text-6xl, .text-9xl, .font-serif.text-6xl, .font-serif.text-9xl {
+                font-size: 1.9rem !important;
+                line-height: 2.2rem !important;
+            }
+            h2, .text-4xl, .text-5xl, .font-serif.text-4xl, .font-serif.text-5xl {
+                font-size: 1.25rem !important;
+                line-height: 1.8rem !important;
+            }
+            h3, .text-3xl, .font-serif.text-3xl {
+                font-size: 1rem !important;
+                line-height: 1.3rem !important;
+            }
+            h4, .text-2xl, .font-serif.text-2xl {
+                font-size: 0.9rem !important;
+                line-height: 1.1rem !important;
+            }
+            p, .text-xl, .text-2xl, .font-serif.text-xl, .font-serif.text-2xl {
+                font-size: 0.88rem !important;
+                line-height: 1.3rem !important;
+            }
+            .px-4 { padding-left: 0.6rem !important; padding-right: 0.6rem !important; }
+            .py-24 { padding-top: 2.2rem !important; padding-bottom: 2.2rem !important; }
+            .pb-40 { padding-bottom: 2.2rem !important; }
+            .pt-20 { padding-top: 1.2rem !important; }
+            .mb-8 { margin-bottom: 1rem !important; }
+            .mt-20 { margin-top: 1rem !important; }
+        }
+
+        /* 모바일 본문 텍스트 및 주요 요소 폰트 크기 축소 */
+        @media (max-width: 600px) {
+            body {
+                font-size: 12px;
+            }
+
+            h1,
+            .text-6xl,
+            .text-9xl,
+            .font-serif.text-6xl,
+            .font-serif.text-9xl {
+                font-size: 2.1rem !important;
+                line-height: 2.5rem !important;
+            }
+
+            h2,
+            .text-4xl,
+            .text-5xl,
+            .font-serif.text-4xl,
+            .font-serif.text-5xl {
+                font-size: 1.4rem !important;
+                line-height: 2rem !important;
+            }
+
+            h3,
+            .text-3xl,
+            .font-serif.text-3xl {
+                font-size: 1.1rem !important;
+                line-height: 1.5rem !important;
+            }
+
+            h4,
+            .text-2xl,
+            .font-serif.text-2xl {
+                font-size: 1rem !important;
+                line-height: 1.3rem !important;
+            }
+
+            p,
+            .text-xl,
+            .text-2xl,
+            .font-serif.text-xl,
+            .font-serif.text-2xl {
+                font-size: 0.98rem !important;
+                line-height: 1.5rem !important;
+            }
+
+            .px-4 {
+                padding-left: 0.7rem !important;
+                padding-right: 0.7rem !important;
+            }
+
+            .py-24 {
+                padding-top: 2.5rem !important;
+                padding-bottom: 2.5rem !important;
+            }
+
+            .pb-40 {
+                padding-bottom: 2.5rem !important;
+            }
+
+            .pt-20 {
+                padding-top: 1.5rem !important;
+            }
+
+            .mb-8 {
+                margin-bottom: 1.2rem !important;
+            }
+
+            .mt-20 {
+                margin-top: 1.2rem !important;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Utility classes for animation delays */
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-500 {
+            animation-delay: 0.5s;
+        }
+
+        /* Ticket Punch Effect CSS */
+        .ticket-punch-l,
+        .ticket-punch-r {
+            position: absolute;
+            top: 50%;
+            width: 30px;
+            height: 30px;
+            background-color: #f8fafc;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        .ticket-punch-l {
+            left: -15px;
+            box-shadow: inset -2px 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .ticket-punch-r {
+            right: -15px;
+            box-shadow: inset 2px 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Loading Dots */
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-poetry-gray text-slate-900 font-sans antialiased">
+
+    <!-- !!!!!!!!!!########## 전체 페이지 영역 시작 ##########!!!!!!!!!! -->
+    <div id="yesWrap" class="" style="margin:0;padding:0;border:0;height:auto;">
+        <div id="yHdWrap" class="welMod">
+            <input id="hdHost" type="hidden" value="https://m.yes24.com">
+            <input id="hdPreHost" type="hidden" value="https://">
+            <input id="hdMainHost" type="hidden" value="https://m.yes24.com">
+            <div id="yHd">
+                <h1 class="logo">
+                    <a href="https://m.yes24.com/home/main" onclick="setMcode('001_001');" class="logo_lnk"></a>
+                </h1>
+                <div class="mnu">
+                    <a href="https://ssl.yes24.com/mMyCart/CartMain" onclick="setMcode('001_005');"
+                        class="mnu_cart">카트<span class="cnt" id="cartNum">25</span></a>
+                </div>
+                <div class="sch">
+                    <div class="ipt">
+                        <label>
+                            <input type="search" placeholder="2028 수능도 EBS로 시작!" id="query" name="searchquery"
+                                title="YES24 검색" maxlength="80" value="" autocapitalize="off" autocomplete="off"
+                                class="ipt_box" onkeypress="if (event.keyCode === 13) { searchGoods(); return false; }">
+                            <button type="button" id="btn_del_schKWord" class="ipt_del"><span
+                                    class="txt">입력삭제</span></button>
+                        </label>
+                    </div>
+                    <span class="btn"><button type="button" id="search_real_search" class="btn_sch"><span
+                                class="txt">검색하기</span></button></span>
+                    <span class="ad"><button type="button" id="btn_ad_search" class="btn_ad"><span
+                                class="txt">광고이동</span></button></span>
+                    <span class="app">
+                        <button type="button" id="btn_app_search" class="btn_qr"
+                            onclick="setMcode('1200_002'); goApp('SCAN', '');">
+                            <span class="txt">QR/바코드 검색</span>
+                        </button>
+                    </span>
+                    <span class="appTip">이미지 검색을 사용해 보세요</span>
+                    <input id="hdSearchCategory" type="hidden" value="">
+                </div>
+                <span class="prev">
+                    <a href="javascript:void(0);" class="prev_rset" id="prevSch">
+                        <span class="txt">검색창 이전화면</span>
+                    </a>
+                    <a href="javascript:void(0);" class="prev_back" onclick="commonPrevBtn();">
+                        <span class="txt">이전화면</span>
+                    </a>
+                </span>
+            </div>
+            <div id="yKeyWrap">
+                <div id="yKWD" class="yKeywords">
+                    <dl class="keyDl keyRct">
+                        <dt><strong class="keyTit">최근 검색어</strong></dt>
+                        <dd>
+                            <div id="search_recent" class="rctRow"><span class="rctTxt">
+                                    <a href="https://m.yes24.com/search?query=%ED%9D%AC%EB%A7%9D%EC%9D%80%20%EC%82%AC%EB%9E%91%EC%9D%84%20%ED%95%9C%EB%8B%A4"
+                                        onclick="removeStorageSearchword();setMcode('515_001');insertSearchQuery('희망은 사랑을 한다')"
+                                        ;="" class="lnk_rct">
+                                        <em class="txt">희망은 사랑을 한다</em>
+                                    </a>
+                                    <a href="javascript:void(0);" onclick="removeSearchItem(this,'희망은 사랑을 한다');"
+                                        class="lnk_del"><em class="ico">삭제</em></a>
+                                </span><span class="rctTxt">
+                                    <a href="https://m.yes24.com/search?query=%EC%B6%9C%EB%B0%9C%EC%84%A0%20%EB%92%A4%EC%9D%98%20%EC%B4%88%EC%A1%B0%ED%95%A8"
+                                        onclick="removeStorageSearchword();setMcode('515_001');insertSearchQuery('출발선 뒤의 초조함')"
+                                        ;="" class="lnk_rct">
+                                        <em class="txt">출발선 뒤의 초조함</em>
+                                    </a>
+                                    <a href="javascript:void(0);" onclick="removeSearchItem(this,'출발선 뒤의 초조함');"
+                                        class="lnk_del"><em class="ico">삭제</em></a>
+                                </span><span class="rctTxt">
+                                    <a href="https://m.yes24.com/search?query=%EC%96%91%EC%95%88%EB%8B%A4"
+                                        onclick="removeStorageSearchword();setMcode('515_001');insertSearchQuery('양안다')"
+                                        ;="" class="lnk_rct">
+                                        <em class="txt">양안다</em>
+                                    </a>
+                                    <a href="javascript:void(0);" onclick="removeSearchItem(this,'양안다');"
+                                        class="lnk_del"><em class="ico">삭제</em></a>
+                                </span><span class="rctTxt">
+                                    <a href="https://m.yes24.com/search?query=%EC%84%B8%EA%B3%84%EC%9D%98%20%EC%9E%AC%EA%B5%AC%EC%B6%95"
+                                        onclick="removeStorageSearchword();setMcode('515_001');insertSearchQuery('세계의 재구축')"
+                                        ;="" class="lnk_rct">
+                                        <em class="txt">세계의 재구축</em>
+                                    </a>
+                                    <a href="javascript:void(0);" onclick="removeSearchItem(this,'세계의 재구축');"
+                                        class="lnk_del"><em class="ico">삭제</em></a>
+                                </span><span class="rctTxt">
+                                    <a href="https://m.yes24.com/search?query=%EC%9B%90%ED%94%BC%EC%8A%A4"
+                                        onclick="removeStorageSearchword();setMcode('515_001');insertSearchQuery('원피스')"
+                                        ;="" class="lnk_rct">
+                                        <em class="txt">원피스</em>
+                                    </a>
+                                    <a href="javascript:void(0);" onclick="removeSearchItem(this,'원피스');"
+                                        class="lnk_del"><em class="ico">삭제</em></a>
+                                </span><span class="rctTxt">
+                                    <a href="https://m.yes24.com/search?query=%EC%97%B4%ED%98%88%EA%B0%95%ED%98%B8"
+                                        onclick="removeStorageSearchword();setMcode('515_001');insertSearchQuery('열혈강호')"
+                                        ;="" class="lnk_rct">
+                                        <em class="txt">열혈강호</em>
+                                    </a>
+                                    <a href="javascript:void(0);" onclick="removeSearchItem(this,'열혈강호');"
+                                        class="lnk_del"><em class="ico">삭제</em></a>
+                                </span><span class="rctTxt">
+                                    <a href="https://m.yes24.com/search?query=%EC%96%B4%EB%A6%B0%EC%9D%B4"
+                                        onclick="removeStorageSearchword();setMcode('515_001');insertSearchQuery('어린이')"
+                                        ;="" class="lnk_rct">
+                                        <em class="txt">어린이</em>
+                                    </a>
+                                    <a href="javascript:void(0);" onclick="removeSearchItem(this,'어린이');"
+                                        class="lnk_del"><em class="ico">삭제</em></a>
+                                </span><span class="rctTxt">
+                                    <a href="https://m.yes24.com/search?query=%EB%AF%BC%EC%9D%8C%EC%82%AC"
+                                        onclick="removeStorageSearchword();setMcode('515_001');insertSearchQuery('민음사')"
+                                        ;="" class="lnk_rct">
+                                        <em class="txt">민음사</em>
+                                    </a>
+                                    <a href="javascript:void(0);" onclick="removeSearchItem(this,'민음사');"
+                                        class="lnk_del"><em class="ico">삭제</em></a>
+                                </span></div>
+                            <a href="javascript:void(0);" onclick="clearSearchword();" id="remove_searchword_history"
+                                class="lnk_delAll" style="">전체삭제</a>
+                        </dd>
+                    </dl>
+                    <dl class="keyDl keyPop">
+                        <dt>
+                            <strong class="keyTit">인기 검색어</strong>
+                            <span id="date_search_popular" class="date"></span>
+                        </dt>
+                        <dd>
+                            <div id="search_popular_nodata" class="noData" style="display:none;">
+                            </div>
+                            <ol id="search_popular" class="popOl" style="display:none;">
+                            </ol>
+                        </dd>
+                    </dl>
+                </div>
+                <div id="ySGST" class="ySuggest" style="display:none;">
+                    <ul id="search_suggest" class="sgstLi">
+                    </ul>
+                </div>
+         
+                <div class="yKEtc">
+                    <a href="javascript:void(0);" id="search_close" class="lnk_close"><em class="txt">닫기</em><em
+                            class="ico"></em></a>
+                </div>
+            </div>
+        </div>
+        <div id="content_wrap">
+            <div id="navRow" class="welNavRow">
+                <nav class="welMnu">
+                    <h2 class="blind">웰컴 네비게이션</h2>
+                    <div class="mnuLiArea" style="">
+                        <!-- +++++ 웰컴 메뉴바 영역 시작 +++++ -->
+                        <div id="welNav" class="mnuLi">
+
+                            <div class="eg-flick-viewport"
+                                style="position: relative; z-index: 2000; overflow: hidden; min-height: 100%; width: 100%; touch-action: pan-y; user-select: none; -webkit-user-drag: none; height: 50px;">
+                                <div class="eg-flick-camera"
+                                    style="width: 100%; height: 100%; will-change: transform; transform: translate3d(-169px, 0px, 0px);">
+                                    <span class="panel eg-flick-panel" id="nav_yestopic" name="chyes" css-menu-index="0"
+                                        data-menu-idx="9" style="position: absolute; left: 32px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_0" name="yestopic"
+                                            data-menu-index="chyes"
+                                            onclick="clickWelcomeMenu(0, '012_012_001','yestopic', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">채널예스</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_event" name="event"
+                                        css-menu-index="1" data-menu-idx="10" style="position: absolute; left: 107px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_1" name="event"
+                                            data-menu-index="event"
+                                            onclick="clickWelcomeMenu(1, '012_013_001','event', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">이벤트</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_new" name="ygnew"
+                                        css-menu-index="2" data-menu-idx="11" style="position: absolute; left: 167px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_2" name="new"
+                                            data-menu-index="ygnew"
+                                            onclick="clickWelcomeMenu(2, '012_017_001','new', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">신상품</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_best" name="ybest"
+                                        css-menu-index="3" data-menu-idx="12" style="position: absolute; left: 227px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_3" name="best"
+                                            data-menu-index="ybest"
+                                            onclick="clickWelcomeMenu(3, '012_014_001','best', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">베스트</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_yprom" name="yprom"
+                                        css-menu-index="99" data-menu-idx="99" style="position: absolute; left: 287px;">
+                                        <a class="promotion" href="https://event.yes24.com/newyearcuration/2026"
+                                            id="welcomeMenu_yprom" name="yprom" data-menu-index="99"
+                                            onclick="setMcode('012_018_001');">
+                                            <span class="mnu">
+                                                <span class="txt_promotion ">
+                                                    <em class="txt_mnu">🐎2026</em>
+                                                    <em class="txt_mnu">새해첫책</em>
+                                                    <em class="txt_mnu">🐎2026</em>
+                                                </span>
+                                            </span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_main" name="yhome"
+                                        css-menu-index="5" data-menu-idx="0" style="position: absolute; left: 369px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_5" name="main"
+                                            data-menu-index="yhome"
+                                            onclick="clickWelcomeMenu(5, '012_001_002','main', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu on">홈</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_books" name="kbook"
+                                        css-menu-index="6" data-menu-idx="1" style="position: absolute; left: 400px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_6" name="books"
+                                            data-menu-index="kbook"
+                                            onclick="clickWelcomeMenu(6, '012_002_001','books', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">국내도서</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_usedshop" name="yused"
+                                        css-menu-index="7" data-menu-idx="2" style="position: absolute; left: 475px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_7" name="usedshop"
+                                            data-menu-index="yused"
+                                            onclick="clickWelcomeMenu(7, '012_004_001','usedshop', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">중고샵</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_foreign" name="fbook"
+                                        css-menu-index="8" data-menu-idx="3" style="position: absolute; left: 535px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_8" name="foreign"
+                                            data-menu-index="fbook"
+                                            onclick="clickWelcomeMenu(8, '012_003_001','foreign', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">외국도서</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_ebook" name="ebook"
+                                        css-menu-index="9" data-menu-idx="4" style="position: absolute; left: 610px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_9" name="ebook"
+                                            data-menu-index="ebook"
+                                            onclick="clickWelcomeMenu(9, '012_005_001','ebook', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">eBook</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_music" name="cdnlp"
+                                        css-menu-index="10" data-menu-idx="5" style="position: absolute; left: 676px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_10" name="music"
+                                            data-menu-index="cdnlp"
+                                            onclick="clickWelcomeMenu(10, '012_007_001','music', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">CD/LP</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_dvd" name="dvdbd"
+                                        css-menu-index="11" data-menu-idx="6" style="position: absolute; left: 744px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_11" name="dvd"
+                                            data-menu-index="dvdbd"
+                                            onclick="clickWelcomeMenu(11, '012_008_001','dvd', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">DVD/BD</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_gift" name="ygift"
+                                        css-menu-index="12" data-menu-idx="7" style="position: absolute; left: 826px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_12" name="gift"
+                                            data-menu-index="ygift"
+                                            onclick="clickWelcomeMenu(12, '009_040_002','gift', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">문구/GIFT</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_ticket" name="yplay"
+                                        css-menu-index="13" data-menu-idx="8" style="position: absolute; left: 916px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_13" name="ticket"
+                                            data-menu-index="yplay"
+                                            onclick="clickWelcomeMenu(13, '012_011_001','ticket', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">티켓</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_yestopic" name="chyes"
+                                        css-menu-index="0" data-menu-idx="9" style="position: absolute; left: 961px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_0" name="yestopic"
+                                            data-menu-index="chyes"
+                                            onclick="clickWelcomeMenu(0, '012_012_001','yestopic', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">채널예스</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_event" name="event"
+                                        css-menu-index="1" data-menu-idx="10" style="position: absolute; left: 1036px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_1" name="event"
+                                            data-menu-index="event"
+                                            onclick="clickWelcomeMenu(1, '012_013_001','event', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">이벤트</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_new" name="ygnew"
+                                        css-menu-index="2" data-menu-idx="11" style="position: absolute; left: 1096px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_2" name="new"
+                                            data-menu-index="ygnew"
+                                            onclick="clickWelcomeMenu(2, '012_017_001','new', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">신상품</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_best" name="ybest"
+                                        css-menu-index="3" data-menu-idx="12" style="position: absolute; left: 1156px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_3" name="best"
+                                            data-menu-index="ybest"
+                                            onclick="clickWelcomeMenu(3, '012_014_001','best', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">베스트</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_yprom" name="yprom"
+                                        css-menu-index="99" data-menu-idx="99"
+                                        style="position: absolute; left: 1216px;">
+                                        <a class="promotion" href="https://event.yes24.com/newyearcuration/2026"
+                                            id="welcomeMenu_yprom" name="yprom" data-menu-index="99"
+                                            onclick="setMcode('012_018_001');">
+                                            <span class="mnu">
+                                                <span class="txt_promotion ">
+                                                    <em class="txt_mnu">🐎2026</em>
+                                                    <em class="txt_mnu">새해첫책</em>
+                                                    <em class="txt_mnu">🐎2026</em>
+                                                </span>
+                                            </span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_main" name="yhome"
+                                        css-menu-index="5" data-menu-idx="0" style="position: absolute; left: 1298px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_5" name="main"
+                                            data-menu-index="yhome"
+                                            onclick="clickWelcomeMenu(5, '012_001_002','main', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu on">홈</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_books" name="kbook"
+                                        css-menu-index="6" data-menu-idx="1" style="position: absolute; left: 1329px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_6" name="books"
+                                            data-menu-index="kbook"
+                                            onclick="clickWelcomeMenu(6, '012_002_001','books', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">국내도서</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_usedshop" name="yused"
+                                        css-menu-index="7" data-menu-idx="2" style="position: absolute; left: 1404px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_7" name="usedshop"
+                                            data-menu-index="yused"
+                                            onclick="clickWelcomeMenu(7, '012_004_001','usedshop', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">중고샵</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_foreign" name="fbook"
+                                        css-menu-index="8" data-menu-idx="3" style="position: absolute; left: 1464px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_8" name="foreign"
+                                            data-menu-index="fbook"
+                                            onclick="clickWelcomeMenu(8, '012_003_001','foreign', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">외국도서</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_ebook" name="ebook"
+                                        css-menu-index="9" data-menu-idx="4" style="position: absolute; left: 1539px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_9" name="ebook"
+                                            data-menu-index="ebook"
+                                            onclick="clickWelcomeMenu(9, '012_005_001','ebook', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">eBook</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_music" name="cdnlp"
+                                        css-menu-index="10" data-menu-idx="5" style="position: absolute; left: 1605px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_10" name="music"
+                                            data-menu-index="cdnlp"
+                                            onclick="clickWelcomeMenu(10, '012_007_001','music', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">CD/LP</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_dvd" name="dvdbd"
+                                        css-menu-index="11" data-menu-idx="6" style="position: absolute; left: -185px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_11" name="dvd"
+                                            data-menu-index="dvdbd"
+                                            onclick="clickWelcomeMenu(11, '012_008_001','dvd', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">DVD/BD</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_gift" name="ygift"
+                                        css-menu-index="12" data-menu-idx="7" style="position: absolute; left: -103px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_12" name="gift"
+                                            data-menu-index="ygift"
+                                            onclick="clickWelcomeMenu(12, '009_040_002','gift', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">문구/GIFT</em></span>
+                                        </a>
+                                    </span><span class="panel eg-flick-panel" id="nav_ticket" name="yplay"
+                                        css-menu-index="13" data-menu-idx="8" style="position: absolute; left: -13px;">
+                                        <a href="javascript:void(0);" id="welcomeMenu_13" name="ticket"
+                                            data-menu-index="yplay"
+                                            onclick="clickWelcomeMenu(13, '012_011_001','ticket', null, null, true)">
+                                            <span class="mnu"><em class="txt_mnu ">티켓</em></span>
+                                        </a>
+                                    </span></div>
+                            </div>
+                        </div>
+                        <!-- +++++ 웰컴 메뉴바 영역 끝 +++++ -->
+                    </div>
+                    <div class="mnuBtn"><a href="javascript:void(0);"
+                            onclick="toggleNavMap(); setMcode('010_001_001_016');"><em class="bgC_com">웰컴메뉴
+                                모두보기</em></a></div>
+                </nav>
+                <div id="navMapPan" class="navMap">
+                    <div class="map_cont">
+                        <div class="map_home">
+                            <a onclick="setMcode('012_001_002'); setMcode('010_001_001_001'); location.href='Main'"><em
+                                    class="ico"><img
+                                        src="https://image.yes24.com/sysimage/mv2/w2/tBarN4/ico_home_on.svg?v=20210823"
+                                        border="0" alt="YES24"></em><em class="txt">홈</em></a>
+                        </div>
+                        <div class="map_sub map cate">
+                            <strong class="map_tit">분야 바로가기</strong>
+                            <div id="mapCate" class="mapGrp">
+                                <div class="mapUnit" menu-seq="5"><em class="txt">국내도서 </em><a
+                                        onclick="moveNavMenu('kbook', '012_002_001'); setMcode('010_001_001_002')"><em
+                                            class="blind">국내도서 </em></a></div>
+                                <div class="mapUnit" menu-seq="7"><em class="txt">중고샵 </em><a
+                                        onclick="moveNavMenu('yused', '012_004_001'); setMcode('010_001_001_004')"><em
+                                            class="blind">중고샵 </em></a></div>
+                                <div class="mapUnit" menu-seq="6"><em class="txt">외국도서 </em><a
+                                        onclick="moveNavMenu('fbook', '012_003_001'); setMcode('010_001_001_003')"><em
+                                            class="blind">외국도서 </em></a></div>
+                                <div class="mapUnit" menu-seq="8"><em class="txt">eBook </em><a
+                                        onclick="moveNavMenu('ebook', '012_005_001'); setMcode('010_001_001_005')"><em
+                                            class="blind">eBook </em></a></div>
+                                <div class="mapUnit" menu-seq="10"><em class="txt">CD/LP </em><a
+                                        onclick="moveNavMenu('cdnlp', '012_007_001'); setMcode('010_001_001_007')"><em
+                                            class="blind">CD/LP </em></a></div>
+                                <div class="mapUnit" menu-seq="11"><em class="txt">DVD/BD </em><a
+                                        onclick="moveNavMenu('dvdbd', '012_008_001'); setMcode('010_001_001_008')"><em
+                                            class="blind">DVD/BD </em></a></div>
+                                <div class="mapUnit" menu-seq="12"><em class="txt">문구/GIFT </em><a
+                                        onclick="moveNavMenu('ygift', '009_040_002'); setMcode('010_001_001_009')"><em
+                                            class="blind">문구/GIFT </em></a></div>
+                                <div class="mapUnit" menu-seq="14"><em class="txt">티켓 </em><a
+                                        onclick="moveNavMenu('yplay', '012_011_001'); setMcode('010_001_001_011')"><em
+                                            class="blind">티켓 </em></a></div>
+                            </div>
+                        </div>
+                        <div class="map_sub map_store">
+                            <strong class="map_tit">주요 서비스 바로가기</strong>
+                            <div id="mapStore" class="mapGrp">
+                                <div class="mapUnit " menu-seq="1"><em class="txt">채널예스 </em><a
+                                        onclick="moveNavMenu('chyes','012_012_001'); setMcode('010_001_001_014')"><em
+                                            class="blind">채널예스 </em></a></div>
+                                <div class="mapUnit " menu-seq="2"><em class="txt">이벤트 </em><a
+                                        onclick="moveNavMenu('event','012_013_001'); setMcode('010_001_001_013')"><em
+                                            class="blind">이벤트 </em></a></div>
+                                <div class="mapUnit hot" menu-seq="16"><em class="txt">신상품 </em><a
+                                        onclick="moveNavMenu('ygnew','012_017_001'); setMcode('010_001_001_017')"><em
+                                            class="blind">신상품 </em></a></div>
+                                <div class="mapUnit " menu-seq="3"><em class="txt">베스트 </em><a
+                                        onclick="moveNavMenu('ybest','012_014_001'); setMcode('010_001_001_012')"><em
+                                            class="blind">베스트 </em></a></div>
+                            </div>
+                        </div>
+                        <div class="map_btn" id="btnMenuChange">
+                            <span class="btnDes">원하는 메뉴 순서로 변경해 보세요</span>
+                            <a href="javascript:void(0);" onclick="modMap(); setMcode('010_001_002');"
+                                class="btn_c w_80 l_size btn_blue"><em class="txt">순서변경</em></a>
+                        </div>
+                        <div class="map_btn" id="btnMenuSave" style="display:none;">
+                            <span class="btnDes">메뉴를 끌어서 순서를 변경하세요</span>
+                            <a href="javascript:void(0);" onclick="savMap();" class="btn_c w_80 l_size btn_blue"><em
+                                    class="txt">저장</em></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- [HERO] -->
+        <section id="poets" class="relative min-h-screen flex flex-col justify-center overflow-hidden bg-slate-900"
+            style="margin-top:0;padding-top:0;">
+            <!-- Background Image with Ken Burns Effect -->
+            <div class="absolute inset-0 z-0 overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=2560&auto=format&fit=crop"
+                    alt="Spring Background"
+                    class="w-full h-full object-cover opacity-80 animate-ken-burns origin-center">
+                <!-- Overlay Gradient -->
+                <div class="absolute inset-0 from-black/30 via-transparent to-poetry-gray/95">
+                </div>
+            </div>
+
+            <div class="relative z-10 max-w-7xl mx-auto text-center px-4 pt-20 pb-40">
+                <span
+                    class="inline-block px-5 py-2 rounded-full bg-white/10 backdrop-blur-md text-white/90 text-sm font-bold tracking-[0.3em] mb-8 uppercase border border-white/20 animate-fade-in-up shadow-lg">
+                    2026 젊은 작가 - 봄을 여는 4개의 시(詩)선
+                </span>
+                <h1
+                    class="font-serif text-6xl md:text-9xl font-bold text-white mb-8 leading-tight animate-fade-in-up delay-100 drop-shadow-2xl">
+                    봄을 여는<br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-white to-blue-100">4개의
+                        시(詩)선</span>
+                </h1>
+                <p
+                    class="text-white/80 text-xl md:text-2xl max-w-2xl mx-auto animate-fade-in-up delay-200 leading-relaxed font-light drop-shadow-lg">
+                    가장 첨예한 언어로 계절의 문을 여는<br>
+                    네 명의 시인들을 만나보세요.
+                </p>
+
+                <div class="mt-20 animate-fade-in-up delay-300">
+                    <a href="#poet-list"
+                        class="inline-flex flex-col items-center text-white/60 hover:text-white transition-colors gap-3 text-sm animate-bounce group">
+                        <span class="tracking-widest uppercase text-[10px] font-bold">Scroll Down</span>
+                        <div class="p-2 rounded-full border border-white/30 group-hover:border-white transition-colors">
+                            <i data-lucide="arrow-down" class="w-5 h-5"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- [FEATURED POETS GRID] -->
+        <div id="poet-list" class="relative z-20 -mt-40 max-w-7xl mx-auto px-4 pb-24">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                <!-- Poet 1 -->
+                <div
+                    class="group relative overflow-hidden rounded-2xl aspect-[3/4.5] cursor-pointer shadow-2xl hover:shadow-y24-blue/30 transition-all duration-500 hover:-translate-y-4 bg-white ring-0 hover:ring-4 ring-y24-blue ring-offset-4 ring-offset-poetry-gray">
+                    <img src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?q=80&w=1000&auto=format&fit=crop"
+                        alt="김복희"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex flex-col justify-end p-8">
+                        <div
+                            class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                            <span
+                                class="inline-block bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Poet
+                                01</span>
+                            <h3 class="text-white font-serif text-3xl font-bold mb-1">김복희</h3>
+                            <p class="text-blue-200 text-sm opacity-80 font-light">희망의 다른 이름</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Poet 2 -->
+                <div
+                    class="group relative overflow-hidden rounded-2xl aspect-[3/4.5] cursor-pointer shadow-2xl hover:shadow-y24-blue/30 transition-all duration-500 hover:-translate-y-4 bg-white ring-0 hover:ring-4 ring-y24-blue ring-offset-4 ring-offset-poetry-gray delay-100">
+                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop"
+                        alt="양안다"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex flex-col justify-end p-8">
+                        <div
+                            class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                            <span
+                                class="inline-block bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Poet
+                                02</span>
+                            <h3 class="text-white font-serif text-3xl font-bold mb-1">양안다</h3>
+                            <p class="text-blue-200 text-sm opacity-80 font-light">세계의 재구축</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Poet 3 -->
+                <div
+                    class="group relative overflow-hidden rounded-2xl aspect-[3/4.5] cursor-pointer shadow-2xl hover:shadow-y24-blue/30 transition-all duration-500 hover:-translate-y-4 bg-white ring-0 hover:ring-4 ring-y24-blue ring-offset-4 ring-offset-poetry-gray delay-200">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop"
+                        alt="김선오"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex flex-col justify-end p-8">
+                        <div
+                            class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                            <span
+                                class="inline-block bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Poet
+                                03</span>
+                            <h3 class="text-white font-serif text-3xl font-bold mb-1">김선오</h3>
+                            <p class="text-blue-200 text-sm opacity-80 font-light">감각의 심연</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Poet 4 -->
+                <div
+                    class="group relative overflow-hidden rounded-2xl aspect-[3/4.5] cursor-pointer shadow-2xl hover:shadow-y24-blue/30 transition-all duration-500 hover:-translate-y-4 bg-white ring-0 hover:ring-4 ring-y24-blue ring-offset-4 ring-offset-poetry-gray delay-300">
+                    <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=1000&auto=format&fit=crop"
+                        alt="박참새"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex flex-col justify-end p-8">
+                        <div
+                            class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                            <span
+                                class="inline-block bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Poet
+                                04</span>
+                            <h3 class="text-white font-serif text-3xl font-bold mb-1">박참새</h3>
+                            <p class="text-blue-200 text-sm opacity-80 font-light">내일의 용기</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- [INTERVIEW CARDS] -->
+        <section class="py-24 bg-white relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-serif font-bold mb-16 text-center text-slate-900">
+                    Poet's Voice
+                    <span class="block w-12 h-1 bg-y24-blue mx-auto mt-4 rounded-full"></span>
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Card 1 -->
+                    <div
+                        class="bg-poetry-gray p-10 rounded-2xl hover:bg-blue-50/50 hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-6">
+                            <h3 class="text-2xl font-bold text-slate-900 group-hover:text-y24-blue transition-colors">
+                                김복희</h3>
+                            <i data-lucide="quote"
+                                class="text-slate-300 w-8 h-8 group-hover:text-y24-blue/30 transition-colors"></i>
+                        </div>
+                        <blockquote class="font-serif text-lg text-slate-700 mb-6 leading-relaxed">
+                            "봄은 잊고 있던 것들이 돌아오는 계절이 아니라,<br>새로운 상실을 마주할 용기를 얻는 시간입니다."
+                        </blockquote>
+                        <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+                            섬세한 언어로 일상의 균열을 포착하는 시인. 시집 『희망은 사랑을 한다』로 독자들에게 깊은 울림을 주었다.
+                        </p>
+                        <a href="#"
+                            class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-y24-blue transition-colors border-b border-slate-900 hover:border-y24-blue pb-1">
+                            인터뷰 전문 보기 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                    <!-- Card 2 -->
+                    <div
+                        class="bg-poetry-gray p-10 rounded-2xl hover:bg-blue-50/50 hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-6">
+                            <h3 class="text-2xl font-bold text-slate-900 group-hover:text-y24-blue transition-colors">
+                                양안다</h3>
+                            <i data-lucide="quote"
+                                class="text-slate-300 w-8 h-8 group-hover:text-y24-blue/30 transition-colors"></i>
+                        </div>
+                        <blockquote class="font-serif text-lg text-slate-700 mb-6 leading-relaxed">
+                            "세계가 무너지는 소리를 기록하고 싶었습니다.<br>그 소리조차 음악이 될 수 있다는 것을."
+                        </blockquote>
+                        <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+                            다양한 페르소나를 통해 시적 자아를 확장하는 실험적 시인. 독특한 리듬감과 이미지로 문단의 주목을 받고 있다.
+                        </p>
+                        <a href="#"
+                            class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-y24-blue transition-colors border-b border-slate-900 hover:border-y24-blue pb-1">
+                            인터뷰 전문 보기 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                    <!-- Card 3 -->
+                    <div
+                        class="bg-poetry-gray p-10 rounded-2xl hover:bg-blue-50/50 hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-6">
+                            <h3 class="text-2xl font-bold text-slate-900 group-hover:text-y24-blue transition-colors">
+                                김선오</h3>
+                            <i data-lucide="quote"
+                                class="text-slate-300 w-8 h-8 group-hover:text-y24-blue/30 transition-colors"></i>
+                        </div>
+                        <blockquote class="font-serif text-lg text-slate-700 mb-6 leading-relaxed">
+                            "감각이 언어보다 먼저 도착하는 순간이 있습니다.<br>저는 그 찰나의 뒷모습을 잡으려 합니다."
+                        </blockquote>
+                        <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+                            공감각적 이미지를 통해 시의 영역을 넓히는 작가. 밤과 꿈, 무의식의 세계를 탐구하며 독자들에게 새로운 경험을 선사한다.
+                        </p>
+                        <a href="#"
+                            class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-y24-blue transition-colors border-b border-slate-900 hover:border-y24-blue pb-1">
+                            인터뷰 전문 보기 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                    <!-- Card 4 -->
+                    <div
+                        class="bg-poetry-gray p-10 rounded-2xl hover:bg-blue-50/50 hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                        <div class="flex justify-between items-start mb-6">
+                            <h3 class="text-2xl font-bold text-slate-900 group-hover:text-y24-blue transition-colors">
+                                박참새</h3>
+                            <i data-lucide="quote"
+                                class="text-slate-300 w-8 h-8 group-hover:text-y24-blue/30 transition-colors"></i>
+                        </div>
+                        <blockquote class="font-serif text-lg text-slate-700 mb-6 leading-relaxed">
+                            "불안은 나의 동력입니다. <br>흔들리지 않고 피는 꽃보다, 흔들리며 버티는 줄기를 사랑해요."
+                        </blockquote>
+                        <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+                            솔직하고 거침없는 문체로 MZ세대의 열렬한 지지를 받는 작가. 팟캐스트 진행자이자 에세이스트로서 전방위적 활동을 펼치고 있다.
+                        </p>
+                        <a href="#"
+                            class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-y24-blue transition-colors border-b border-slate-900 hover:border-y24-blue pb-1">
+                            인터뷰 전문 보기 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [CURATED OBJECTS] -->
+        <section id="curated" class="py-24 bg-poetry-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <span class="text-xs font-bold text-y24-blue tracking-widest uppercase mb-2 block">Limited
+                        Edition</span>
+                    <h2 class="text-3xl font-serif font-bold text-slate-900">Curated Objects</h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Object 1 -->
+                    <div
+                        class="bg-white group rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="aspect-square bg-slate-100 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1544365558-35aa4afcf11f?q=80&w=600&auto=format&fit=crop"
+                                alt="Object 1"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div
+                                class="absolute top-4 left-4 bg-white/95 px-3 py-1.5 text-[10px] font-bold tracking-wider rounded text-slate-900 uppercase">
+                                Inspired by 김복희</div>
+                        </div>
+                        <div class="p-6 text-center">
+                            <h4 class="font-serif font-bold text-lg mb-1 text-slate-900">새벽의 잉크웰</h4>
+                            <p class="text-xs text-slate-500 mb-5">Glass & Brass Finish</p>
+                            <button
+                                class="w-full bg-slate-900 text-white py-3 text-sm font-bold hover:bg-y24-blue transition-colors rounded-lg">
+                                Shop Now
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Object 2 -->
+                    <div
+                        class="bg-white group rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="aspect-square bg-slate-100 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1603006905003-be475563bc59?q=80&w=600&auto=format&fit=crop"
+                                alt="Object 2"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div
+                                class="absolute top-4 left-4 bg-white/95 px-3 py-1.5 text-[10px] font-bold tracking-wider rounded text-slate-900 uppercase">
+                                Inspired by 양안다</div>
+                        </div>
+                        <div class="p-6 text-center">
+                            <h4 class="font-serif font-bold text-lg mb-1 text-slate-900">침묵의 캔들</h4>
+                            <p class="text-xs text-slate-500 mb-5">Soy Wax, Sandalwood</p>
+                            <button
+                                class="w-full bg-slate-900 text-white py-3 text-sm font-bold hover:bg-y24-blue transition-colors rounded-lg">
+                                Shop Now
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Object 3 -->
+                    <div
+                        class="bg-white group rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="aspect-square bg-slate-100 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?q=80&w=600&auto=format&fit=crop"
+                                alt="Object 3"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div
+                                class="absolute top-4 left-4 bg-white/95 px-3 py-1.5 text-[10px] font-bold tracking-wider rounded text-slate-900 uppercase">
+                                Inspired by 김선오</div>
+                        </div>
+                        <div class="p-6 text-center">
+                            <h4 class="font-serif font-bold text-lg mb-1 text-slate-900">프리즘 문진</h4>
+                            <p class="text-xs text-slate-500 mb-5">Optical Crystal</p>
+                            <button
+                                class="w-full bg-slate-900 text-white py-3 text-sm font-bold hover:bg-y24-blue transition-colors rounded-lg">
+                                Shop Now
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Object 4 -->
+                    <div
+                        class="bg-white group rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                        <div class="aspect-square bg-slate-100 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1585336261022-680e295ce3fe?q=80&w=600&auto=format&fit=crop"
+                                alt="Object 4"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div
+                                class="absolute top-4 left-4 bg-white/95 px-3 py-1.5 text-[10px] font-bold tracking-wider rounded text-slate-900 uppercase">
+                                Inspired by 박참새</div>
+                        </div>
+                        <div class="p-6 text-center">
+                            <h4 class="font-serif font-bold text-lg mb-1 text-slate-900">용기의 노트</h4>
+                            <p class="text-xs text-slate-500 mb-5">Hardcover, Plain paper</p>
+                            <button
+                                class="w-full bg-slate-900 text-white py-3 text-sm font-bold hover:bg-y24-blue transition-colors rounded-lg">
+                                Shop Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [AI POET SECTION] -->
+        <section id="ai-poet" class="py-24 bg-white border-t border-slate-100">
+            <div class="max-w-3xl mx-auto px-4 text-center">
+                <span
+                    class="inline-flex items-center gap-1 text-y24-blue text-xs font-bold tracking-widest mb-3 uppercase bg-blue-50 px-3 py-1 rounded-full">
+                    <i data-lucide="sparkles" class="w-3 h-3"></i> Powered by Gemini
+                </span>
+                <h2 class="font-serif text-4xl font-bold mb-4 text-slate-900">AI 시인과 함께하는 봄</h2>
+                <p class="text-slate-500 mb-10 text-lg">
+                    마음속에 떠오르는 단어나 감정을 입력해보세요.<br>
+                    AI가 당신만을 위한 짧은 시를 선물합니다.
+                </p>
+
+                <div
+                    class="bg-gradient-to-br from-white to-blue-50/50 p-6 md:p-12 rounded-3xl shadow-xl border border-blue-100 relative overflow-hidden transition-all hover:shadow-2xl">
+                    <!-- Input Area -->
+                    <div class="relative z-10">
+                        <input type="text" id="user-keyword" placeholder="예: 벚꽃, 늦잠, 오래된 편지..."
+                            class="w-full px-6 py-5 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-y24-blue text-center text-lg mb-6 bg-white placeholder-slate-300 transition-all shadow-sm"
+                            onkeypress="if(event.key === 'Enter') generatePoem()">
+
+                        <button onclick="generatePoem()" id="generate-btn"
+                            class="w-full bg-y24-blue text-white px-8 py-5 rounded-xl font-bold text-lg hover:bg-blue-600 transition-all flex items-center justify-center gap-2 transform active:scale-[0.98] shadow-lg shadow-blue-500/30">
+                            <span>✨ 시(詩) 선물 받기</span>
+                        </button>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div id="loading-indicator" class="hidden mt-10">
+                        <div class="flex justify-center items-center gap-2 mb-3">
+                            <div class="w-3 h-3 bg-y24-blue rounded-full typing-dot"></div>
+                            <div class="w-3 h-3 bg-y24-blue rounded-full typing-dot"></div>
+                            <div class="w-3 h-3 bg-y24-blue rounded-full typing-dot"></div>
+                        </div>
+                        <p class="text-sm text-slate-400 font-serif">시어(詩語)를 고르는 중...</p>
+                    </div>
+
+                    <!-- Result Area -->
+                    <div id="poem-result" class="hidden mt-10 pt-10 border-t border-slate-200 fade-in-up">
+                        <div class="font-serif text-xl md:text-2xl text-slate-800 leading-loose whitespace-pre-line break-keep"
+                            id="poem-text"></div>
+                        <div class="mt-10 flex justify-center">
+                            <button onclick="copyPoem()"
+                                class="text-sm text-slate-500 hover:text-y24-blue flex items-center gap-2 px-4 py-2 rounded-full hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-100">
+                                <i data-lucide="copy" class="w-4 h-4"></i> 복사하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [MESSAGE WALL] -->
+        <section id="message-wall" class="py-0 overflow-hidden relative"
+            style="margin-top:20px;padding-bottom:20px;background:#f8fafc;">
+            <div class="max-w-7xl mx-auto px-4 pt-8 pb-4 relative z-10 text-center">
+                <h2 class="font-serif text-3xl font-bold text-slate-900 mb-2">봄바람 메시지 월</h2>
+                <p class="text-slate-500 text-base mb-6">여러분의 따뜻한 응원을 남겨주세요.<br>모든 메시지는 실시간으로 공유됩니다.</p>
+            </div>
+
+            <!-- 메시지 리스트 (세로 스크롤 카드형) -->
+            <div class="max-w-xl mx-auto h-72 overflow-y-auto flex flex-col gap-3 px-2 pb-2" id="message-list">
+                <div class="flex items-start gap-3 bg-white rounded-2xl shadow border border-blue-100 px-4 py-3">
+                    <div
+                        class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-lg">
+                        🌸</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-bold text-sm text-blue-900">익명</div>
+                        <div class="text-slate-700 text-sm mt-1">시인님들의 새로운 시작을 응원합니다!</div>
+                        <div class="text-xs text-slate-400 mt-1">2026-01-24</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 bg-white rounded-2xl shadow border border-blue-100 px-4 py-3">
+                    <div
+                        class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-lg">
+                        ☀️</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-bold text-sm text-blue-900">익명</div>
+                        <div class="text-slate-700 text-sm mt-1">봄날의 햇살 같은 시 잘 읽었습니다.</div>
+                        <div class="text-xs text-slate-400 mt-1">2026-01-24</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 bg-white rounded-2xl shadow border border-blue-100 px-4 py-3">
+                    <div
+                        class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-lg">
+                        ✨</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-bold text-sm text-blue-900">익명</div>
+                        <div class="text-slate-700 text-sm mt-1">젊은 작가전 언제나 기대됩니다</div>
+                        <div class="text-xs text-slate-400 mt-1">2026-01-24</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 bg-white rounded-2xl shadow border border-blue-100 px-4 py-3">
+                    <div
+                        class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-lg">
+                        🏆</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-bold text-sm text-blue-900">익명</div>
+                        <div class="text-slate-700 text-sm mt-1">올해의 문장은 단연코 박참새 시인!</div>
+                        <div class="text-xs text-slate-400 mt-1">2026-01-24</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 bg-white rounded-2xl shadow border border-blue-100 px-4 py-3">
+                    <div
+                        class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-lg">
+                        📚</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-bold text-sm text-blue-900">익명</div>
+                        <div class="text-slate-700 text-sm mt-1">나만의 문장을 찾아서...</div>
+                        <div class="text-xs text-slate-400 mt-1">2026-01-24</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 bg-white rounded-2xl shadow border border-blue-100 px-4 py-3">
+                    <div
+                        class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-lg">
+                        👍</div>
+                    <div class="flex-1 text-left">
+                        <div class="font-bold text-sm text-blue-900">익명</div>
+                        <div class="text-slate-700 text-sm mt-1">Yes24 굿즈 맛집 인정합니다</div>
+                        <div class="text-xs text-slate-400 mt-1">2026-01-24</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 메시지 입력창 -->
+            <form class="max-w-xl mx-auto mt-6 px-2 flex gap-2 sticky bottom-0 bg-[#f8fafc] pb-4 pt-2 z-20"
+                onsubmit="event.preventDefault();">
+                <input type="text" placeholder="응원의 한마디를 남겨주세요 (최대 30자)" maxlength="30"
+                    class="flex-1 px-5 py-3 rounded-full border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm shadow-sm transition-shadow focus:shadow-md bg-white"
+                    required>
+                <button type="submit"
+                    class="bg-y24-blue text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg transform active:scale-95">
+                    남기기
+                </button>
+            </form>
+        </section>
+
+        <!-- [EVENT SECTION] -->
+        <section id="event" class="py-24 bg-poetry-gray relative overflow-hidden">
+            <div class="max-w-4xl mx-auto px-4 relative z-10">
+                <!-- Ticket Container -->
+                <div
+                    class="relative bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-slate-200 hover:shadow-y24-blue/10 transition-shadow duration-500">
+                    <!-- Left Side: Main Content -->
+                    <div
+                        class="flex-1 p-8 md:p-12 border-b md:border-b-0 md:border-r border-dashed border-slate-300 relative">
+                        <!-- Punch Holes (Visual) -->
+                        <div class="ticket-punch-r md:hidden"></div>
+
+                        <span
+                            class="inline-block text-y24-blue font-bold tracking-widest text-xs uppercase mb-4 border border-blue-100 bg-blue-50 px-3 py-1 rounded-full">Coming
+                            Soon</span>
+                        <h2 class="font-serif text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+                            여름을 활짝 여는<br><span class="text-y24-blue">6월 15일</span>
+                        </h2>
+                        <p class="text-slate-500 mb-8 text-lg">
+                            당신의 마음을 흔든 '올해의 문장'에 투표해주세요.<br>
+                            추첨을 통해 작가들의 친필 사인본을 드립니다.
+                        </p>
+
+                        <div class="bg-slate-50 rounded-xl p-6 border border-slate-100">
+                            <div class="flex items-start gap-4">
+                                <div class="p-3 bg-white rounded-lg shadow-sm text-y24-blue">
+                                    <i data-lucide="gift" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900">Special Prize</h4>
+                                    <p class="text-sm text-slate-500 mt-1">투표 참여자 중 <span
+                                            class="font-bold text-y24-blue">100명</span> 추첨 증정</p>
+                                    <p class="text-xs text-slate-400 mt-2">당첨자 발표: 2026.06.20 (개별연락)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Punch hole for desktop right edge -->
+                        <div class="ticket-punch-r hidden md:block"></div>
+                    </div>
+
+                    <!-- Right Side: Action (Stub) -->
+                    <div
+                        class="w-full md:w-80 bg-slate-50 p-8 md:p-12 flex flex-col justify-center items-center relative">
+                        <!-- Punch hole for desktop left edge -->
+                        <div class="ticket-punch-l hidden md:block"></div>
+                        <!-- Punch hole for mobile left edge -->
+                        <div class="ticket-punch-l md:hidden"></div>
+
+                        <div class="text-center w-full">
+                            <div class="text-slate-400 text-xs font-bold mb-2 uppercase tracking-wide">Notice</div>
+                            <p class="text-xs text-slate-500 mb-6 px-4 break-keep">로그인 후 참여 가능하며, ID당 1회 투표하실 수
+                                있습니다.</p>
+
+                            <button
+                                class="w-full bg-slate-900 hover:bg-y24-blue text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:scale-105 active:scale-95 group">
+                                <span class="flex items-center justify-center gap-2">
+                                    알림 신청하기 <i data-lucide="bell" class="w-4 h-4 group-hover:animate-pulse"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [IMAGE CAROUSEL] -->
+        <section class="py-24 bg-white overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4">
+                <h3 class="text-2xl font-serif font-bold text-center mb-12 text-slate-900">Event Gifts Gallery</h3>
+
+                <div
+                    class="relative w-full max-w-4xl mx-auto h-[450px] rounded-2xl overflow-hidden group shadow-2xl border border-slate-100">
+                    <!-- Slides Container -->
+                    <div id="carousel-track"
+                        class="flex h-full transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]">
+                        <!-- Slide 1 -->
+                        <div class="min-w-full h-full relative">
+                            <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1200&auto=format&fit=crop"
+                                class="w-full h-full object-cover">
+                            <div
+                                class="absolute bottom-0 w-full bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent p-10 text-white">
+                                <h4 class="text-2xl font-bold mb-2">에디션 북커버 세트</h4>
+                                <p class="text-sm opacity-80">봄의 색감을 담은 한정판 패키지</p>
+                            </div>
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="min-w-full h-full relative">
+                            <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200&auto=format&fit=crop"
+                                class="w-full h-full object-cover">
+                            <div
+                                class="absolute bottom-0 w-full bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent p-10 text-white">
+                                <h4 class="text-2xl font-bold mb-2">작가 친필 엽서</h4>
+                                <p class="text-sm opacity-80">시인의 문장이 육필로 담긴 엽서</p>
+                            </div>
+                        </div>
+                        <!-- Slide 3 -->
+                        <div class="min-w-full h-full relative">
+                            <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1200&auto=format&fit=crop"
+                                class="w-full h-full object-cover">
+                            <div
+                                class="absolute bottom-0 w-full bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent p-10 text-white">
+                                <h4 class="text-2xl font-bold mb-2">시 구절 각인 연필</h4>
+                                <p class="text-sm opacity-80">사각거리는 기록의 시간을 위한 선물</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <button onclick="prevSlide()"
+                        class="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 backdrop-blur-md p-3 rounded-full text-white transition-all opacity-0 group-hover:opacity-100 hover:scale-110">
+                        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                    </button>
+                    <button onclick="nextSlide()"
+                        class="absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 backdrop-blur-md p-3 rounded-full text-white transition-all opacity-0 group-hover:opacity-100 hover:scale-110">
+                        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                    </button>
+
+                    <!-- Indicators -->
+                    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
+                        <button onclick="goToSlide(0)"
+                            class="w-2.5 h-2.5 rounded-full bg-white shadow-lg transition-all hover:scale-125"
+                            id="indicator-0"></button>
+                        <button onclick="goToSlide(1)"
+                            class="w-2.5 h-2.5 rounded-full bg-white/40 shadow-lg transition-all hover:scale-125"
+                            id="indicator-1"></button>
+                        <button onclick="goToSlide(2)"
+                            class="w-2.5 h-2.5 rounded-full bg-white/40 shadow-lg transition-all hover:scale-125"
+                            id="indicator-2"></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [PRODUCT LIST - TARGET BOOKS] -->
+        <section id="productList" class="py-24 bg-white border-t border-slate-100" style="font-size:0.5em !important;">
+            <div class="max-w-7xl mx-auto px-3">
+                <!-- Section Title -->
+                <div class="text-center mb-16">
+                    <!-- YES24 Image Banner -->
+                    <div class="mb-8 flex justify-center">
+                        <div
+                            class="bg-blue-50 border border-blue-100 rounded-full px-6 py-2 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow">
+                            <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.png" alt="YES24"
+                                class="h-5 opacity-80 filter grayscale hover:grayscale-0 transition-all">
+                            <span class="text-xs text-slate-500 font-bold tracking-wide uppercase">Official
+                                Partner</span>
+                        </div>
+                    </div>
+
+                    <span
+                        class="inline-block px-3 py-1 rounded-full bg-blue-50 text-y24-blue text-xs font-bold tracking-widest uppercase mb-3">Event
+                        Books</span>
+                    <h3 class="font-serif text-3xl md:text-4xl font-bold text-slate-900">이 주의 시집, 그리고 문장들</h3>
+                    <p class="text-slate-500 mt-4 max-w-2xl mx-auto">
+                        이벤트 대상 도서를 포함해 2만원 이상 구매 시,<br>
+                        봄날의 감성을 담은 한정판 굿즈를 드립니다.
+                    </p>
+                </div>
+
+                <!-- Books Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+                    <!-- Book 1 -->
+                    <div class="group cursor-pointer">
+                        <div
+                            class="relative aspect-[1/1.5] bg-slate-100 rounded-lg overflow-hidden mb-5 shadow-md group-hover:shadow-xl transition-all duration-300">
+                            <img src="https://image.yes24.com/goods/91402194/XL" alt="희망은 사랑을 한다"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div
+                                class="absolute top-0 left-0 bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded-br-lg z-10">
+                                + 굿즈 증정</div>
+                            <div
+                                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 z-20">
+                                <button
+                                    class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i
+                                        data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                                <button
+                                    class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i
+                                        data-lucide="heart" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <h4
+                                class="font-bold text-slate-900 text-lg line-clamp-1 group-hover:text-y24-blue transition-colors">
+                                희망은 사랑을 한다</h4>
+                            <p class="text-sm text-slate-500">김복희 저</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="font-bold text-y24-blue text-lg">10,800원</span>
+                                <span class="text-xs text-slate-400 line-through">12,000원</span>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Book 2 -->
+                    <div class="group cursor-pointer">
+                        <div
+                            class="relative aspect-[1/1.5] bg-slate-100 rounded-lg overflow-hidden mb-5 shadow-md group-hover:shadow-xl transition-all duration-300">
+                            <img src="https://image.yes24.com/goods/150259715/XL" alt="세계의 재구축"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div
+                                class="absolute top-0 left-0 bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded-br-lg z-10">
+                                MD 추천</div>
+                            <div
+                                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 z-20">
+                                <button
+                                    class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i
+                                        data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                                <button
+                                    class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i
+                                        data-lucide="heart" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <h4
+                                class="font-bold text-slate-900 text-lg line-clamp-1 group-hover:text-y24-blue transition-colors">
+                                세계의 재구축</h4>
+                            <p class="text-sm text-slate-500">양안다 저</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="font-bold text-y24-blue text-lg">11,700원</span>
+                                <span class="text-xs text-slate-400 line-through">13,000원</span>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Book 3 -->
+                    <div class="group cursor-pointer">
+                        <div
+                            class="relative aspect-[1/1.5] bg-slate-100 rounded-lg overflow-hidden mb-5 shadow-md group-hover:shadow-xl transition-all duration-300">
+                            <img src="https://image.yes24.com/goods/93775837/XL" alt="나이트 사커"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div
+                                class="absolute top-0 left-0 bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded-br-lg z-10">
+                                + 굿즈 증정</div>
+                            <div
+                                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 z-20">
+                                <button
+                                    class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i
+                                        data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                                <button
+                                    class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i
+                                        data-lucide="heart" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <h4
+                                class="font-bold text-slate-900 text-lg line-clamp-1 group-hover:text-y24-blue transition-colors">
+                                나이트 사커</h4>
+                            <p class="text-sm text-slate-500">김선오 저</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="font-bold text-y24-blue text-lg">9,900원</span>
+                                <span class="text-xs text-slate-400 line-through">11,000원</span>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Book 4 -->
+                    <div class="group cursor-pointer">
+                        <div
+                            class="relative aspect-[1/1.5] bg-slate-100 rounded-lg overflow-hidden mb-5 shadow-md group-hover:shadow-xl transition-all duration-300">
+                            <img src="https://image.yes24.com/goods/108433308/XL" alt="내일의 용기"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div
+                                class="absolute top-0 left-0 bg-pink-500 text-white text-[10px] font-bold px-2 py-1 rounded-br-lg z-10">
+                                베스트셀러</div>
+                            <div
+                                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 z-20">
+                                <button
+                                    class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i
+                                        data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                                <button
+                                    class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i
+                                        data-lucide="heart" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <h4
+                                class="font-bold text-slate-900 text-lg line-clamp-1 group-hover:text-y24-blue transition-colors">
+                                출발선 뒤의 초조함</h4>
+                            <p class="text-sm text-slate-500">박참새 저</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="font-bold text-y24-blue text-lg">14,400원</span>
+                                <span class="text-xs text-slate-400 line-through">16,000원</span>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [FOOTER - IMAGE REPLACEMENT] -->
+        <div id="yesFooter">
+            <div id="toolBtn">
+                <div class="toolBtnRow">
+                    <div id="yAIBtn" class="yAIChatBtn" style="display:none;">
+                        <a class="lnk_ai" href="javascript:void(0);" onclick="goOepnChat();">
+                            <span class="ai_ico"></span>
+                            <div class="ai_msg" style="display:none;">
+                                <div class="msg">
+                                    <p>AI와 대화하며 eBook을 추천받아 보시겠어요?</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- 채팅 상담 영역 시작 -->
+                    <div id="yCSBtn" class="yChatBtn" style="display:none;">
+                        <a class="lnk_chat" href="javascript:void(0);" onclick="">
+                            <span class="chat_img"></span>
+                            <p class="chat_txt">
+                                <span class="txC_black">eBook</span><br />
+                                채팅상담
+                            </p>
+                        </a>
+                    </div>
+                    <!-- 채팅 상담 영역 끝 -->
+
+                    <!-- 최근 본 레이어 영역 시작 -->
+                    <div id="yRGoodsBox" class="yRecentBox" style="display:none">
+                        <div class="yRBoxSet">
+                            <div id="yRBoxRecentCnt" class="yRBox_tit">최근 본 상품</div>
+                            <div id="yRGoodsBody" class="yRBox_cont">
+                                <div id="yRGoodsScl" class="contScl">
+                                    <div id="yRGoodsNoData" class="noData" style="display:none;">
+                                        <p class="txt_tit">최근 본 상품이 없습니다.</p>
+                                    </div>
+                                    <ul id="yRGoodsList" class="yRGoodsLi"></ul>
+                                </div>
+                            </div>
+                            <div class="yRBox_close"><a href="javascript:void(0)" onClick="hideRecent();"><em
+                                        class="bgYUI btn_popClose">창 닫기</em></a></div>
+                        </div>
+                     
+                    </div>
+                    <!-- 최근 본 레이어 영역 끝 -->
+
+                </div>
+            </div>
+
+        </div>
+        <div id="toolBar" class="yTBar">
+            <div class="tBar">
+                <span class="mnuSet">
+                    <a href="javascript:void(0);" onclick="setMcode(mobileCommon.getMenuCode('002')); openWingMenu();"
+                        class="wing">
+                        <em class="ico">전체메뉴</em>
+                    </a>
+                </span>
+                <span class="mnuSet">
+                    <a href="javascript:void(0);" onclick="setMcode(mobileCommon.getMenuCode('003')); focusSchBox();"
+                        class="gSch">
+                        <em class="ico">상품검색</em>
+                    </a>
+                </span>
+                <span class="mnuSet">
+                    <a href="https://m.yes24.com/home/main" onclick="setMcode(mobileCommon.getMenuCode('001'));"
+                        class="home">
+                        <em class="ico">홈으로</em>
+                    </a>
+                </span>
+                <span class="mnuSet">
+                    <a href="https://m.yes24.com/MyPage" onclick="setMcode(mobileCommon.getMenuCode('004'));"
+                        class="myPg">
+                        <em class="ico">마이페이지</em>
+                    </a>
+                </span>
+                <span class="mnuSet">
+                    <a href="javascript:void(0);"
+                        onclick="setMcode(mobileCommon.getMenuCode('010')); goApp('PUSH', '');" class="alarm">
+                        <em class="ico">앱 알림</em>
+                        <span id="botAlarmCnt" class="cnt"></span>
+                    </a>
+                </span>
+            </div>
+        </div>
+        <div id="toolBtn" class="yTBtn topBtnAct">
+            <span id="yesBotChat" class="tBtn btn_chat btn_topActive" style="display:none;">
+                <a href="javascript:void(0);">
+                    <em class="ico">eBook 채팅상담</em>
+                </a>
+            </span>
+            <span id="yAIBtn" class="tBtn btn_ai" style="display:none;">
+                <a class="lnk_ai" href="javascript:void(0);" onclick="goOepnChat();">
+                    <em class="ico ai_ico"></em>
+                    <div class="ai_msg" stryle="display:none;" style="display: none;">
+                        <div class="msg">
+                            <p>AI와 대화하며 eBook을 추천받아 보시겠어요?</p>
+                        </div>
+                    </div>
+                </a>
+            </span>
+            <span id="bottomRecentGoodsWrap" class="tBtn btn_rcnt" style="">
+                <a href="https://m.yes24.com/Category/RecentGoods"
+                    onclick="setMcode((IS_NATIVE_APPS ? '011_002_005' : '011_001_005'));">
+                    <em class="img">
+                        <img id="recentGoodsArea" src="https://image.yes24.com/goods/108433308/S" border="0"
+                            alt="최근 본 상품">
+                    </em>
+                    <em class="ico">최근 본 상품</em>
+                </a>
+            </span>
+            <span class="tBtn btn_top">
+                <a href="javascript:void(0);" onclick="sclTopBottomBar();">
+                    <em class="ico">맨위로</em>
+                </a>
+            </span>
+        </div>
+
+        <footer>
+            <div id="footer" class="tBarOn">
+
+                <div class="footMnu">
+                    <div class="mnuLnk">
+                        <span class="lnkSet">
+                            <a id="loginOutLink"
+                                href="javascript:setMcodeNRedirection('https://m.yes24.com/Momo/Templates/FTLogOut.aspx', '003_001')"
+                                onclick="brazeHelper.logout(); airbridgeHelper.logout();">
+                                <em class="txt">로그아웃</em>
+                            </a>
+                        </span>
+                        <span class="lnkSet">
+                            <a href="https://m.yes24.com/Category/RecentGoods" onclick="setMcode('003_002');">
+                                <em class="txt">최근 본 상품</em>
+                            </a>
+                        </span>
+                        <span class="lnkSet">
+                            <a
+                                href="javascript:setMcodeNRedirection('https://ssl.yes24.com/MMyPageOrderList/MMyPageOrderList', '003_003');">
+                                <em class="txt">주문/배송</em>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <div class="footCs">
+                    <div class="csTel">
+                        <span class="telSet"><a href="tel:15443800" onclick="setMcode('003_004');" class="txt">고객센터
+                                1544-3800</a></span>
+                        <span class="telSet"><a href="tel:1544-6399" class="txt">티켓 1544-6399</a></span>
+                        <span class="telSet"><a href="tel:15664295" onclick="setMcode('003_009');" class="txt">중고샵
+                                1566-4295</a></span>
+                        <span class="telSet lastSet"><a href="https://m.yes24.com/Help/Cs/Apply?AplNo=45"
+                                class="lnk">eBook 1:1문의/채팅상담</a></span>
+                    </div>
+                </div>
+
+                <div id="yFootInfo" class="footTxt">
+                    <button type="button" class="btn_fToggle" onclick="toggleFootInfo();">
+                        <span class="txt">예스이십사(주) 사업자 정보</span>
+                        <span class="ico">자세히 보기</span>
+                    </button>
+                    <div class="txtInfo">
+                        <dl>
+                            <dt>대표</dt>
+                            <dd>김석환, 최세라</dd>
+                        </dl>
+                        <dl>
+                            <dt>주소</dt>
+                            <dd>서울시 영등포구 은행로 11, 5층~ 6층 (여의도동,일신빌딩)</dd>
+                        </dl>
+                        <dl>
+                            <dt>사업자등록번호</dt>
+                            <dd>229-81-37000</dd>
+                        </dl>
+                        <dl>
+                            <dt>통신판매업신고</dt>
+                            <dd>제 2005-02682</dd>
+                        </dl>
+                        <dl>
+                            <dt>이메일</dt>
+                            <dd><a href="mailto:yes24help@yes24.com">yes24help@yes24.com</a></dd>
+                        </dl>
+                        <dl>
+                            <dt>호스팅 서비스사업자</dt>
+                            <dd>예스이십사(주)</dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="footCorp">
+                    <div class="corpLnk">
+                        <span class="lnkSet"><a href="https://m.yes24.com/Momo/Member/agree.aspx"
+                                onclick="setMcode('003_008');">이용약관</a></span>
+                        <span class="lnkSet"><a href="https://m.yes24.com/Momo/Member/clause_privacy.aspx"
+                                onclick="setMcode('003_007');"><strong>개인정보처리방침</strong></a></span>
+                        <span class="lnkSet"><a
+                                href="https://m.yes24.com/Momo/Member/youthpolicy.aspx">청소년보호정책</a></span>
+                        <span id="viewPcLink" class="lnkSet"><a href="javascript:void(0);"
+                                onclick="setMcode('003_005');goPcWeb();">PC버전</a></span>
+                    </div>
+                    <div class="corpLnk">
+                        <span class="lnkSet"><a href="https://company.yes24.com/">회사소개</a></span>
+                        <span class="lnkSet"><a href="https://m.yes24.com/Company">거래처관계자께</a></span>
+                        <span class="lnkSet"><a href="https://m.yes24.com/Company/Publish">도서홍보</a></span>
+                        <span class="lnkSet"><a href="https://m.yes24.com/Company/AdGuide">광고</a></span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- [BACK TO TOP BUTTON] -->
+        <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+            class="fixed bottom-8 right-8 bg-slate-900 text-white p-3 rounded-full shadow-lg opacity-0 translate-y-10 transition-all duration-300 hover:bg-y24-blue z-50 group"
+            aria-label="맨 위로 가기">
+            <i data-lucide="arrow-up" class="w-6 h-6 group-hover:-translate-y-1 transition-transform"></i>
+        </button>
+
+        <!-- Scripts -->
+        <script>
+
+            // Init Icons
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                } else {
+                    console.error("Lucide icons library failed to load.");
+                }
+            });
+
+            const apiKey = ""; // Runtime Environment Key
+
+            // Gemini AI Logic (Same as before)
+            async function generatePoem() {
+                const keyword = document.getElementById('user-keyword').value.trim();
+                if (!keyword) {
+                    alert("시상이 떠오르지 않으셨나요? 단어를 입력해주세요.");
+                    return;
+                }
+
+                const btn = document.getElementById('generate-btn');
+                const loading = document.getElementById('loading-indicator');
+                const resultDiv = document.getElementById('poem-result');
+                const poemText = document.getElementById('poem-text');
+
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.innerHTML = '<span>⏳ 시를 짓는 중...</span>';
+                loading.classList.remove('hidden');
+                resultDiv.classList.add('hidden');
+                poemText.innerText = "";
+
+                try {
+                    const prompt = `작성자는 한국의 서정적인 젊은 시인입니다. 사용자가 입력한 단어 '${keyword}'를 주제로 하여, 3~5줄 내외의 짧고 감각적인 현대 시를 작성해주세요. 답변은 시의 내용만 텍스트로 출력하세요.`;
+                    const text = await callGeminiWithRetry(prompt);
+
+                    poemText.innerText = text;
+                    resultDiv.classList.remove('hidden');
+
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+
+                    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                } catch (error) {
+                    console.error("Gemini Error:", error);
+                    alert("시를 짓는 도중 펜을 놓쳤습니다. 잠시 후 다시 시도해주세요.");
+                } finally {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.innerHTML = '<span>✨ 시(詩) 선물 받기</span>';
+                    loading.classList.add('hidden');
+                }
+            }
+
+            async function callGeminiWithRetry(prompt, retries = 3, delay = 1000) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    });
+
+                    if (!response.ok) {
+                        if (retries > 0) {
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            return callGeminiWithRetry(prompt, retries - 1, delay * 2);
+                        }
+                        throw new Error('API Request Failed');
+                    }
+
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "아직 시상이 떠오르지 않습니다.";
+
+                } catch (e) {
+                    if (retries > 0) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return callGeminiWithRetry(prompt, retries - 1, delay * 2);
+                    }
+                    throw e;
+                }
+            }
+
+            function copyPoem() {
+                const text = document.getElementById('poem-text').innerText;
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert("시가 복사되었습니다.");
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+                document.body.removeChild(textArea);
+            }
+
+            // Carousel Logic
+            let currentSlide = 0;
+            const totalSlides = 3;
+            const track = document.getElementById('carousel-track');
+
+            function updateCarousel() {
+                track.style.transform = `translateX(-${currentSlide * 100}%)`;
+                for (let i = 0; i < totalSlides; i++) {
+                    const el = document.getElementById(`indicator-${i}`);
+                    if (i === currentSlide) {
+                        el.classList.remove('bg-white/40');
+                        el.classList.add('bg-white');
+                    } else {
+                        el.classList.add('bg-white/40');
+                        el.classList.remove('bg-white');
+                    }
+                }
+            }
+
+            function nextSlide() { currentSlide = (currentSlide + 1) % totalSlides; updateCarousel(); }
+            function prevSlide() { currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; updateCarousel(); }
+            function goToSlide(index) { currentSlide = index; updateCarousel(); }
+
+            // Scroll Effects (Header & Back to Top)
+            window.addEventListener('scroll', () => {
+                const header = document.getElementById('main-header');
+                const backToTop = document.getElementById('back-to-top');
+
+                if (window.scrollY > 50) {
+                    header.classList.add('shadow-md');
+                    header.classList.replace('h-20', 'h-16');
+                    header.classList.add('bg-slate-900/90');
+                    header.classList.remove('bg-white/10');
+
+                    // Show Back to Top
+                    backToTop.classList.remove('opacity-0', 'translate-y-10');
+                } else {
+                    header.classList.remove('shadow-md');
+                    header.classList.replace('h-16', 'h-20');
+                    header.classList.remove('bg-slate-900/90');
+                    header.classList.add('bg-white/10');
+
+                    // Hide Back to Top
+                    backToTop.classList.add('opacity-0', 'translate-y-10');
+                }
+            });
+            setInterval(nextSlide, 5000);
+        </script>
+</body>
+</html>
