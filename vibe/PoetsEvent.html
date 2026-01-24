@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 젊은 작가 - 봄을 여는 4개의 시(詩)선</title>
+    <!-- Fonts: Noto Serif KR (감성), Noto Sans KR (본문) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS (Prototype Use) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', 'sans-serif'],
+                        serif: ['"Noto Serif KR"', 'serif'],
+                    },
+                    colors: {
+                        'y24-blue': '#0080ff', // Yes24 Primary Blue
+                        'y24-dark': '#1e3a8a', // Deep Navy for contrast
+                        'y24-light': '#eff6ff', // Light Blue Background
+                        'poetry-black': '#1a1a1a',
+                        'poetry-gray': '#f8fafc', // Slate-50 (Background)
+                    },
+                    animation: {
+                        'ken-burns': 'kenBurns 25s ease-out infinite alternate',
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                        'marquee': 'marquee 30s linear infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                    },
+                    keyframes: {
+                        kenBurns: {
+                            '0%': { transform: 'scale(1)' },
+                            '100%': { transform: 'scale(1.15)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Global Settings for Polish */
+        body {
+            word-break: keep-all; /* Prevent awkward Korean line breaks */
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Utility classes for animation delays */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-500 { animation-delay: 0.5s; }
+        
+        /* Ticket Punch Effect CSS */
+        .ticket-punch-l, .ticket-punch-r {
+            position: absolute;
+            top: 50%;
+            width: 30px;
+            height: 30px;
+            background-color: #f8fafc;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+        .ticket-punch-l { left: -15px; box-shadow: inset -2px 0 3px rgba(0,0,0,0.05); }
+        .ticket-punch-r { right: -15px; box-shadow: inset 2px 0 3px rgba(0,0,0,0.05); }
+
+        /* Loading Dots */
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-poetry-gray text-slate-900 font-sans antialiased">
+
+    <!-- [HEADER] -->
+    <header class="fixed top-0 w-full z-50 bg-white/10 backdrop-blur-md border-b border-white/10 transition-all duration-500 hover:bg-white/95 group" id="main-header">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden p-2 text-white group-hover:text-slate-600 transition-colors">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+            
+            <!-- Logo Area (Text Only) -->
+            <div class="flex-1 flex justify-center md:justify-start items-center gap-3">
+                <a href="#" class="font-serif font-bold text-2xl tracking-tight text-white group-hover:text-slate-900 transition-colors duration-300 drop-shadow-md group-hover:drop-shadow-none">
+                    The Poets' Spring
+                </a>
+            </div>
+
+            <!-- Nav (Desktop) -->
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-white group-hover:text-slate-500 transition-colors duration-300 shadow-sm group-hover:shadow-none">
+                <a href="#poets" class="hover:text-y24-blue transition-colors">작가 소개</a>
+                <a href="#curated" class="hover:text-y24-blue transition-colors">오브제</a>
+                <a href="#ai-poet" class="flex items-center gap-1 hover:text-y24-blue font-bold hover:opacity-80 transition-opacity">
+                    <i data-lucide="sparkles" class="w-3 h-3 text-yellow-300 group-hover:text-y24-blue transition-colors"></i> AI 창작소
+                </a>
+                <a href="#message-wall" class="hover:text-y24-blue transition-colors">메시지 월</a>
+                <a href="#event" class="hover:text-y24-blue transition-colors">이벤트</a>
+            </nav>
+            
+            <!-- Action -->
+            <div class="hidden md:block flex-shrink-0 ml-4">
+                <button class="text-xs bg-y24-blue text-white px-6 py-3 rounded-full hover:bg-blue-600 transition-all shadow-lg hover:shadow-xl font-bold transform hover:-translate-y-0.5 active:scale-95">
+                    공유하기
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- [HERO] -->
+    <section id="poets" class="relative min-h-screen flex flex-col justify-center overflow-hidden bg-slate-900">
+        <!-- Background Image with Ken Burns Effect -->
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=2560&auto=format&fit=crop" 
+                 alt="Spring Background" 
+                 class="w-full h-full object-cover opacity-80 animate-ken-burns origin-center">
+            <!-- Overlay Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-poetry-gray/95"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto text-center px-4 pt-20 pb-40">
+            <span class="inline-block px-5 py-2 rounded-full bg-white/10 backdrop-blur-md text-white/90 text-sm font-bold tracking-[0.3em] mb-8 uppercase border border-white/20 animate-fade-in-up shadow-lg">
+                2026 Young Poets Exhibition
+            </span>
+            <h1 class="font-serif text-6xl md:text-9xl font-bold text-white mb-8 leading-tight animate-fade-in-up delay-100 drop-shadow-2xl">
+                봄을 여는<br />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-white to-blue-100">4개의 시(詩)선</span>
+            </h1>
+            <p class="text-white/80 text-xl md:text-2xl max-w-2xl mx-auto animate-fade-in-up delay-200 leading-relaxed font-light drop-shadow-lg">
+                가장 첨예한 언어로 계절의 문을 여는<br>
+                네 명의 시인들을 만나보세요.
+            </p>
+            
+            <div class="mt-20 animate-fade-in-up delay-300">
+                <a href="#poet-list" class="inline-flex flex-col items-center text-white/60 hover:text-white transition-colors gap-3 text-sm animate-bounce group">
+                    <span class="tracking-widest uppercase text-[10px] font-bold">Scroll Down</span>
+                    <div class="p-2 rounded-full border border-white/30 group-hover:border-white transition-colors">
+                        <i data-lucide="arrow-down" class="w-5 h-5"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- [FEATURED POETS GRID] -->
+    <div id="poet-list" class="relative z-20 -mt-40 max-w-7xl mx-auto px-4 pb-24">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            <!-- Poet 1 -->
+            <div class="group relative overflow-hidden rounded-2xl aspect-[3/4.5] cursor-pointer shadow-2xl hover:shadow-y24-blue/30 transition-all duration-500 hover:-translate-y-4 bg-white ring-0 hover:ring-4 ring-y24-blue ring-offset-4 ring-offset-poetry-gray">
+                <img src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?q=80&w=1000&auto=format&fit=crop" alt="김복희" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex flex-col justify-end p-8">
+                    <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <span class="inline-block bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Poet 01</span>
+                        <h3 class="text-white font-serif text-3xl font-bold mb-1">김복희</h3>
+                        <p class="text-blue-200 text-sm opacity-80 font-light">희망의 다른 이름</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Poet 2 -->
+            <div class="group relative overflow-hidden rounded-2xl aspect-[3/4.5] cursor-pointer shadow-2xl hover:shadow-y24-blue/30 transition-all duration-500 hover:-translate-y-4 bg-white ring-0 hover:ring-4 ring-y24-blue ring-offset-4 ring-offset-poetry-gray delay-100">
+                <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop" alt="양안다" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex flex-col justify-end p-8">
+                    <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <span class="inline-block bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Poet 02</span>
+                        <h3 class="text-white font-serif text-3xl font-bold mb-1">양안다</h3>
+                        <p class="text-blue-200 text-sm opacity-80 font-light">세계의 재구축</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Poet 3 -->
+            <div class="group relative overflow-hidden rounded-2xl aspect-[3/4.5] cursor-pointer shadow-2xl hover:shadow-y24-blue/30 transition-all duration-500 hover:-translate-y-4 bg-white ring-0 hover:ring-4 ring-y24-blue ring-offset-4 ring-offset-poetry-gray delay-200">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop" alt="김선오" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex flex-col justify-end p-8">
+                    <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <span class="inline-block bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Poet 03</span>
+                        <h3 class="text-white font-serif text-3xl font-bold mb-1">김선오</h3>
+                        <p class="text-blue-200 text-sm opacity-80 font-light">감각의 심연</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Poet 4 -->
+            <div class="group relative overflow-hidden rounded-2xl aspect-[3/4.5] cursor-pointer shadow-2xl hover:shadow-y24-blue/30 transition-all duration-500 hover:-translate-y-4 bg-white ring-0 hover:ring-4 ring-y24-blue ring-offset-4 ring-offset-poetry-gray delay-300">
+                <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=1000&auto=format&fit=crop" alt="박참새" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex flex-col justify-end p-8">
+                    <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <span class="inline-block bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">Poet 04</span>
+                        <h3 class="text-white font-serif text-3xl font-bold mb-1">박참새</h3>
+                        <p class="text-blue-200 text-sm opacity-80 font-light">내일의 용기</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- [INTERVIEW CARDS] -->
+    <section class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-serif font-bold mb-16 text-center text-slate-900">
+                Poet's Voice
+                <span class="block w-12 h-1 bg-y24-blue mx-auto mt-4 rounded-full"></span>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-poetry-gray p-10 rounded-2xl hover:bg-blue-50/50 hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-2xl font-bold text-slate-900 group-hover:text-y24-blue transition-colors">김복희</h3>
+                        <i data-lucide="quote" class="text-slate-300 w-8 h-8 group-hover:text-y24-blue/30 transition-colors"></i>
+                    </div>
+                    <blockquote class="font-serif text-lg text-slate-700 mb-6 leading-relaxed">
+                        "봄은 잊고 있던 것들이 돌아오는 계절이 아니라,<br>새로운 상실을 마주할 용기를 얻는 시간입니다."
+                    </blockquote>
+                    <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+                        섬세한 언어로 일상의 균열을 포착하는 시인. 시집 『희망은 사랑을 한다』로 독자들에게 깊은 울림을 주었다.
+                    </p>
+                    <a href="#" class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-y24-blue transition-colors border-b border-slate-900 hover:border-y24-blue pb-1">
+                        인터뷰 전문 보기 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </a>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-poetry-gray p-10 rounded-2xl hover:bg-blue-50/50 hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-2xl font-bold text-slate-900 group-hover:text-y24-blue transition-colors">양안다</h3>
+                        <i data-lucide="quote" class="text-slate-300 w-8 h-8 group-hover:text-y24-blue/30 transition-colors"></i>
+                    </div>
+                    <blockquote class="font-serif text-lg text-slate-700 mb-6 leading-relaxed">
+                        "세계가 무너지는 소리를 기록하고 싶었습니다.<br>그 소리조차 음악이 될 수 있다는 것을."
+                    </blockquote>
+                    <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+                        다양한 페르소나를 통해 시적 자아를 확장하는 실험적 시인. 독특한 리듬감과 이미지로 문단의 주목을 받고 있다.
+                    </p>
+                    <a href="#" class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-y24-blue transition-colors border-b border-slate-900 hover:border-y24-blue pb-1">
+                        인터뷰 전문 보기 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </a>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-poetry-gray p-10 rounded-2xl hover:bg-blue-50/50 hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-2xl font-bold text-slate-900 group-hover:text-y24-blue transition-colors">김선오</h3>
+                        <i data-lucide="quote" class="text-slate-300 w-8 h-8 group-hover:text-y24-blue/30 transition-colors"></i>
+                    </div>
+                    <blockquote class="font-serif text-lg text-slate-700 mb-6 leading-relaxed">
+                        "감각이 언어보다 먼저 도착하는 순간이 있습니다.<br>저는 그 찰나의 뒷모습을 잡으려 합니다."
+                    </blockquote>
+                    <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+                        공감각적 이미지를 통해 시의 영역을 넓히는 작가. 밤과 꿈, 무의식의 세계를 탐구하며 독자들에게 새로운 경험을 선사한다.
+                    </p>
+                    <a href="#" class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-y24-blue transition-colors border-b border-slate-900 hover:border-y24-blue pb-1">
+                        인터뷰 전문 보기 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </a>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-poetry-gray p-10 rounded-2xl hover:bg-blue-50/50 hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-2xl font-bold text-slate-900 group-hover:text-y24-blue transition-colors">박참새</h3>
+                        <i data-lucide="quote" class="text-slate-300 w-8 h-8 group-hover:text-y24-blue/30 transition-colors"></i>
+                    </div>
+                    <blockquote class="font-serif text-lg text-slate-700 mb-6 leading-relaxed">
+                        "불안은 나의 동력입니다. <br>흔들리지 않고 피는 꽃보다, 흔들리며 버티는 줄기를 사랑해요."
+                    </blockquote>
+                    <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+                        솔직하고 거침없는 문체로 MZ세대의 열렬한 지지를 받는 작가. 팟캐스트 진행자이자 에세이스트로서 전방위적 활동을 펼치고 있다.
+                    </p>
+                    <a href="#" class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-y24-blue transition-colors border-b border-slate-900 hover:border-y24-blue pb-1">
+                        인터뷰 전문 보기 <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [CURATED OBJECTS] -->
+    <section id="curated" class="py-24 bg-poetry-gray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-xs font-bold text-y24-blue tracking-widest uppercase mb-2 block">Limited Edition</span>
+                <h2 class="text-3xl font-serif font-bold text-slate-900">Curated Objects</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Object 1 -->
+                <div class="bg-white group rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="aspect-square bg-slate-100 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1544365558-35aa4afcf11f?q=80&w=600&auto=format&fit=crop" alt="Object 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 bg-white/95 px-3 py-1.5 text-[10px] font-bold tracking-wider rounded text-slate-900 uppercase">Inspired by 김복희</div>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h4 class="font-serif font-bold text-lg mb-1 text-slate-900">새벽의 잉크웰</h4>
+                        <p class="text-xs text-slate-500 mb-5">Glass & Brass Finish</p>
+                        <button class="w-full bg-slate-900 text-white py-3 text-sm font-bold hover:bg-y24-blue transition-colors rounded-lg">
+                            Shop Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Object 2 -->
+                <div class="bg-white group rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="aspect-square bg-slate-100 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1603006905003-be475563bc59?q=80&w=600&auto=format&fit=crop" alt="Object 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 bg-white/95 px-3 py-1.5 text-[10px] font-bold tracking-wider rounded text-slate-900 uppercase">Inspired by 양안다</div>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h4 class="font-serif font-bold text-lg mb-1 text-slate-900">침묵의 캔들</h4>
+                        <p class="text-xs text-slate-500 mb-5">Soy Wax, Sandalwood</p>
+                        <button class="w-full bg-slate-900 text-white py-3 text-sm font-bold hover:bg-y24-blue transition-colors rounded-lg">
+                            Shop Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Object 3 -->
+                <div class="bg-white group rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="aspect-square bg-slate-100 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?q=80&w=600&auto=format&fit=crop" alt="Object 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 bg-white/95 px-3 py-1.5 text-[10px] font-bold tracking-wider rounded text-slate-900 uppercase">Inspired by 김선오</div>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h4 class="font-serif font-bold text-lg mb-1 text-slate-900">프리즘 문진</h4>
+                        <p class="text-xs text-slate-500 mb-5">Optical Crystal</p>
+                        <button class="w-full bg-slate-900 text-white py-3 text-sm font-bold hover:bg-y24-blue transition-colors rounded-lg">
+                            Shop Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Object 4 -->
+                <div class="bg-white group rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="aspect-square bg-slate-100 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1585336261022-680e295ce3fe?q=80&w=600&auto=format&fit=crop" alt="Object 4" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 bg-white/95 px-3 py-1.5 text-[10px] font-bold tracking-wider rounded text-slate-900 uppercase">Inspired by 박참새</div>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h4 class="font-serif font-bold text-lg mb-1 text-slate-900">용기의 노트</h4>
+                        <p class="text-xs text-slate-500 mb-5">Hardcover, Plain paper</p>
+                        <button class="w-full bg-slate-900 text-white py-3 text-sm font-bold hover:bg-y24-blue transition-colors rounded-lg">
+                            Shop Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [AI POET SECTION] -->
+    <section id="ai-poet" class="py-24 bg-white border-t border-slate-100">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <span class="inline-flex items-center gap-1 text-y24-blue text-xs font-bold tracking-widest mb-3 uppercase bg-blue-50 px-3 py-1 rounded-full">
+                <i data-lucide="sparkles" class="w-3 h-3"></i> Powered by Gemini
+            </span>
+            <h2 class="font-serif text-4xl font-bold mb-4 text-slate-900">AI 시인과 함께하는 봄</h2>
+            <p class="text-slate-500 mb-10 text-lg">
+                마음속에 떠오르는 단어나 감정을 입력해보세요.<br>
+                AI가 당신만을 위한 짧은 시를 선물합니다.
+            </p>
+            
+            <div class="bg-gradient-to-br from-white to-blue-50/50 p-6 md:p-12 rounded-3xl shadow-xl border border-blue-100 relative overflow-hidden transition-all hover:shadow-2xl">
+                <!-- Input Area -->
+                <div class="relative z-10">
+                    <input type="text" id="user-keyword" placeholder="예: 벚꽃, 늦잠, 오래된 편지..." 
+                        class="w-full px-6 py-5 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-y24-blue text-center text-lg mb-6 bg-white placeholder-slate-300 transition-all shadow-sm" onkeypress="if(event.key === 'Enter') generatePoem()">
+                    
+                    <button onclick="generatePoem()" id="generate-btn"
+                        class="w-full bg-y24-blue text-white px-8 py-5 rounded-xl font-bold text-lg hover:bg-blue-600 transition-all flex items-center justify-center gap-2 transform active:scale-[0.98] shadow-lg shadow-blue-500/30">
+                        <span>✨ 시(詩) 선물 받기</span>
+                    </button>
+                </div>
+                
+                <!-- Loading State -->
+                <div id="loading-indicator" class="hidden mt-10">
+                    <div class="flex justify-center items-center gap-2 mb-3">
+                        <div class="w-3 h-3 bg-y24-blue rounded-full typing-dot"></div>
+                        <div class="w-3 h-3 bg-y24-blue rounded-full typing-dot"></div>
+                        <div class="w-3 h-3 bg-y24-blue rounded-full typing-dot"></div>
+                    </div>
+                    <p class="text-sm text-slate-400 font-serif">시어(詩語)를 고르는 중...</p>
+                </div>
+
+                <!-- Result Area -->
+                <div id="poem-result" class="hidden mt-10 pt-10 border-t border-slate-200 fade-in-up">
+                    <div class="font-serif text-xl md:text-2xl text-slate-800 leading-loose whitespace-pre-line break-keep" id="poem-text"></div>
+                    <div class="mt-10 flex justify-center">
+                        <button onclick="copyPoem()" class="text-sm text-slate-500 hover:text-y24-blue flex items-center gap-2 px-4 py-2 rounded-full hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-100">
+                            <i data-lucide="copy" class="w-4 h-4"></i> 복사하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [MESSAGE WALL] -->
+    <section id="message-wall" class="py-24 bg-poetry-gray overflow-hidden relative">
+        <div class="max-w-7xl mx-auto px-4 mb-12 relative z-10 text-center">
+            <h2 class="font-serif text-3xl font-bold text-slate-900 mb-2">봄바람 메시지 월</h2>
+            <p class="text-slate-500">여러분의 따뜻한 응원이 봄바람을 타고 전해집니다.</p>
+        </div>
+        
+        <!-- Marquee Container -->
+        <div class="relative w-full overflow-hidden py-8 bg-white/50 backdrop-blur-sm border-y border-slate-100">
+            <div class="flex animate-marquee whitespace-nowrap gap-8">
+                <!-- Messages Row 1 -->
+                <div class="flex gap-8" id="marquee-content">
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">🌸 시인님들의 새로운 시작을 응원합니다!</div>
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">봄날의 햇살 같은 시 잘 읽었습니다.</div>
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">젊은 작가전 언제나 기대됩니다 ✨</div>
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">올해의 문장은 단연코 박참새 시인!</div>
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">나만의 문장을 찾아서... 📚</div>
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">Yes24 굿즈 맛집 인정합니다 👍</div>
+                </div>
+                <!-- Duplicate for seamless loop -->
+                <div class="flex gap-8" aria-hidden="true">
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">🌸 시인님들의 새로운 시작을 응원합니다!</div>
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">봄날의 햇살 같은 시 잘 읽었습니다.</div>
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">젊은 작가전 언제나 기대됩니다 ✨</div>
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">올해의 문장은 단연코 박참새 시인!</div>
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">나만의 문장을 찾아서... 📚</div>
+                    <div class="px-6 py-4 bg-white rounded-full shadow-sm border border-blue-50 text-slate-600 font-serif">Yes24 굿즈 맛집 인정합니다 👍</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Message Form (Simulated) -->
+        <div class="max-w-xl mx-auto mt-12 px-4 flex gap-2 relative z-10">
+            <input type="text" placeholder="응원의 한마디를 남겨주세요 (최대 30자)" class="flex-1 px-6 py-3 rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-y24-blue text-sm shadow-sm transition-shadow focus:shadow-md" maxlength="30">
+            <button class="bg-slate-900 text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-y24-blue transition-colors shadow-lg transform active:scale-95" onclick="alert('소중한 메시지가 봄바람에 실려 등록되었습니다!')">
+                남기기
+            </button>
+        </div>
+    </section>
+
+    <!-- [EVENT SECTION] -->
+    <section id="event" class="py-24 bg-poetry-gray relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-4 relative z-10">
+            <!-- Ticket Container -->
+            <div class="relative bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-slate-200 hover:shadow-y24-blue/10 transition-shadow duration-500">
+                <!-- Left Side: Main Content -->
+                <div class="flex-1 p-8 md:p-12 border-b md:border-b-0 md:border-r border-dashed border-slate-300 relative">
+                    <!-- Punch Holes (Visual) -->
+                    <div class="ticket-punch-r md:hidden"></div>
+                    
+                    <span class="inline-block text-y24-blue font-bold tracking-widest text-xs uppercase mb-4 border border-blue-100 bg-blue-50 px-3 py-1 rounded-full">Coming Soon</span>
+                    <h2 class="font-serif text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+                        여름을 활짝 여는<br><span class="text-y24-blue">6월 15일</span>
+                    </h2>
+                    <p class="text-slate-500 mb-8 text-lg">
+                        당신의 마음을 흔든 '올해의 문장'에 투표해주세요.<br>
+                        추첨을 통해 작가들의 친필 사인본을 드립니다.
+                    </p>
+                    
+                    <div class="bg-slate-50 rounded-xl p-6 border border-slate-100">
+                         <div class="flex items-start gap-4">
+                             <div class="p-3 bg-white rounded-lg shadow-sm text-y24-blue">
+                                 <i data-lucide="gift" class="w-6 h-6"></i>
+                             </div>
+                             <div>
+                                 <h4 class="font-bold text-slate-900">Special Prize</h4>
+                                 <p class="text-sm text-slate-500 mt-1">투표 참여자 중 <span class="font-bold text-y24-blue">100명</span> 추첨 증정</p>
+                                 <p class="text-xs text-slate-400 mt-2">당첨자 발표: 2026.06.20 (개별연락)</p>
+                             </div>
+                         </div>
+                    </div>
+                    
+                    <!-- Punch hole for desktop right edge -->
+                    <div class="ticket-punch-r hidden md:block"></div>
+                </div>
+
+                <!-- Right Side: Action (Stub) -->
+                <div class="w-full md:w-80 bg-slate-50 p-8 md:p-12 flex flex-col justify-center items-center relative">
+                    <!-- Punch hole for desktop left edge -->
+                    <div class="ticket-punch-l hidden md:block"></div>
+                    <!-- Punch hole for mobile left edge -->
+                    <div class="ticket-punch-l md:hidden"></div>
+
+                    <div class="text-center w-full">
+                        <div class="text-slate-400 text-xs font-bold mb-2 uppercase tracking-wide">Notice</div>
+                        <p class="text-xs text-slate-500 mb-6 px-4 break-keep">로그인 후 참여 가능하며, ID당 1회 투표하실 수 있습니다.</p>
+                        
+                        <button class="w-full bg-slate-900 hover:bg-y24-blue text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:scale-105 active:scale-95 group">
+                            <span class="flex items-center justify-center gap-2">
+                                알림 신청하기 <i data-lucide="bell" class="w-4 h-4 group-hover:animate-pulse"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [IMAGE CAROUSEL] -->
+    <section class="py-24 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4">
+            <h3 class="text-2xl font-serif font-bold text-center mb-12 text-slate-900">Event Gifts Gallery</h3>
+            
+            <div class="relative w-full max-w-4xl mx-auto h-[450px] rounded-2xl overflow-hidden group shadow-2xl border border-slate-100">
+                <!-- Slides Container -->
+                <div id="carousel-track" class="flex h-full transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]">
+                    <!-- Slide 1 -->
+                    <div class="min-w-full h-full relative">
+                        <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 w-full bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent p-10 text-white">
+                            <h4 class="text-2xl font-bold mb-2">에디션 북커버 세트</h4>
+                            <p class="text-sm opacity-80">봄의 색감을 담은 한정판 패키지</p>
+                        </div>
+                    </div>
+                    <!-- Slide 2 -->
+                    <div class="min-w-full h-full relative">
+                        <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 w-full bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent p-10 text-white">
+                            <h4 class="text-2xl font-bold mb-2">작가 친필 엽서</h4>
+                            <p class="text-sm opacity-80">시인의 문장이 육필로 담긴 엽서</p>
+                        </div>
+                    </div>
+                    <!-- Slide 3 -->
+                    <div class="min-w-full h-full relative">
+                        <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1200&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 w-full bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent p-10 text-white">
+                            <h4 class="text-2xl font-bold mb-2">시 구절 각인 연필</h4>
+                            <p class="text-sm opacity-80">사각거리는 기록의 시간을 위한 선물</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <button onclick="prevSlide()" class="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 backdrop-blur-md p-3 rounded-full text-white transition-all opacity-0 group-hover:opacity-100 hover:scale-110">
+                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                </button>
+                <button onclick="nextSlide()" class="absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 backdrop-blur-md p-3 rounded-full text-white transition-all opacity-0 group-hover:opacity-100 hover:scale-110">
+                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                </button>
+                
+                <!-- Indicators -->
+                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
+                    <button onclick="goToSlide(0)" class="w-2.5 h-2.5 rounded-full bg-white shadow-lg transition-all hover:scale-125" id="indicator-0"></button>
+                    <button onclick="goToSlide(1)" class="w-2.5 h-2.5 rounded-full bg-white/40 shadow-lg transition-all hover:scale-125" id="indicator-1"></button>
+                    <button onclick="goToSlide(2)" class="w-2.5 h-2.5 rounded-full bg-white/40 shadow-lg transition-all hover:scale-125" id="indicator-2"></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [PRODUCT LIST - TARGET BOOKS] -->
+    <section class="py-24 bg-white border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-4">
+            <!-- Section Title -->
+            <div class="text-center mb-16">
+                <!-- YES24 Image Banner -->
+                <div class="mb-8 flex justify-center">
+                    <div class="bg-blue-50 border border-blue-100 rounded-full px-6 py-2 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow">
+                        <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.png" alt="YES24" class="h-5 opacity-80 filter grayscale hover:grayscale-0 transition-all">
+                        <span class="text-xs text-slate-500 font-bold tracking-wide uppercase">Official Partner</span>
+                    </div>
+                </div>
+
+                <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-y24-blue text-xs font-bold tracking-widest uppercase mb-3">Event Books</span>
+                <h3 class="font-serif text-3xl md:text-4xl font-bold text-slate-900">이 주의 시집, 그리고 문장들</h3>
+                <p class="text-slate-500 mt-4 max-w-2xl mx-auto">
+                    이벤트 대상 도서를 포함해 2만원 이상 구매 시,<br>
+                    봄날의 감성을 담은 한정판 굿즈를 드립니다.
+                </p>
+            </div>
+
+            <!-- Books Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+                <!-- Book 1 -->
+                <div class="group cursor-pointer">
+                    <div class="relative aspect-[1/1.5] bg-slate-100 rounded-lg overflow-hidden mb-5 shadow-md group-hover:shadow-xl transition-all duration-300">
+                        <img src="https://image.yes24.com/goods/91402194/L" alt="희망은 사랑을 한다" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-0 left-0 bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded-br-lg z-10">+ 굿즈 증정</div>
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 z-20">
+                            <button class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                            <button class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i data-lucide="heart" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                    <div class="space-y-1.5">
+                        <h4 class="font-bold text-slate-900 text-lg line-clamp-1 group-hover:text-y24-blue transition-colors">희망은 사랑을 한다</h4>
+                        <p class="text-sm text-slate-500">김복희 저 | 문학동네</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="font-bold text-y24-blue text-lg">10,800원</span>
+                            <span class="text-xs text-slate-400 line-through">12,000원</span>
+                            <span class="text-xs text-red-500 font-bold bg-red-50 px-1 rounded">10%</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Book 2 -->
+                <div class="group cursor-pointer">
+                    <div class="relative aspect-[1/1.5] bg-slate-100 rounded-lg overflow-hidden mb-5 shadow-md group-hover:shadow-xl transition-all duration-300">
+                        <img src="https://image.yes24.com/goods/150259715/L" alt="세계의 재구축" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-0 left-0 bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded-br-lg z-10">MD 추천</div>
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 z-20">
+                             <button class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                            <button class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i data-lucide="heart" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                    <div class="space-y-1.5">
+                        <h4 class="font-bold text-slate-900 text-lg line-clamp-1 group-hover:text-y24-blue transition-colors">세계의 재구축</h4>
+                        <p class="text-sm text-slate-500">양안다 저 | 문학과지성사</p>
+                        <div class="flex items-center gap-2 mt-2">
+                             <span class="font-bold text-y24-blue text-lg">11,700원</span>
+                            <span class="text-xs text-slate-400 line-through">13,000원</span>
+                            <span class="text-xs text-red-500 font-bold bg-red-50 px-1 rounded">10%</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Book 3 -->
+                <div class="group cursor-pointer">
+                    <div class="relative aspect-[1/1.5] bg-slate-100 rounded-lg overflow-hidden mb-5 shadow-md group-hover:shadow-xl transition-all duration-300">
+                        <img src="https://image.yes24.com/goods/93775837/L" alt="나이트 사커" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-0 left-0 bg-y24-blue text-white text-[10px] font-bold px-2 py-1 rounded-br-lg z-10">+ 굿즈 증정</div>
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 z-20">
+                             <button class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                            <button class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i data-lucide="heart" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                    <div class="space-y-1.5">
+                        <h4 class="font-bold text-slate-900 text-lg line-clamp-1 group-hover:text-y24-blue transition-colors">나이트 사커</h4>
+                        <p class="text-sm text-slate-500">김선오 저 | 문학과지성사</p>
+                        <div class="flex items-center gap-2 mt-2">
+                             <span class="font-bold text-y24-blue text-lg">9,900원</span>
+                            <span class="text-xs text-slate-400 line-through">11,000원</span>
+                            <span class="text-xs text-red-500 font-bold bg-red-50 px-1 rounded">10%</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Book 4 -->
+                <div class="group cursor-pointer">
+                    <div class="relative aspect-[1/1.5] bg-slate-100 rounded-lg overflow-hidden mb-5 shadow-md group-hover:shadow-xl transition-all duration-300">
+                        <img src="https://image.yes24.com/goods/108433308/L" alt="내일의 용기" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-0 left-0 bg-pink-500 text-white text-[10px] font-bold px-2 py-1 rounded-br-lg z-10">베스트셀러</div>
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 z-20">
+                             <button class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+                            <button class="bg-white text-slate-900 p-3 rounded-full hover:bg-y24-blue hover:text-white transition-colors transform hover:scale-110"><i data-lucide="heart" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                    <div class="space-y-1.5">
+                        <h4 class="font-bold text-slate-900 text-lg line-clamp-1 group-hover:text-y24-blue transition-colors">출발선 뒤의 초조함</h4>
+                        <p class="text-sm text-slate-500">박참새 저 | 민음사</p>
+                        <div class="flex items-center gap-2 mt-2">
+                             <span class="font-bold text-y24-blue text-lg">14,400원</span>
+                            <span class="text-xs text-slate-400 line-through">16,000원</span>
+                            <span class="text-xs text-red-500 font-bold bg-red-50 px-1 rounded">10%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [FOOTER - IMAGE REPLACEMENT] -->
+    <footer class="bg-white border-t border-slate-100">
+        <div class="w-full max-w-[1920px] mx-auto">
+            <!-- IMPORTANT: Replace 'https://image.yes24.com/momo/TopCategories/0001/2023/footer_yes24.jpg' with your uploaded image path (e.g., '/images/footer.jpg') -->
+            <img src="https://image.yes24.com/momo/TopCategories/0001/2023/footer_yes24.jpg" 
+                 alt="YES24 Footer" 
+                 class="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                 onerror="this.src='https://dummyimage.com/1920x300/f8f9fa/cbd5e1&text=Footer+Image+Area+(Replace+with+your+file)'">
+        </div>
+    </footer>
+
+    <!-- [BACK TO TOP BUTTON] -->
+    <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+        class="fixed bottom-8 right-8 bg-slate-900 text-white p-3 rounded-full shadow-lg opacity-0 translate-y-10 transition-all duration-300 hover:bg-y24-blue z-50 group" aria-label="맨 위로 가기">
+        <i data-lucide="arrow-up" class="w-6 h-6 group-hover:-translate-y-1 transition-transform"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script>
+        // Init Icons
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            } else {
+                console.error("Lucide icons library failed to load.");
+            }
+        });
+
+        const apiKey = ""; // Runtime Environment Key
+
+        // Gemini AI Logic (Same as before)
+        async function generatePoem() {
+            const keyword = document.getElementById('user-keyword').value.trim();
+            if (!keyword) {
+                alert("시상이 떠오르지 않으셨나요? 단어를 입력해주세요.");
+                return;
+            }
+
+            const btn = document.getElementById('generate-btn');
+            const loading = document.getElementById('loading-indicator');
+            const resultDiv = document.getElementById('poem-result');
+            const poemText = document.getElementById('poem-text');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.innerHTML = '<span>⏳ 시를 짓는 중...</span>';
+            loading.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            poemText.innerText = "";
+
+            try {
+                const prompt = `작성자는 한국의 서정적인 젊은 시인입니다. 사용자가 입력한 단어 '${keyword}'를 주제로 하여, 3~5줄 내외의 짧고 감각적인 현대 시를 작성해주세요. 답변은 시의 내용만 텍스트로 출력하세요.`;
+                const text = await callGeminiWithRetry(prompt);
+
+                poemText.innerText = text;
+                resultDiv.classList.remove('hidden');
+                
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+                
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            } catch (error) {
+                console.error("Gemini Error:", error);
+                alert("시를 짓는 도중 펜을 놓쳤습니다. 잠시 후 다시 시도해주세요.");
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.innerHTML = '<span>✨ 시(詩) 선물 받기</span>';
+                loading.classList.add('hidden');
+            }
+        }
+
+        async function callGeminiWithRetry(prompt, retries = 3, delay = 1000) {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                if (!response.ok) {
+                    if (retries > 0) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return callGeminiWithRetry(prompt, retries - 1, delay * 2);
+                    }
+                    throw new Error('API Request Failed');
+                }
+
+                const data = await response.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "아직 시상이 떠오르지 않습니다.";
+
+            } catch (e) {
+                if (retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return callGeminiWithRetry(prompt, retries - 1, delay * 2);
+                }
+                throw e;
+            }
+        }
+
+        function copyPoem() {
+            const text = document.getElementById('poem-text').innerText;
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert("시가 복사되었습니다.");
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Carousel Logic
+        let currentSlide = 0;
+        const totalSlides = 3;
+        const track = document.getElementById('carousel-track');
+        
+        function updateCarousel() {
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            for(let i=0; i<totalSlides; i++) {
+                const el = document.getElementById(`indicator-${i}`);
+                if(i === currentSlide) {
+                    el.classList.remove('bg-white/40');
+                    el.classList.add('bg-white');
+                } else {
+                    el.classList.add('bg-white/40');
+                    el.classList.remove('bg-white');
+                }
+            }
+        }
+
+        function nextSlide() { currentSlide = (currentSlide + 1) % totalSlides; updateCarousel(); }
+        function prevSlide() { currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; updateCarousel(); }
+        function goToSlide(index) { currentSlide = index; updateCarousel(); }
+
+        // Scroll Effects (Header & Back to Top)
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('main-header');
+            const backToTop = document.getElementById('back-to-top');
+            
+            if (window.scrollY > 50) {
+                header.classList.add('shadow-md');
+                header.classList.replace('h-20', 'h-16');
+                header.classList.add('bg-slate-900/90');
+                header.classList.remove('bg-white/10');
+                
+                // Show Back to Top
+                backToTop.classList.remove('opacity-0', 'translate-y-10');
+            } else {
+                header.classList.remove('shadow-md');
+                header.classList.replace('h-16', 'h-20');
+                header.classList.remove('bg-slate-900/90');
+                header.classList.add('bg-white/10');
+                
+                // Hide Back to Top
+                backToTop.classList.add('opacity-0', 'translate-y-10');
+            }
+        });
+        
+        setInterval(nextSlide, 5000);
+    </script>
+</body>
+</html>
