@@ -1,1 +1,72 @@
-test
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Handwriting Animation (Korean)</title>
+  <link href="https://fonts.googleapis.com/css?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f8f3e8;
+    }
+    .handwriting-container {
+      background: #fffbea;
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.07);
+      font-family: 'Nanum Pen Script', cursive;
+      font-size: 2.1em;
+      color: #4f3c1b;
+      white-space: pre-wrap;
+      border: 2px solid #e7d8be;
+      min-width: 350px;
+      max-width: 650px;
+      min-height: 140px;
+    }
+    .blinking-cursor {
+      display: inline-block;
+      width: 16px;
+      animation: blink 0.9s steps(1) infinite;
+      color: #dd5454;
+      font-size: 1em;
+      vertical-align: bottom;
+    }
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="handwriting-container" id="handwriting">
+    <span id="text"></span><span class="blinking-cursor">|</span>
+  </div>
+
+  <script>
+    // 표시할 한글 문자열 (여러 문장 지원)
+    const sentences = [
+      "오늘도 새로운 하루를 시작합니다.",
+      "작은 습관이 큰 변화를 만듭니다."
+    ];
+    const text = sentences.join('\n'); // 2문장 이상
+
+    const textElement = document.getElementById('text');
+    let i = 0;
+
+    function typeWriter() {
+      if (i < text.length) {
+        textElement.textContent += text[i];
+        i++;
+        let delay = 80 + Math.random() * 60; // 속도 약간 랜덤
+        setTimeout(typeWriter, text[i-1] === "\n" ? 600 : delay);
+      }
+    }
+    typeWriter();
+  </script>
+</body>
+</html>
