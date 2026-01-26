@@ -80,11 +80,11 @@
         <header class="text-center space-y-4">
             <h1 class="text-4xl font-bold text-slate-800 tracking-tight">JIRA 대체 솔루션 비교 분석</h1>
             <p class="text-lg text-slate-600 max-w-2xl mx-auto">
-                이 대시보드는 Flow, Yona, Redmine, YouTrack, Dooray, OpenProject를 최신 JIRA와 다각도로 분석하여 
-                귀사의 조직에 가장 적합한 프로젝트 관리 도구를 찾도록 돕습니다.
+                이 대시보드는 Flow, Yona, Redmine, YouTrack, Dooray, OpenProject를 최신 JIRA와 다각도로 분석하여 가장 적합한 프로젝트 관리 도구를 찾도록 돕습니다.
             </p>
         </header>
-       
+
+    
 
         <!-- Visual Analysis Section -->
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -158,6 +158,18 @@
             </div>
         </section>
 
+        <!-- New Section: Detailed Characteristics Analysis -->
+        <section class="space-y-8 mt-12 border-t border-slate-200 pt-12">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">📌 솔루션별 상세 특징 분석</h2>
+                <p class="text-slate-600 mt-2">각 솔루션의 태생적 특징과 장단점을 심층 분석하여, 도입 시 고려해야 할 핵심 포인트를 정리했습니다.</p>
+            </div>
+            
+            <div id="detailed-analysis" class="grid grid-cols-1 gap-8">
+                <!-- Detailed rows injected by JS -->
+            </div>
+        </section>
+
         <!-- Footer -->
         <footer class="text-center text-slate-400 py-8 border-t border-slate-200 mt-12">
             <p class="text-sm">데이터 기준: 2024년 최신 버전 기준 분석 | 분석 제공: Canvas Intelligence</p>
@@ -184,6 +196,7 @@
             { id: 'cost', label: '가격 정책', category: 'management', 
               jira: '높음 (유저당 과금)', flow: '중간 (유저당)', dooray: '중간 (유저당)', youtrack: '무료(10인)/저렴', redmine: '무료 (오픈소스)', yona: '무료 (오픈소스)', openproject: '무료 / 유료(Ent)' },
             
+            // Added Cost Rows with USD/KRW
             { id: 'cost_100', label: '월 비용 (100명)', category: 'management', 
               jira: '$820 (약 119만원)', flow: '$415 (60만원)', dooray: '$485 (70만원)', youtrack: '$440 (약 64만원)', redmine: '0원 (서버비 별도)', yona: '0원 (서버비 별도)', openproject: '€595 (약 92만원)' },
 
@@ -275,10 +288,100 @@
             initTable();
             initCharts();
             initToolCards();
+            initDetailedAnalysis(); // New function call
             setupRecommender();
         });
 
         // --- Functions ---
+        
+        function initDetailedAnalysis() {
+            const container = document.getElementById('detailed-analysis');
+            const details = [
+                {
+                    name: 'Flow (플로우)',
+                    badge: '협업 중심',
+                    badgeColor: 'bg-purple-100 text-purple-700',
+                    desc: '국내 점유율 1위의 메신저형 협업 툴입니다. 카카오톡과 유사한 채팅 UI에 게시판형 업무 관리를 결합하여 학습 곡선이 거의 없습니다.',
+                    pros: ['직관적인 UI로 전사 도입 장벽이 매우 낮음', '외부 파트너(게스트) 초대가 매우 간편함', '채팅과 업무 히스토리가 유기적으로 연결됨'],
+                    cons: ['JIRA 수준의 복잡한 이슈 추적(Workflow) 불가', 'Git/CI/CD 등 개발 도구와의 연동성 부족', '스크럼/스프린트 관리 기능 미약']
+                },
+                {
+                    name: 'Yona (요나)',
+                    badge: '한국형 설치형',
+                    badgeColor: 'bg-amber-100 text-amber-700',
+                    desc: '네이버 개발팀에서 사용하던 도구를 오픈소스로 공개한 프로젝트입니다. 한국 개발 문화에 최적화되어 있으며, 설치형으로 폐쇄망 구축에 용이합니다.',
+                    pros: ['Git 저장소와 이슈 트래커가 통합되어 별도 형상관리 툴 불필요', '완벽한 한글화 및 한국적 게시판 UI', '비용이 전혀 들지 않는 완전 무료'],
+                    cons: ['모바일 앱 부재 (모바일 웹만 지원)', '플러그인 생태계가 작음', '직접 서버를 구축하고 유지보수해야 함']
+                },
+                {
+                    name: 'Redmine (레드마인)',
+                    badge: '오픈소스 표준',
+                    badgeColor: 'bg-violet-100 text-violet-700',
+                    desc: '전 세계적으로 가장 널리 쓰이는 오픈소스 프로젝트 관리 도구입니다. 루비 온 레일즈(RoR) 기반이며 매우 방대한 플러그인 생태계를 보유하고 있습니다.',
+                    pros: ['플러그인을 통해 거의 모든 기능(간트, 애자일 등) 확장 가능', '완전 무료이며 데이터 소유권을 100% 가짐', '매우 상세한 권한 제어 설정 가능'],
+                    cons: ['UI/UX가 구식이며 사용성이 떨어짐', '루비 환경 설정 및 업그레이드 유지보수가 까다로움', '기본 설정만으로는 사용하기 불편함']
+                },
+                {
+                    name: 'JetBrains YouTrack (유트랙)',
+                    badge: '개발자 최적화',
+                    badgeColor: 'bg-rose-100 text-rose-700',
+                    desc: 'IntelliJ를 만든 JetBrains사의 이슈 트래커입니다. 개발자가 마우스를 쓰지 않고 키보드만으로 모든 처리를 할 수 있도록 설계되었습니다.',
+                    pros: ['IDE(IntelliJ 등)와의 완벽한 통합', '매우 강력한 검색 쿼리 및 명령어 지원', '10명 이하 무료, 설치형/클라우드 모두 지원'],
+                    cons: ['개발자가 아닌 직군에게는 UI가 다소 어렵게 느껴질 수 있음', '한글화가 되어있으나 번역 품질이 일부 어색함']
+                },
+                {
+                    name: 'NHN Dooray (두레이)',
+                    badge: '올인원 SaaS',
+                    badgeColor: 'bg-emerald-100 text-emerald-700',
+                    desc: '프로젝트, 메일, 메신저, 화상회의를 하나의 플랫폼에서 제공하는 올인원 서비스입니다. JIRA와 유사한 이슈 관리 구조를 가집니다.',
+                    pros: ['메일과 메신저가 통합되어 별도 커뮤니케이션 툴 불필요', 'Github/Gitlab/Jenkins 연동 지원', '공공기관 보안 인증(CSAP) 획득으로 신뢰성 높음'],
+                    cons: ['일부 고급 애자일 리포팅 기능은 JIRA에 비해 부족', '무료 플랜의 기능 제약이 존재']
+                },
+                {
+                    name: 'OpenProject (오픈프로젝트)',
+                    badge: '전통적 PM',
+                    badgeColor: 'bg-blue-100 text-blue-700',
+                    desc: 'Redmine에서 파생되었으나 현대적인 UI로 재탄생했습니다. WBS(작업 분할 구조)와 간트 차트 기능이 매우 강력합니다.',
+                    pros: ['가장 강력하고 미려한 간트 차트 기능 제공', '프로젝트 일정 계획 및 리소스 관리에 최적화', 'Redmine 대비 훨씬 세련된 UI'],
+                    cons: ['애자일(스크럼) 보다는 워터폴(Waterfall) 방식에 더 적합', '커뮤니티 버전에서는 일부 핵심 기능(보드 등) 제한']
+                }
+            ];
+
+            details.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row gap-6';
+                el.innerHTML = `
+                    <div class="md:w-1/3 flex-shrink-0">
+                        <div class="flex items-center gap-3 mb-3">
+                            <h3 class="text-xl font-bold text-slate-800">${item.name}</h3>
+                            <span class="px-2 py-1 text-xs font-bold rounded ${item.badgeColor}">${item.badge}</span>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                            ${item.desc}
+                        </p>
+                    </div>
+                    <div class="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-sm font-bold text-teal-700 mb-2 flex items-center">
+                                <span class="mr-2">👍</span> 장점 (Pros)
+                            </h4>
+                            <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside marker:text-teal-500">
+                                ${item.pros.map(p => `<li>${p}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-rose-700 mb-2 flex items-center">
+                                <span class="mr-2">👎</span> 단점 (Cons)
+                            </h4>
+                            <ul class="text-sm text-slate-600 space-y-1 list-disc list-inside marker:text-rose-500">
+                                ${item.cons.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
 
         function initTable() {
             const tbody = document.getElementById('matrix-body');
