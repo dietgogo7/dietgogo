@@ -28,6 +28,42 @@
       max-width: 650px;
       min-height: 140px;
     }
+    .hand-letter {
+      display: inline-block;
+      opacity: 0;
+      transform: scale(0.7) translateY(12px) rotate(-7deg);
+      animation: handdraw 0.42s forwards;
+      animation-timing-function: cubic-bezier(.66,1.66,.41, 1.23);
+    }
+    /* 겹쳐진 효과 방지와 랜덤성 부여 */
+    .hand-letter.odd {
+      transform: scale(0.72) translateY(9px) rotate(4deg);
+      animation-delay: 0.09s;
+    }
+    .hand-letter.even {
+      transform: scale(0.67) translateY(15px) rotate(-5deg);
+      animation-delay: 0.02s;
+    }
+    @keyframes handdraw {
+      0% {
+        opacity: 0;
+        transform: scale(0.7) translateY(12px) rotate(-7deg);
+        filter: blur(2px);
+      }
+      70% {
+        opacity: 1;
+        filter: blur(0.2px);
+      }
+      90% {
+        transform: scale(1.04) translateY(-1px) rotate(0.6deg);
+        filter: blur(0.1px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1.0) translateY(0px) rotate(0deg);
+        filter: blur(0);
+      }
+    }
     .blinking-cursor {
       display: inline-block;
       width: 16px;
@@ -53,20 +89,37 @@
       "오늘도 새로운 하루를 시작합니다.",
       "작은 습관이 큰 변화를 만듭니다."
     ];
-    const text = sentences.join('\n'); // 2문장 이상
+    const text = sentences.join('\n');
 
     const textElement = document.getElementById('text');
     let i = 0;
 
-    function typeWriter() {
+    // 개별 글자 손글씨 효과로 추가
+    function handWrite() {
       if (i < text.length) {
-        textElement.textContent += text[i];
+        if(text[i] === "\n") {
+          textElement.appendChild(document.createElement('br'));
+        } else {
+          const span = document.createElement('span');
+          span.textContent = text[i];
+          span.className = "hand-letter";
+          // 위치, 각도 등에 랜덤성 추가
+          if (i % 2 === 0) span.classList.add('even');
+          else span.classList.add('odd');
+          span.style.animationDelay = "0s";
+          textElement.appendChild(span);
+          // 등장의 animation-delay도 조금씩 다르게
+          setTimeout(() => {
+            span.style.animationDelay = "0s";
+            span.style.opacity = 1;
+          }, 0);
+        }
         i++;
-        let delay = 80 + Math.random() * 60; // 속도 약간 랜덤
-        setTimeout(typeWriter, text[i-1] === "\n" ? 600 : delay);
+        let delay = 96 + Math.random() * 120; // 한글자씩 쓰는 시간 더 느리게
+        setTimeout(handWrite, text[i-1] === "\n" ? 550 : delay);
       }
     }
-    typeWriter();
+    handWrite();
   </script>
 </body>
 </html>
