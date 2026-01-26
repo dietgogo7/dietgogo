@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JIRA 대체 솔루션 비교 분석 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #fdfaf6; /* Warm neutral background */
+            color: #334155;
+        }
+
+        /* Chart Container Styling - Mandatory per instructions */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals with Slate Blue and Soft Teal Accents -->
+    <!-- Application Structure Plan: 
+         1. Header & Intro: Context setting.
+         2. Interactive Recommendation Engine: User inputs constraints (Cost, Self-hosting, etc.), logic suggests best fit.
+         3. Visual Analysis (Dashboard): Radar Chart for capability scoring and Scatter Plot for Cost vs. Effort.
+         4. Detailed Feature Matrix: The core data request, presented as a filterable interactive table.
+         5. Tool Deep Dive: Card-based view for specific pros/cons relative to Jira.
+         Reasoning: Users first want a quick answer ("What should I use?"), then visual confirmation, then granular data proof.
+    -->
+    <!-- Visualization & Content Choices:
+         - Radar Chart: To compare "soft" metrics like Usability, Feature Completeness, and Dev Integration across 7 tools.
+         - Scatter Plot: To visualize "Maintenance Effort" vs "License Cost".
+         - Interactive Table: For the row-by-row feature comparison requested.
+         - Logic: JS used to filter table rows and calculate recommendation scores dynamically.
+         - NO SVG/Mermaid: All icons are Unicode/CSS, charts are Chart.js.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="antialiased selection:bg-teal-100 selection:text-teal-900">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        
+        <!-- Header Section -->
+        <header class="text-center space-y-4">
+            <h1 class="text-4xl font-bold text-slate-800 tracking-tight">JIRA 대체 솔루션 비교 분석</h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                이 대시보드는 Flow, Yona, Redmine, YouTrack, Dooray, OpenProject를 최신 JIRA와 다각도로 분석하여 
+                귀사의 조직에 가장 적합한 프로젝트 관리 도구를 찾도록 돕습니다.
+            </p>
+        </header>
+
+        <!-- Recommendation Engine Section -->
+        <section id="recommendation-engine" class="glass-panel rounded-2xl p-6 sm:p-8">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="text-teal-600 text-3xl">✦</span> 솔루션 추천 도우미
+                </h2>
+                <p class="text-slate-600 mt-2">
+                    가장 중요하게 생각하는 요소를 선택하시면, 분석 데이터를 기반으로 최적의 도구를 추천해 드립니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white">
+                    <input type="checkbox" id="req-free" class="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 border-gray-300">
+                    <span class="ml-3 font-medium text-slate-700">무료 / 오픈소스 필수</span>
+                </label>
+                <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white">
+                    <input type="checkbox" id="req-saas" class="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 border-gray-300">
+                    <span class="ml-3 font-medium text-slate-700">운영 부담 없음 (SaaS)</span>
+                </label>
+                <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white">
+                    <input type="checkbox" id="req-korean" class="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 border-gray-300">
+                    <span class="ml-3 font-medium text-slate-700">완벽한 한국어/국내환경</span>
+                </label>
+                <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white">
+                    <input type="checkbox" id="req-dev" class="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 border-gray-300">
+                    <span class="ml-3 font-medium text-slate-700">Git/개발 기능 강력</span>
+                </label>
+            </div>
+
+            <div id="recommendation-result" class="hidden bg-teal-50 border border-teal-100 rounded-xl p-6 text-center">
+                <p class="text-sm text-teal-600 font-semibold uppercase tracking-wider mb-2">추천 결과</p>
+                <h3 class="text-3xl font-bold text-slate-800 mb-2" id="recommended-tool-name">-</h3>
+                <p class="text-slate-600" id="recommendation-reason">-</p>
+            </div>
+        </section>
+
+        <!-- Visual Analysis Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Chart 1: Feature Landscape -->
+            <div class="glass-panel rounded-2xl p-6">
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold text-slate-800">기능 vs 비용/노력 포지셔닝</h3>
+                    <p class="text-sm text-slate-500">
+                        X축: 운영/관리 노력 (낮을수록 좋음), Y축: 기능의 풍부함 (높을수록 좋음), 원 크기: 비용 예상
+                    </p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="scatterChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Capability Radar -->
+            <div class="glass-panel rounded-2xl p-6">
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold text-slate-800">핵심 역량 비교</h3>
+                    <p class="text-sm text-slate-500">
+                        4가지 핵심 영역에 대한 솔루션별 상대적 점수 (JIRA 기준점 포함)
+                    </p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Comparison Matrix -->
+        <section id="comparison-matrix" class="glass-panel rounded-2xl overflow-hidden shadow-sm">
+            <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">기능 상세 비교 매트릭스</h2>
+                    <p class="text-sm text-slate-500 mt-1">요청하신 19개 항목에 대한 정밀 분석표입니다.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="filterTable('all')" class="px-4 py-2 text-sm font-medium rounded-lg bg-slate-800 text-white shadow hover:bg-slate-700 transition">전체 보기</button>
+                    <button onclick="filterTable('management')" class="px-4 py-2 text-sm font-medium rounded-lg bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition">관리/기획</button>
+                    <button onclick="filterTable('dev')" class="px-4 py-2 text-sm font-medium rounded-lg bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition">개발/연동</button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
+                        <tr>
+                            <th class="px-6 py-4 font-bold sticky left-0 bg-slate-50 z-10 w-48">비교 항목</th>
+                            <th class="px-6 py-4 font-bold text-blue-700 bg-blue-50/50 min-w-[140px]">JIRA (Latest)</th>
+                            <th class="px-6 py-4 font-bold min-w-[140px]">Flow</th>
+                            <th class="px-6 py-4 font-bold min-w-[140px]">Dooray</th>
+                            <th class="px-6 py-4 font-bold min-w-[140px]">YouTrack</th>
+                            <th class="px-6 py-4 font-bold min-w-[140px]">Redmine</th>
+                            <th class="px-6 py-4 font-bold min-w-[140px]">Yona</th>
+                            <th class="px-6 py-4 font-bold min-w-[140px]">OpenProject</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrix-body" class="divide-y divide-slate-100">
+                        <!-- JS generated rows will go here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Tool Deep Dive Cards -->
+        <section class="space-y-6">
+            <h2 class="text-2xl font-bold text-slate-800 pl-2 border-l-4 border-teal-500">솔루션별 핵심 요약</h2>
+            <div id="tool-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards injected by JS -->
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-slate-400 py-8 border-t border-slate-200 mt-12">
+            <p class="text-sm">데이터 기준: 2024년 최신 버전 기준 분석 | 분석 제공: Canvas Intelligence</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- Data Source ---
+        // Comparison data based on the requested features and general industry knowledge of these tools.
+        
+        const tools = [
+            { id: 'jira', name: 'Jira (Latest)', type: 'SaaS/DC', cost: 'High', maintenance: 'Low(Cloud)/High(DC)', color: '#0052CC' },
+            { id: 'flow', name: 'Flow', type: 'SaaS', cost: 'Mid', maintenance: 'None', color: '#6B46C1' },
+            { id: 'dooray', name: 'NHN Dooray', type: 'SaaS', cost: 'Mid', maintenance: 'None', color: '#10B981' },
+            { id: 'youtrack', name: 'YouTrack', type: 'Cloud/Server', cost: 'Mid-Low', maintenance: 'Low', color: '#F43F5E' },
+            { id: 'redmine', name: 'Redmine', type: 'Self-Hosted', cost: 'Free', maintenance: 'High', color: '#8B5CF6' },
+            { id: 'yona', name: 'Yona', type: 'Self-Hosted', cost: 'Free', maintenance: 'High', color: '#F59E0B' },
+            { id: 'openproject', name: 'OpenProject', type: 'Cloud/Server', cost: 'Mid', maintenance: 'Mid', color: '#3B82F6' }
+        ];
+
+        // The exact requested features mapped to categories
+        const features = [
+            { id: 'cost', label: '가격 정책', category: 'management', 
+              jira: '높음 (유저당 과금)', flow: '중간 (유저당)', dooray: '중간 (유저당)', youtrack: '무료(10인)/저렴', redmine: '무료 (오픈소스)', yona: '무료 (오픈소스)', openproject: '무료 / 유료(Ent)' },
+            
+            { id: 'cost_100', label: '월 비용 (100명)', category: 'management', 
+              jira: '$820 (약 119만원)', flow: '$415 (60만원)', dooray: '$485 (70만원)', youtrack: '$440 (약 64만원)', redmine: '0원 (서버비 별도)', yona: '0원 (서버비 별도)', openproject: '€595 (약 92만원)' },
+
+            { id: 'cost_200', label: '월 비용 (200명)', category: 'management', 
+              jira: '$1,630 (약 236만원)', flow: '$830 (120만원)', dooray: '$965 (140만원)', youtrack: '$880 (약 128만원)', redmine: '0원 (서버비 별도)', yona: '0원 (서버비 별도)', openproject: '€1,190 (약 185만원)' },
+
+            { id: 'operator', label: '전담 운영자 필요', category: 'management',
+              jira: '불필요(Cloud) / 필수(DC)', flow: '불필요', dooray: '불필요', youtrack: '권장(Server) / 불필요', redmine: '필수 (서버관리)', yona: '필수 (서버관리)', openproject: '권장' },
+            
+            { id: 'issuelink', label: '이슈 연결 기능', category: 'management',
+              jira: '매우 강력 (다양한 타입)', flow: '기본 지원', dooray: '지원', youtrack: '강력', redmine: '강력 (관계 설정)', yona: '지원', openproject: '강력' },
+            
+            { id: 'hierarchy', label: '계층 구조 지원', category: 'management',
+              jira: 'Epic-Task-Subtask', flow: '프로젝트-글', dooray: '상/하위 업무', youtrack: '무제한 계층', redmine: '무제한 하위 일감', yona: '상위 이슈', openproject: '무제한 계층' },
+            
+            { id: 'kanban', label: '칸반 보드', category: 'management',
+              jira: '강력 (Scrum/Kanban)', flow: '지원 (업무 보드)', dooray: '지원', youtrack: '강력 (Agile)', redmine: '플러그인 필요', yona: '지원 (보드뷰)', openproject: '지원' },
+            
+            { id: 'gantt', label: '간트 차트', category: 'management',
+              jira: 'Timeline(기본)/Advanced', flow: '지원', dooray: '타임라인 지원', youtrack: '지원 (Gantt View)', redmine: '기본 강력 지원', yona: '미지원(목록 위주)', openproject: '매우 강력' },
+            
+            { id: 'permission', label: '프로젝트별 권한', category: 'management',
+              jira: '매우 상세 설정 가능', flow: '관리자/멤버/게스트', dooray: '멤버/손님 등', youtrack: '상세 설정 가능', redmine: '역할별 상세 설정', yona: '프로젝트 멤버/비멤버', openproject: '역할별 상세' },
+            
+            { id: 'reference', label: '티켓 참조(#ID)', category: 'general',
+              jira: '자동 링크 변환', flow: '링크 방식', dooray: '지원', youtrack: '강력 (명령어 포함)', redmine: '강력 (#번호)', yona: '강력 (#번호)', openproject: '지원' },
+            
+            { id: 'stats', label: '통계/차트 기능', category: 'management',
+              jira: '대시보드/가젯 다양', flow: '기본 현황', dooray: '기본 통계', youtrack: '다양한 리포트', redmine: '기본 차트/플러그인', yona: '통계 탭 지원', openproject: '위젯 지원' },
+            
+            { id: 'excel', label: '엑셀 Export', category: 'general',
+              jira: '지원 (CSV/Excel)', flow: '지원', dooray: '지원', youtrack: '지원', redmine: '지원 (CSV/PDF)', yona: '지원', openproject: '지원' },
+            
+            { id: 'search', label: '검색 및 필터', category: 'general',
+              jira: 'JQL (매우 강력)', flow: '기본 검색', dooray: '상세 검색', youtrack: 'Query Mode (강력)', redmine: '필터 조합', yona: '조건 검색', openproject: '필터 조합' },
+            
+            { id: 'dynamic_filter', label: '동적 필터', category: 'general',
+              jira: '지원 (저장된 필터)', flow: '미지원', dooray: '지원', youtrack: '지원', redmine: '지원 (사용자 정의)', yona: '기본 지원', openproject: '지원' },
+            
+            { id: 'wiki', label: '위키/게시판', category: 'collab',
+              jira: 'Confluence 연동 필수', flow: '글/댓글 중심', dooray: '위키 드라이브', youtrack: 'Knowledge Base 내장', redmine: '프로젝트별 위키', yona: '프로젝트별 게시판', openproject: '위키 내장' },
+            
+            { id: 'korean', label: '한글 지원 여부', category: 'general',
+              jira: '지원 (번역체 느낌)', flow: '토종 (완벽)', dooray: '토종 (완벽)', youtrack: '공식 지원', redmine: '지원', yona: '토종 (완벽)', openproject: '지원' },
+            
+            { id: 'dashboard', label: '대시보드', category: 'management',
+              jira: '커스텀 가능', flow: '전체 업무 모아보기', dooray: '내 업무 요약', youtrack: '커스텀 위젯', redmine: '마이 페이지', yona: '내 프로젝트/이슈', openproject: '개요 페이지' },
+            
+            { id: 'notification', label: '스마트 알림', category: 'collab',
+              jira: '상세 설정 가능', flow: '강력 (채팅 연동)', dooray: '메신저 연동', youtrack: '이메일/인앱/Jabber', redmine: '이메일 위주', yona: '알림 센터', openproject: '이메일/인앱' },
+            
+            { id: 'mention', label: '멘션 (@)', category: 'collab',
+              jira: '지원', flow: '지원', dooray: '지원', youtrack: '지원', redmine: '플러그인/최신버전', yona: '지원', openproject: '지원' },
+            
+            { id: 'thread', label: '스레드형 댓글', category: 'collab',
+              jira: '지원', flow: '댓글/대댓글', dooray: '지원', youtrack: '지원', redmine: '미지원 (선형)', yona: '지원', openproject: '지원' },
+            
+            { id: 'git', label: 'Git 연동', category: 'dev',
+              jira: 'Bitbucket 등 강력', flow: '미지원/제한적', dooray: 'Github/Gitlab 연동', youtrack: 'VCS 통합 (강력)', redmine: '저장소 연동', yona: 'Git/SVN 내장 호스팅', openproject: 'Github/Gitlab 연동' }
+        ];
+
+        // --- Chart Data Preparation ---
+
+        // Capability Scores (0-10 scale approximation for visualization)
+        const radarData = {
+            labels: ['Agile/관리기능', '개발/Git연동', '사용성/UI', '비용효율성', '커스터마이징'],
+            datasets: [
+                { label: 'Jira', data: [10, 10, 7, 4, 10], borderColor: '#0052CC', backgroundColor: 'rgba(0, 82, 204, 0.1)' },
+                { label: 'YouTrack', data: [9, 9, 8, 7, 8], borderColor: '#F43F5E', backgroundColor: 'rgba(244, 63, 94, 0.1)' },
+                { label: 'Redmine', data: [7, 8, 4, 10, 9], borderColor: '#8B5CF6', backgroundColor: 'rgba(139, 92, 246, 0.1)' },
+                { label: 'Dooray', data: [7, 7, 9, 6, 5], borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)' }
+            ]
+        };
+
+        // Scatter Data: x=Maintenance Effort (1=Easy, 10=Hard), y=Feature Richness (1=Basic, 10=Rich), r=Cost Indicator
+        const scatterData = [
+            { x: 3, y: 10, r: 20, label: 'Jira (Cloud)' }, // High feature, mid effort (config), high cost
+            { x: 1, y: 5, r: 10, label: 'Flow' }, // Low effort, basic feature, mid cost
+            { x: 1, y: 7, r: 10, label: 'Dooray' }, // Low effort, good feature, mid cost
+            { x: 4, y: 9, r: 8, label: 'YouTrack' }, // Mid effort, high feature, low cost
+            { x: 9, y: 8, r: 5, label: 'Redmine' }, // High effort, high feature, free
+            { x: 8, y: 6, r: 5, label: 'Yona' }, // High effort, mid feature, free
+            { x: 5, y: 8, r: 10, label: 'OpenProject' } // Mid effort, high feature, mid cost
+        ];
+
+        // --- Initialization ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTable();
+            initCharts();
+            initToolCards();
+            setupRecommender();
+        });
+
+        // --- Functions ---
+
+        function initTable() {
+            const tbody = document.getElementById('matrix-body');
+            tbody.innerHTML = '';
+
+            features.forEach(feat => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0 group';
+                tr.dataset.category = feat.category;
+                
+                // Highlight differences: check if row has varied values
+                // Simplified: Just render rows
+                
+                let rowHtml = `<td class="px-6 py-4 font-medium text-slate-700 bg-slate-50 sticky left-0 group-hover:bg-slate-100 transition-colors z-10 border-r border-slate-200">
+                    <div>${feat.label}</div>
+                    <div class="text-xs text-slate-400 font-normal">${getCategoryLabel(feat.category)}</div>
+                </td>`;
+                
+                const toolKeys = ['jira', 'flow', 'dooray', 'youtrack', 'redmine', 'yona', 'openproject'];
+                
+                toolKeys.forEach(key => {
+                    const val = feat[key];
+                    let styleClass = "text-slate-600";
+                    if(val.includes('강력') || val.includes('완벽') || val.includes('무료')) styleClass = "text-teal-600 font-semibold";
+                    if(val.includes('미지원') || val.includes('필수') || val.includes('높음')) styleClass = "text-rose-500";
+                    
+                    // Jira column highlight
+                    const bgClass = key === 'jira' ? 'bg-blue-50/30' : '';
+                    
+                    rowHtml += `<td class="px-6 py-4 ${styleClass} ${bgClass}">${val}</td>`;
+                });
+
+                tr.innerHTML = rowHtml;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function getCategoryLabel(cat) {
+            if(cat === 'management') return '관리/기획';
+            if(cat === 'collab') return '협업/소통';
+            if(cat === 'dev') return '개발/연동';
+            return '일반';
+        }
+
+        function filterTable(category) {
+            const rows = document.querySelectorAll('#matrix-body tr');
+            rows.forEach(row => {
+                if (category === 'all' || row.dataset.category === category || row.dataset.category === 'general') {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update button styles
+            const buttons = document.querySelectorAll('#comparison-matrix button');
+            buttons.forEach(btn => {
+                if(btn.textContent.includes(getCategoryBtnText(category))) {
+                    btn.classList.remove('bg-white', 'text-slate-600', 'border');
+                    btn.classList.add('bg-slate-800', 'text-white', 'shadow');
+                } else {
+                    btn.classList.add('bg-white', 'text-slate-600', 'border');
+                    btn.classList.remove('bg-slate-800', 'text-white', 'shadow');
+                }
+            });
+        }
+        
+        function getCategoryBtnText(cat) {
+            if(cat === 'all') return '전체';
+            if(cat === 'management') return '관리';
+            if(cat === 'dev') return '개발';
+            return '';
+        }
+
+        function initCharts() {
+            // Scatter Chart
+            const scatterCtx = document.getElementById('scatterChart').getContext('2d');
+            new Chart(scatterCtx, {
+                type: 'bubble',
+                data: {
+                    datasets: scatterData.map(d => ({
+                        label: d.label,
+                        data: [{x: d.x, y: d.y, r: d.r}],
+                        backgroundColor: getColorForTool(d.label)
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': (노력: ' + context.raw.x + ', 기능: ' + context.raw.y + ')';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: '운영/도입 노력 (← 쉬움 | 어려움 →)' },
+                            min: 0, max: 11,
+                            grid: { display: false }
+                        },
+                        y: {
+                            title: { display: true, text: '기능 풍부함 (← 기본 | 강력 →)' },
+                            min: 0, max: 12,
+                            grid: { color: '#f1f5f9' }
+                        }
+                    }
+                }
+            });
+
+            // Radar Chart
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: radarData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
+                            pointLabels: { font: { size: 12, family: "'Noto Sans KR', sans-serif" }, color: '#475569' },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function getColorForTool(name) {
+            if(name.includes('Jira')) return '#0052CC';
+            if(name.includes('Flow')) return '#6B46C1';
+            if(name.includes('Dooray')) return '#10B981';
+            if(name.includes('YouTrack')) return '#F43F5E';
+            if(name.includes('Redmine')) return '#8B5CF6';
+            if(name.includes('Yona')) return '#F59E0B';
+            if(name.includes('OpenProject')) return '#3B82F6';
+            return '#ccc';
+        }
+
+        function initToolCards() {
+            const container = document.getElementById('tool-cards');
+            const summaries = [
+                { id: 'flow', title: 'Flow', text: 'JIRA의 복잡함 없이 메신저 기반으로 업무를 관리하고 싶은 비개발 조직에 최적. 한국적 UI/UX.', badge: '협업중심' },
+                { id: 'dooray', title: 'Dooray', text: 'JIRA와 가장 유사한 사용성을 가진 국산 SaaS. 메일, 위키, 메신저 통합이 강점. 공공기관 도입 용이.', badge: '올인원' },
+                { id: 'youtrack', title: 'YouTrack', text: '개발자 친화적. JIRA보다 빠르고 검색이 강력함. 소규모 팀 무료 정책이 매력적. IDE 통합 우수.', badge: '개발최적' },
+                { id: 'redmine', title: 'Redmine', text: '전통의 오픈소스 강자. 무료지만 UI가 노후하고 설정/플러그인 관리에 공수가 많이 듬.', badge: '가성비' },
+                { id: 'yona', title: 'Yona', text: '국산 설치형 오픈소스. Git 저장소를 내장하여 소규모 개발팀이 폐쇄망에서 쓰기에 매우 적합.', badge: '폐쇄망' },
+                { id: 'openproject', title: 'OpenProject', text: '간트 차트(WBS) 기능이 가장 강력함. 전통적인 프로젝트 관리(PM) 방법론을 따른다면 추천.', badge: 'PM정석' }
+            ];
+
+            summaries.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg transition-shadow border-l-4';
+                
+                // Color coding border
+                if(tool.id === 'flow') div.classList.add('border-l-purple-500');
+                if(tool.id === 'dooray') div.classList.add('border-l-emerald-500');
+                if(tool.id === 'youtrack') div.classList.add('border-l-rose-500');
+                if(tool.id === 'redmine') div.classList.add('border-l-violet-500');
+                if(tool.id === 'yona') div.classList.add('border-l-amber-500');
+                if(tool.id === 'openproject') div.classList.add('border-l-blue-500');
+
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-bold text-slate-800">${tool.title}</h3>
+                        <span class="px-2 py-1 text-xs font-semibold rounded bg-slate-100 text-slate-600">${tool.badge}</span>
+                    </div>
+                    <p class="text-slate-600 text-sm leading-relaxed">${tool.text}</p>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex items-center text-xs text-slate-400">
+                        <span class="mr-2">💡 JIRA 대비:</span>
+                        <span class="font-medium text-slate-600">
+                             ${getJiraComparison(tool.id)}
+                        </span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function getJiraComparison(id) {
+            if(id === 'flow') return '기능은 단순하나 배우기 쉬움';
+            if(id === 'dooray') return '기능 대등, 속도/UI 우수';
+            if(id === 'youtrack') return '검색 속도 압도적, 비용 절감';
+            if(id === 'redmine') return 'UI 불편하나 무료, 커스텀 자유';
+            if(id === 'yona') return '설치 간편, 한국 환경 최적';
+            if(id === 'openproject') return '일정 관리 시각화 우수';
+            return '';
+        }
+
+        function setupRecommender() {
+            const inputs = document.querySelectorAll('#recommendation-engine input');
+            inputs.forEach(input => input.addEventListener('change', runRecommendation));
+        }
+
+        function runRecommendation() {
+            const free = document.getElementById('req-free').checked;
+            const saas = document.getElementById('req-saas').checked;
+            const korean = document.getElementById('req-korean').checked;
+            const dev = document.getElementById('req-dev').checked;
+
+            let resultName = "Jira (유지 권장)";
+            let resultReason = "현재 요구사항으로는 JIRA가 가장 강력한 솔루션입니다. 비용 부담이 있더라도 기능 완결성이 중요합니다.";
+
+            // Logic Tree for Recommendation
+            if (free && saas) {
+                resultName = "YouTrack (Cloud Free Tier)";
+                resultReason = "10명 이하 소규모 팀이라면 YouTrack 클라우드 무료 버전이 가장 강력한 기능을 제공합니다.";
+            } else if (free && !saas) {
+                if (korean && !dev) {
+                    resultName = "Redmine";
+                    resultReason = "설치형 무료 도구 중 커뮤니티가 가장 활발하고 한글 자료가 많습니다.";
+                } else if (dev) {
+                    resultName = "Yona";
+                    resultReason = "Git 저장소가 내장된 국산 오픈소스로, 개발팀에 특화되어 있습니다.";
+                } else {
+                    resultName = "Redmine 또는 OpenProject";
+                    resultReason = "비용 없이 자체 서버를 운영한다면 가장 안정적인 선택지입니다.";
+                }
+            } else if (saas && korean) {
+                if (dev) {
+                    resultName = "NHN Dooray";
+                    resultReason = "국내 환경에 최적화되어 있으면서도 Github/Gitlab 연동 등 개발 협업 기능이 JIRA 수준으로 강력합니다.";
+                } else {
+                    resultName = "Flow (플로우)";
+                    resultReason = "개발 기능보다는 일반 업무/협업 비중이 높다면 플로우의 사용성이 훨씬 직관적입니다.";
+                }
+            } else if (dev && !free) {
+                resultName = "JetBrains YouTrack";
+                resultReason = "개발자 도구 명가 JetBrains 제품으로, JIRA보다 빠르고 IDE 연동성이 뛰어납니다.";
+            } else if (saas) {
+                resultName = "NHN Dooray 또는 YouTrack";
+                resultReason = "운영 부담 없이 바로 사용할 수 있는 강력한 대안들입니다.";
+            }
+
+            const resultDiv = document.getElementById('recommendation-result');
+            const nameEl = document.getElementById('recommended-tool-name');
+            const reasonEl = document.getElementById('recommendation-reason');
+
+            resultDiv.classList.remove('hidden');
+            resultDiv.classList.add('block', 'animate-pulse');
+            setTimeout(() => resultDiv.classList.remove('animate-pulse'), 500);
+
+            nameEl.innerText = resultName;
+            reasonEl.innerText = resultReason;
+        }
+    </script>
+</body>
+</html>
