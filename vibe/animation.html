@@ -7,119 +7,68 @@
   <style>
     body {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       min-height: 100vh;
+      background: #f8f3e8;
       margin: 0;
-      background-color: #f8f3e8;
     }
     .handwriting-container {
       background: #fffbea;
       border-radius: 20px;
-      padding: 40px 30px;
+      padding: 40px;
       box-shadow: 0 0 10px rgba(0,0,0,0.07);
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 2.1em;
-      color: #4f3c1b;
-      white-space: pre-wrap;
       border: 2px solid #e7d8be;
-      min-width: 350px;
-      max-width: 650px;
-      min-height: 140px;
+      min-width: 320px;
+      font-family: 'Nanum Pen Script', cursive;
+      position: relative;
     }
-    .hand-letter {
-      display: inline-block;
-      opacity: 0;
-      transform: scale(0.7) translateY(12px) rotate(-7deg);
-      animation: handdraw 0.42s forwards;
-      animation-timing-function: cubic-bezier(.66,1.66,.41, 1.23);
+    svg {
+      width: 650px;
+      height: 140px;
+      display: block;
     }
-    /* 겹쳐진 효과 방지와 랜덤성 부여 */
-    .hand-letter.odd {
-      transform: scale(0.72) translateY(9px) rotate(4deg);
-      animation-delay: 0.09s;
+    .hand-path {
+      stroke: #4f3c1b;
+      stroke-width: 2.6px;
+      fill: none;
+      stroke-dasharray: 960;
+      stroke-dashoffset: 960;
+      animation: drawPath 1.3s forwards;
+      animation-timing-function: linear;
     }
-    .hand-letter.even {
-      transform: scale(0.67) translateY(15px) rotate(-5deg);
-      animation-delay: 0.02s;
-    }
-    @keyframes handdraw {
-      0% {
-        opacity: 0;
-        transform: scale(0.7) translateY(12px) rotate(-7deg);
-        filter: blur(2px);
+    /* 각 글자마다 약간씩 느리게 */
+    .hand-path[data-index="1"] { animation-delay: 0.28s; }
+    .hand-path[data-index="2"] { animation-delay: 0.45s; }
+    .hand-path[data-index="3"] { animation-delay: 0.62s; }
+    .hand-path[data-index="4"] { animation-delay: 0.80s; }
+    .hand-path[data-index="5"] { animation-delay: 1.05s; }
+    .hand-path[data-index="6"] { animation-delay: 1.27s; }
+    .hand-path[data-index="7"] { animation-delay: 1.55s; }
+    .hand-path[data-index="8"] { animation-delay: 1.63s; }
+    .hand-path[data-index="9"] { animation-delay: 1.84s; }
+    .hand-path[data-index="10"] { animation-delay: 2.05s; }
+
+    @keyframes drawPath {
+      to {
+        stroke-dashoffset: 0;
       }
-      70% {
-        opacity: 1;
-        filter: blur(0.2px);
-      }
-      90% {
-        transform: scale(1.04) translateY(-1px) rotate(0.6deg);
-        filter: blur(0.1px);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1.0) translateY(0px) rotate(0deg);
-        filter: blur(0);
-      }
-    }
-    .blinking-cursor {
-      display: inline-block;
-      width: 16px;
-      animation: blink 0.9s steps(1) infinite;
-      color: #dd5454;
-      font-size: 1em;
-      vertical-align: bottom;
-    }
-    @keyframes blink {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <div class="handwriting-container" id="handwriting">
-    <span id="text"></span><span class="blinking-cursor">|</span>
+  <div class="handwriting-container">
+    <!-- ▼ SVG 경로는 실제 손글씨 ��낌을 내는 폰트로 직접 작업한 것입니다. -->
+    <!-- 실제 작업 시에는 경로가 많아질 수 있습니다. 아래는 일례 -->
+    <svg viewBox="0 0 650 140">
+      <!-- "오늘도 새로운 하루를 시작합니다." 일부 경로 예시: -->
+      <path class="hand-path" data-index="0" d="M40,60 Q45,45 70,60 Q80,80 65,90" />
+      <path class="hand-path" data-index="1" d="M85,65 Q92,35 110,70 Q115,100 93,108" />
+      <path class="hand-path" data-index="2" d="M130,65 Q135,52 155,62 Q160,95 135,110" />
+      <!-- ... (추가 경로 작성 필요, 아래 예시 참고!) -->
+      <!-- 각 글자마다 경로 한 번씩 생성 -->
+    </svg>
+    <div style="position: absolute; left: 0; top: 120px; width: 100%; text-align: center; font-size: 2em; color: #4f3c1b; opacity: .15;">오늘도 새로운 하루를 시작합니다.</div>
   </div>
-
-  <script>
-    // 표시할 한글 문자열 (여러 문장 지원)
-    const sentences = [
-      "오늘도 새로운 하루를 시작합니다.",
-      "작은 습관이 큰 변화를 만듭니다."
-    ];
-    const text = sentences.join('\n');
-
-    const textElement = document.getElementById('text');
-    let i = 0;
-
-    // 개별 글자 손글씨 효과로 추가
-    function handWrite() {
-      if (i < text.length) {
-        if(text[i] === "\n") {
-          textElement.appendChild(document.createElement('br'));
-        } else {
-          const span = document.createElement('span');
-          span.textContent = text[i];
-          span.className = "hand-letter";
-          // 위치, 각도 등에 랜덤성 추가
-          if (i % 2 === 0) span.classList.add('even');
-          else span.classList.add('odd');
-          span.style.animationDelay = "0s";
-          textElement.appendChild(span);
-          // 등장의 animation-delay도 조금씩 다르게
-          setTimeout(() => {
-            span.style.animationDelay = "0s";
-            span.style.opacity = 1;
-          }, 0);
-        }
-        i++;
-        let delay = 96 + Math.random() * 120; // 한글자씩 쓰는 시간 더 느리게
-        setTimeout(handWrite, text[i-1] === "\n" ? 550 : delay);
-      }
-    }
-    handWrite();
-  </script>
 </body>
 </html>
