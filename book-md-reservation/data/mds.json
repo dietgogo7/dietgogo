@@ -1,0 +1,34 @@
+[
+  {
+    "id": "md-01",
+    "name": "김철수 MD",
+    "category": "소설/시/에세이"
+  },
+  {
+    "id": "md-02",
+    "name": "이영희 MD",
+    "category": "경제/경영"
+  },
+  {
+    "id": "md-03",
+    "name": "박지성 MD",
+    "category": "인문/사회/역사"
+  },
+  {
+    "id": "md-04",
+    "name": "최수진 MD",
+    "category": "아동/청소년",
+    "status": "AWAY"
+  },
+  {
+    "id": "md-05",
+    "name": "정민호 MD",
+    "category": "과학/기술",
+    "status": "ON_LEAVE"
+  },
+  {
+    "id": "md-06",
+    "name": "한지은 MD",
+    "category": "예술/디자인"
+  }
+]

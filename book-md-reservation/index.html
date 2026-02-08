@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도서 MD 미팅 예약</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+    .yes24-logo {
+        width: 160px;
+        margin-bottom: 9px;
+        margin-top: 10px;
+    }
+    .main-header h1 {
+        font-size: 2.2rem;
+        color: var(--primary-color);
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+    .my-bookings-entry {
+        margin-top: 18px;
+        text-align: center;
+    }
+    .my-bookings-btn {
+        background: var(--primary-color);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.98rem;
+        font-weight: 500;
+        padding: 7px 18px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,102,204,0.06);
+        transition: background 0.2s, transform 0.2s;
+        margin-top: 8px;
+        letter-spacing: 0.01em;
+        height: 32px;
+        line-height: 1.2;
+    }
+    .my-bookings-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+    }
+
+    /* flow-selector 버튼 스타일 원래대로 복원 */
+    .flow-selector {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+    .flow-btn {
+        background: var(--primary-color);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.08rem;
+        font-weight: 700;
+        padding: 14px 32px;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(0,102,204,0.08);
+        transition: background 0.2s, transform 0.2s;
+        margin-top: 0;
+        letter-spacing: 0.02em;
+        height: 44px;
+        line-height: 1.2;
+    }
+    .flow-btn.active {
+        background: var(--primary-dark);
+        color: #fff;
+    }
+    .flow-btn:hover {
+        background: var(--primary-dark);
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header class="main-header">
+            <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.svg" alt="yes24.com 로고" class="yes24-logo">
+            <h1>MD 미팅 예약시스템</h1>
+            <p class="subtitle">원하는 날짜와 MD를 선택해 예약을 진행하세요.</p>
+            <div class="my-bookings-entry">
+                <button class="my-bookings-btn" onclick="openMyBookingsPopup()">예약 내역 조회</button>
+            </div>
+        </header>
+        <main>
+            <div class="flow-selector">
+                <button id="select-flow-md" class="flow-btn active">MD 먼저 선택</button>
+                <button id="select-flow-date" class="flow-btn">날짜 먼저 선택</button>
+            </div>
+            <!-- Flow 1: MD First -->
+            <div id="flow-md-first" class="flow-container">
+                <div id="md-list-container-1" class="selection-area">
+                    <h3>1. MD를 선택해주세요.</h3>
+                    <div class="list-wrapper"></div>
+                </div>
+                <div id="date-selector-container-1" class="selection-area" style="display: none;">
+                    <h3>2. 날짜를 선택해주세요.</h3>
+                    <input type="date" id="meeting-date-1">
+                </div>
+                <div id="slots-area-1" class="selection-area" style="display: none;">
+                    <h3>3. 시간을 선택해주세요.</h3>
+                    <div class="list-wrapper"></div>
+                </div>
+            </div>
+            <!-- Flow 2: Date First -->
+            <div id="flow-date-first" class="flow-container" style="display: none;">
+                <div class="selection-area">
+                    <h3>1. 날짜를 선택해주세요.</h3>
+                    <input type="date" id="meeting-date-2">
+                </div>
+                <div id="time-selector-container-2" class="selection-area" style="display: none;">
+                    <h3>2. 시간을 선택해주세요.</h3>
+                    <div class="list-wrapper"></div>
+                </div>
+                <div id="md-list-container-2" class="selection-area" style="display: none;">
+                    <h3>3. 예약 가능한 MD를 선택해주세요.</h3>
+                    <div class="list-wrapper"></div>
+                </div>
+            </div>
+            <!-- 예약신청 폼은 JS에서 동적으로 표시 -->
+            <div id="inline-booking-form-container" style="display:none; margin-top:10px;"></div>
+        </main>
+        <footer class="main-footer">
+            <span>© 2026 MD 예약 서비스</span>
+            <a href="admin.html">관리자 페이지</a>
+        </footer>
+    </div>
+    <script src="js/app.js"></script>
+    <script>
+    function openMyBookingsPopup() {
+        const phone = prompt('예약 조회를 위해 전화번호를 입력하세요 (예: 010-1234-5678):', '');
+        if (!phone) return;
+        window.location.href = 'my-bookings.html?phone=' + encodeURIComponent(phone);
+    }
+    </script>
+</body>
+</html>

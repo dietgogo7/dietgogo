@@ -1,0 +1,64 @@
+  {
+    "id": "booking-001",
+    "slotId": "slot-20240901-1030",
+    "userName": "김민준",
+    "userEmail": "minjun.kim@example.com",
+    "userPhone": "010-1234-5678",
+    "notes": "신간 관련 미팅",
+    "status": "APPROVED",
+    "createdAt": "2024-08-28T10:00:00Z"
+  },
+  {
+    "id": "booking-002",
+    "slotId": "slot-20240902-0900",
+    "userName": "이서연",
+    "userEmail": "seoyeon.lee@example.com",
+    "userPhone": "010-9876-5432",
+    "notes": "마케팅 제휴 건",
+    "status": "PENDING",
+    "createdAt": "2024-08-29T14:30:00Z"
+  }
+]
+[
+  // ...기존 데이터...
+  {
+    "id": "booking-20260208-01",
+    "slotId": "slot-20260208-0930-md01",
+    "userName": "박지성",
+    "userEmail": "jisung.park@example.com",
+    "userPhone": "010-1111-2222",
+    "notes": "도서 신간 미팅",
+    "status": "APPROVED",
+    "createdAt": "2026-02-08T08:50:00Z"
+  },
+  {
+    "id": "booking-20260208-02",
+    "slotId": "slot-20260208-1030-md02",
+    "userName": "김철수",
+    "userEmail": "chulsoo.kim@example.com",
+    "userPhone": "010-3333-4444",
+    "notes": "경제서 미팅",
+    "status": "PENDING",
+    "createdAt": "2026-02-08T09:10:00Z"
+  },
+  {
+    "id": "booking-20260209-01",
+    "slotId": "slot-20260209-1030-md01",
+    "userName": "이영희",
+    "userEmail": "younghee.lee@example.com",
+    "userPhone": "010-5555-6666",
+    "notes": "소설 미팅",
+    "status": "APPROVED",
+    "createdAt": "2026-02-09T10:00:00Z"
+  },
+  {
+    "id": "booking-20260209-02",
+    "slotId": "slot-20260209-1030-md03",
+    "userName": "최수진",
+    "userEmail": "soojin.choi@example.com",
+    "userPhone": "010-7777-8888",
+    "notes": "역사서 미팅",
+    "status": "APPROVED",
+    "createdAt": "2026-02-09T10:30:00Z"
+  }
+]

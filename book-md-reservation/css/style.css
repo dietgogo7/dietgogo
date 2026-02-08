@@ -1,0 +1,301 @@
+/* YES24 스타일 modern tone & manner */
+:root {
+    --primary-color: #0066CC;
+    --primary-dark: #003366;
+    --secondary-color: #F5F7FA;
+    --accent-color: #FFB800;
+    --text-primary: #222;
+    --text-secondary: #888;
+    --bg-color: #F8FAFC;
+    --card-bg: #fff;
+    --border-color: #E3E8EE;
+    --font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --card-shadow: 0 4px 16px rgba(0,102,204,0.08);
+    --card-shadow-hover: 0 8px 32px rgba(0,102,204,0.12);
+}
+
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.7;
+}
+
+#app {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 24px;
+}
+
+.main-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.yes24-logo {
+    width: 160px;
+    margin-bottom: 18px;
+    margin-top: 10px;
+}
+
+.main-header h1 {
+    font-size: 2.7rem;
+    color: var(--primary-color);
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 0;
+}
+
+.flow-selector {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.flow-btn {
+    background: var(--card-bg);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 12px 32px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--card-shadow);
+}
+
+.flow-btn.active {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-dark);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.flow-btn:hover {
+    background: var(--accent-color);
+    color: var(--primary-dark);
+    border-color: var(--accent-color);
+}
+
+.selection-area {
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    padding: 32px 24px;
+    margin-bottom: 24px;
+}
+
+.selection-area h3 {
+    font-size: 1.2rem;
+    color: var(--primary-dark);
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.list-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+.md-item, .time-item, .slot {
+    border: 1.5px solid var(--border-color);
+    padding: 14px 22px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s;
+    background-color: var(--card-bg);
+    font-weight: 500;
+    box-shadow: var(--card-shadow);
+    font-size: 1.08rem;
+}
+
+.md-item:hover, .time-item:hover, .slot.OPEN:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--primary-color);
+}
+
+.md-item.selected, .time-item.selected, .slot.selected {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-dark);
+    font-weight: 700;
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.time-item.disabled, .slot.disabled {
+    cursor: not-allowed;
+    background-color: var(--bg-color);
+    color: var(--text-secondary);
+    opacity: 0.7;
+    box-shadow: none;
+}
+
+	slot.disabled.BOOKED, .slot.disabled.CLOSED {
+    background-color: var(--text-secondary);
+    color: #fff;
+    opacity: 0.8;
+}
+
+	slot.CLOSED, .slot.BOOKED {
+    background-color: var(--text-secondary);
+    color: #fff;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+input[type="date"] {
+    padding: 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 1.08rem;
+    font-family: var(--font-family);
+    min-width: 220px;
+    background: var(--secondary-color);
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+input[type="date"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0,102,204,0.15);
+}
+
+/* YES24 서비스형 예약신청 카드 스타일 */
+.service-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,102,204,0.12);
+    padding: 48px 36px;
+    max-width: 520px;
+    margin: 70px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.service-title {
+    font-size: 2.1rem;
+    color: var(--primary-color);
+    font-weight: 800;
+    margin-bottom: 22px;
+    text-align: center;
+}
+
+.service-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 28px;
+    gap: 8px;
+}
+
+.service-md {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.service-md-cat {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    margin-left: 10px;
+}
+
+.service-time {
+    font-size: 1.05rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
+    box-sizing: border-box;
+    font-size: 1.08rem;
+    transition: border-color 0.2s;
+    background: var(--secondary-color);
+    color: var(--primary-dark);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0,102,204,0.15);
+}
+
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 14px 32px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.08rem;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #E3E8EE;
+    color: var(--primary-dark);
+}
+
+.btn-secondary:hover {
+    background-color: #C6D4F2;
+}
+
+.main-footer {
+    text-align: center;
+    margin-top: 60px;
+    padding-top: 24px;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--secondary-color);
+}
+
+.main-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 700;
+    margin-left: 16px;
+}
+
+.placeholder {
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+}
