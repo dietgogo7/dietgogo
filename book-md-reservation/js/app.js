@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const slotsContainer1 = document.querySelector('#slots-area-1 .list-wrapper');
 
     // Flow 2
-    const dateInput2 = document.getElementById('meeting-date-2');
+    const calendarContainer = document.getElementById('calendar-container');
     const timeSelectorContainer2 = document.getElementById('time-selector-container-2');
     const timeListWrapper2 = document.querySelector('#time-selector-container-2 .list-wrapper');
     const mdListContainer2 = document.getElementById('md-list-container-2');
@@ -39,14 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- INITIALIZATION ---
     async function initialize() {
-        flowMdBtn.addEventListener('click', () => switchFlow('md-first'));
-        flowDateBtn.addEventListener('click', () => switchFlow('date-first'));
-        dateInput1.addEventListener('change', handleDateChangeInFlow1);
-        dateInput2.addEventListener('change', handleDateChangeInFlow2);
-        const today = new Date().toISOString().split('T')[0];
-        dateInput1.setAttribute('min', today);
-        dateInput2.setAttribute('min', today);
-
+        if (flowMdBtn) flowMdBtn.addEventListener('click', () => switchFlow('md-first'));
+        if (flowDateBtn) flowDateBtn.addEventListener('click', () => switchFlow('date-first'));
+        if (dateInput1) {
+            dateInput1.addEventListener('change', handleDateChangeInFlow1);
+            const today = new Date().toISOString().split('T')[0];
+            dateInput1.setAttribute('min', today);
+        }
+        // Flow 2: 달력 컨트롤은 switchFlow('date-first')에서 렌더링
         try {
             const [mdsRes, slotsRes] = await Promise.all([fetch('data/mds.json'), fetch('data/slots.json')]);
             allMds = await mdsRes.json();
@@ -80,8 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
         flowDateContainer.style.display = flow === 'date-first' ? 'block' : 'none';
         flowMdBtn.classList.toggle('active', flow === 'md-first');
         flowDateBtn.classList.toggle('active', flow === 'date-first');
-        
         if (flow === 'md-first') initializeMdFirstFlow();
+        if (flow === 'date-first') renderCalendar();
     }
 
     function resetSelections() {
@@ -249,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mdListWrapper2.innerHTML = '';
         timeListWrapper2.innerHTML = '';
     }
+    window.resetSelectionsForFlow2 = resetSelectionsForFlow2;
 
     // --- GENERIC RENDERERS & MODAL ---
     function renderMDs(mdsToRender, container, onSelect) {
@@ -433,3 +434,72 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- START ---
     initialize();
 });
+
+function renderCalendar() {
+    const calendarContainer = document.getElementById('calendar-container');
+    if (!calendarContainer) return;
+    calendarContainer.innerHTML = '';
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startDay = firstDay.getDay();
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + 7);
+
+    // 캘린더 헤더
+    const header = document.createElement('div');
+    header.className = 'calendar-header';
+    header.innerHTML = `<strong>${year}년 ${month + 1}월</strong>`;
+    calendarContainer.appendChild(header);
+
+    // 요일
+    const daysRow = document.createElement('div');
+    daysRow.className = 'calendar-days-row';
+    ['일','월','화','수','목','금','토'].forEach(d => {
+        const day = document.createElement('span');
+        day.className = 'calendar-day-label';
+        day.textContent = d;
+        daysRow.appendChild(day);
+    });
+    calendarContainer.appendChild(daysRow);
+
+    // 날짜
+    const grid = document.createElement('div');
+    grid.className = 'calendar-grid';
+    for (let i = 0; i < startDay; i++) {
+        const empty = document.createElement('span');
+        empty.className = 'calendar-date empty';
+        grid.appendChild(empty);
+    }
+    for (let date = 1; date <= daysInMonth; date++) {
+        const cellDate = new Date(year, month, date);
+        const cell = document.createElement('span');
+        cell.className = 'calendar-date';
+        cell.textContent = date;
+        // 예약 가능 날짜: 오늘~오늘+7일
+        if (cellDate >= today && cellDate <= maxDate) {
+            cell.classList.add('available');
+            cell.addEventListener('click', () => handleCalendarDateSelect(cellDate));
+        } else {
+            cell.classList.add('disabled');
+        }
+        grid.appendChild(cell);
+    }
+    calendarContainer.appendChild(grid);
+}
+
+function handleCalendarDateSelect(dateObj) {
+    selectedDate = dateObj.toISOString().split('T')[0];
+    window.resetSelectionsForFlow2(false);
+    const timeSelectorContainer2 = document.getElementById('time-selector-container-2');
+    const ICONS = window.ICONS || {
+        clock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
+    };
+    timeSelectorContainer2.style.display = 'block';
+    timeSelectorContainer2.querySelector('h3').innerHTML = `${ICONS.clock} 2. 시간을 선택해주세요.`;
+    window.renderTimeSelectors = renderTimeSelectors;
+    renderTimeSelectors();
+}

@@ -21,25 +21,32 @@
         margin-top: 18px;
         text-align: center;
     }
-    .my-bookings-btn {
-        background: var(--primary-color);
-        color: #fff;
+    .my-bookings-link {
+        display: inline-flex;
+        align-items: center;
+        color: var(--primary-color);
+        font-size: 1.02rem;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 0 4px;
+        border-radius: 6px;
+        transition: background 0.2s, color 0.2s;
+        background: none;
         border: none;
-        border-radius: 8px;
-        font-size: 0.98rem;
-        font-weight: 500;
-        padding: 7px 18px;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0,102,204,0.06);
-        transition: background 0.2s, transform 0.2s;
-        margin-top: 8px;
-        letter-spacing: 0.01em;
-        height: 32px;
-        line-height: 1.2;
     }
-    .my-bookings-btn:hover {
-        background: var(--primary-dark);
-        transform: translateY(-1px);
+    .my-bookings-link:hover {
+        background: #F0F6FF;
+        color: var(--primary-dark);
+    }
+    .my-bookings-link .arrow {
+        display: inline-block;
+        margin-left: 6px;
+        font-size: 1.1em;
+        transition: transform 0.2s;
+    }
+    .my-bookings-link:hover .arrow {
+        transform: translateX(3px);
     }
 
     /* flow-selector 버튼 스타일 원래대로 복원 */
@@ -74,6 +81,62 @@
         color: #fff;
         transform: translateY(-2px);
     }
+
+    /* 달력 스타일 개선 */
+    .calendar-header {
+        text-align: center;
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--primary-color);
+    }
+    .calendar-days-row {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        margin-bottom: 4px;
+        font-size: 0.98rem;
+        color: #6B7A99;
+    }
+    .calendar-day-label {
+        text-align: center;
+        font-weight: 600;
+        padding: 2px 0;
+    }
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+    }
+    .calendar-date {
+        text-align: center;
+        padding: 8px 0;
+        font-size: 1.02rem;
+        border-radius: 6px;
+        background: #F7F9FB;
+        color: #3A4A6B;
+        cursor: default;
+        transition: background 0.2s, color 0.2s;
+    }
+    .calendar-date.available {
+        background: #E3F1FF;
+        color: var(--primary-color);
+        cursor: pointer;
+        font-weight: 700;
+    }
+    .calendar-date.available:hover {
+        background: #B3D8FF;
+        color: var(--primary-dark);
+    }
+    .calendar-date.disabled {
+        background: #F0F2F5;
+        color: #B0B8C9;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    .calendar-date.empty {
+        background: transparent;
+        cursor: default;
+    }
     </style>
 </head>
 <body>
@@ -83,7 +146,9 @@
             <h1>MD 미팅 예약시스템</h1>
             <p class="subtitle">원하는 날짜와 MD를 선택해 예약을 진행하세요.</p>
             <div class="my-bookings-entry">
-                <button class="my-bookings-btn" onclick="openMyBookingsPopup()">예약 내역 조회</button>
+                <a class="my-bookings-link" href="#" onclick="openMyBookingsPopup()">
+                    예약 내역 조회 <span class="arrow">→</span>
+                </a>
             </div>
         </header>
         <main>
@@ -110,7 +175,7 @@
             <div id="flow-date-first" class="flow-container" style="display: none;">
                 <div class="selection-area">
                     <h3>1. 날짜를 선택해주세요.</h3>
-                    <input type="date" id="meeting-date-2">
+                    <div id="calendar-container"></div>
                 </div>
                 <div id="time-selector-container-2" class="selection-area" style="display: none;">
                     <h3>2. 시간을 선택해주세요.</h3>
