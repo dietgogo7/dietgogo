@@ -137,10 +137,55 @@
         background: transparent;
         cursor: default;
     }
+    .calendar-day-label.sunday, .calendar-date.sunday { color: #E03E52 !important; }
+    .calendar-day-label.saturday, .calendar-date.saturday { color: #0066CC !important; }
+    .calendar-date.holiday { color: #E03E52 !important; }
+    
+    .calendar-date.disabled.sunday, 
+    .calendar-date.disabled.saturday, 
+    .calendar-date.disabled.holiday {
+        opacity: 0.5;
+        background-color: #F0F2F5;
+    }
+
+    /* Notice Styles */
+    .notice-container {
+        background-color: #fff;
+        border: 1px solid #e1e4e8;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .notice-header {
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .notice-item {
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 0.95rem;
+        color: #444;
+    }
+    .notice-item:last-child { border-bottom: none; }
+    .notice-date {
+        display: inline-block;
+        background: #f0f2f5;
+        color: #666;
+        font-size: 0.8rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-right: 8px;
+    }
     </style>
 </head>
 <body>
     <div id="app">
+        <!-- Header: 로고 및 예약 조회 링크 -->
         <header class="main-header">
             <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.svg" alt="yes24.com 로고" class="yes24-logo">
             <h1>MD 미팅 예약시스템</h1>
@@ -152,11 +197,18 @@
             </div>
         </header>
         <main>
+            <!-- Notice Section: 상단 공지사항 노출 영역 -->
+            <div id="notice-alert-container" class="notice-container" style="display:none;">
+                <div class="notice-header">📢 공지사항</div>
+                <div id="front-notice-list"></div>
+            </div>
+
+            <!-- Flow Selector: 예약 방식 선택 (MD 먼저 vs 날짜 먼저) -->
             <div class="flow-selector">
                 <button id="select-flow-md" class="flow-btn active">MD 먼저 선택</button>
                 <button id="select-flow-date" class="flow-btn">날짜 먼저 선택</button>
             </div>
-            <!-- Flow 1: MD First -->
+            <!-- Flow 1: MD First (MD 선택 -> 날짜 선택 -> 시간 선택) -->
             <div id="flow-md-first" class="flow-container">
                 <div id="md-list-container-1" class="selection-area">
                     <h3>1. MD를 선택해주세요.</h3>
@@ -164,14 +216,14 @@
                 </div>
                 <div id="date-selector-container-1" class="selection-area" style="display: none;">
                     <h3>2. 날짜를 선택해주세요.</h3>
-                    <input type="date" id="meeting-date-1">
+                    <div id="calendar-container-1"></div>
                 </div>
                 <div id="slots-area-1" class="selection-area" style="display: none;">
                     <h3>3. 시간을 선택해주세요.</h3>
                     <div class="list-wrapper"></div>
                 </div>
             </div>
-            <!-- Flow 2: Date First -->
+            <!-- Flow 2: Date First (날짜 선택 -> 시간 선택 -> MD 선택) -->
             <div id="flow-date-first" class="flow-container" style="display: none;">
                 <div class="selection-area">
                     <h3>1. 날짜를 선택해주세요.</h3>
@@ -186,7 +238,7 @@
                     <div class="list-wrapper"></div>
                 </div>
             </div>
-            <!-- 예약신청 폼은 JS에서 동적으로 표시 -->
+            <!-- 예약신청 폼은 JS에서 동적으로 표시 (inline-booking-form-container) -->
             <div id="inline-booking-form-container" style="display:none; margin-top:10px;"></div>
         </main>
         <footer class="main-footer">

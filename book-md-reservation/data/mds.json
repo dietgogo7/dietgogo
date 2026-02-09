@@ -2,33 +2,45 @@
   {
     "id": "md-01",
     "name": "김철수 MD",
-    "category": "소설/시/에세이"
+    "category": "소설/시/에세이",
+    "email": "chulsoo@yes24.com",
+    "phone": "010-1234-1111"
   },
   {
     "id": "md-02",
     "name": "이영희 MD",
-    "category": "경제/경영"
+    "category": "경제/경영",
+    "email": "younghee@yes24.com",
+    "phone": "010-1234-2222"
   },
   {
     "id": "md-03",
     "name": "박지성 MD",
-    "category": "인문/사회/역사"
+    "category": "인문/사회/역사",
+    "email": "jisung@yes24.com",
+    "phone": "010-1234-3333"
   },
   {
     "id": "md-04",
     "name": "최수진 MD",
     "category": "아동/청소년",
-    "status": "AWAY"
+    "status": "AWAY",
+    "email": "sujin@yes24.com",
+    "phone": "010-1234-4444"
   },
   {
     "id": "md-05",
     "name": "정민호 MD",
     "category": "과학/기술",
-    "status": "ON_LEAVE"
+    "status": "ON_LEAVE",
+    "email": "minho@yes24.com",
+    "phone": "010-1234-5555"
   },
   {
     "id": "md-06",
     "name": "한지은 MD",
-    "category": "예술/디자인"
+    "category": "예술/디자인",
+    "email": "jieun@yes24.com",
+    "phone": "010-1234-6666"
   }
 ]

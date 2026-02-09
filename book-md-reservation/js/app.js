@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Flow 1
     const mdListContainer1 = document.querySelector('#flow-md-first #md-list-container-1 .list-wrapper');
     const dateSelectorContainer1 = document.getElementById('date-selector-container-1');
-    const dateInput1 = document.getElementById('meeting-date-1');
+    const calendarContainer1 = document.getElementById('calendar-container-1');
     const slotsArea1 = document.getElementById('slots-area-1');
     const slotsContainer1 = document.querySelector('#slots-area-1 .list-wrapper');
 
@@ -38,20 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // 인라인 예약 폼은 동적으로 생성됨
 
     // --- INITIALIZATION ---
+    // 초기화 함수: 데이터 로드 및 초기 화면 설정
+    // DB 연동 시 JSON 파일 대신 API 호출로 변경 필요
     async function initialize() {
         if (flowMdBtn) flowMdBtn.addEventListener('click', () => switchFlow('md-first'));
         if (flowDateBtn) flowDateBtn.addEventListener('click', () => switchFlow('date-first'));
-        if (dateInput1) {
-            dateInput1.addEventListener('change', handleDateChangeInFlow1);
-            const today = new Date().toISOString().split('T')[0];
-            dateInput1.setAttribute('min', today);
-        }
         // Flow 2: 달력 컨트롤은 switchFlow('date-first')에서 렌더링
         try {
-            const [mdsRes, slotsRes] = await Promise.all([fetch('data/mds.json'), fetch('data/slots.json')]);
+            const [mdsRes, slotsRes, noticesRes] = await Promise.all([fetch('data/mds.json'), fetch('data/slots.json'), fetch('data/notices.json')]);
             allMds = await mdsRes.json();
             allSlots = await slotsRes.json();
+            const notices = await noticesRes.json();
             switchFlow('md-first');
+            renderFrontNotices(notices);
         } catch (error) {
             console.error("Initialization failed:", error);
             const app = document.getElementById('app');
@@ -65,7 +64,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // 공지사항을 사용자 화면에 렌더링하는 함수
+    function renderFrontNotices(notices) {
+        const container = document.getElementById('notice-alert-container');
+        const list = document.getElementById('front-notice-list');
+        if (!notices || notices.length === 0) return;
+
+        // Sort by date desc
+        notices.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        list.innerHTML = notices.map(n => `
+            <div class="notice-item">
+                <span class="notice-date">${n.date}</span>
+                <strong>${n.title}</strong>
+                <span style="display:block; margin-top:4px; color:#666; font-size:0.9em;">${n.content}</span>
+            </div>
+        `).join('');
+        container.style.display = 'block';
+    }
+
     // --- FLOW CONTROL ---
+    // 예약 프로세스(MD 먼저 vs 날짜 먼저)를 전환하는 함수
     function switchFlow(flow) {
         currentFlow = flow;
         resetSelections();
@@ -81,16 +100,16 @@ document.addEventListener('DOMContentLoaded', () => {
         flowMdBtn.classList.toggle('active', flow === 'md-first');
         flowDateBtn.classList.toggle('active', flow === 'date-first');
         if (flow === 'md-first') initializeMdFirstFlow();
-        if (flow === 'date-first') renderCalendar();
+        if (flow === 'date-first') renderCalendar(calendarContainer, handleDateSelectInFlow2);
     }
 
+    // 선택된 MD, 날짜, 시간 등 상태를 초기화하는 함수
     function resetSelections() {
         selectedMdId = null;
         selectedDate = null;
         selectedTime = null;
 
         document.querySelectorAll('.list-wrapper').forEach(w => w.innerHTML = '');
-        document.querySelectorAll('input[type="date"]').forEach(i => i.value = '');
         
         dateSelectorContainer1.style.display = 'none';
         slotsArea1.style.display = 'none';
@@ -101,10 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- FLOW 1: MD First ---
+    // 'MD 먼저 선택' 프로세스를 초기화하는 함수
     function initializeMdFirstFlow() {
         renderMDs(allMds, mdListContainer1, handleMdSelectInFlow1);
     }
 
+    // Flow 1에서 MD 선택 시 처리하는 함수
     function handleMdSelectInFlow1(md) {
         selectedMdId = md.id;
         // Robust selection highlighting
@@ -113,19 +134,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         dateSelectorContainer1.style.display = 'block';
         dateSelectorContainer1.querySelector('h3').innerHTML = `${ICONS.calendar} 2. 날짜를 선택해주세요.`;
+        renderCalendar(calendarContainer1, handleDateSelectInFlow1);
         if (selectedDate) {
             slotsArea1.style.display = 'block';
             renderFilteredSlots();
         }
     }
 
-    function handleDateChangeInFlow1(e) {
-        selectedDate = e.target.value;
+    // Flow 1에서 날짜 선택 시 처리하는 함수
+    function handleDateSelectInFlow1(dateObj) {
+        selectedDate = dateObj.toISOString().split('T')[0];
         slotsArea1.style.display = 'block';
         slotsArea1.querySelector('h3').innerHTML = `${ICONS.slot} 3. 시간을 선택해주세요.`;
         if (selectedMdId) renderFilteredSlots();
     }
 
+    // Flow 1에서 선택된 날짜와 MD에 맞는 슬롯을 렌더링하는 함수
+    // 슬롯 상태(OPEN, BOOKED, CLOSED)에 따라 UI 처리
     function renderFilteredSlots() {
         slotsContainer1.innerHTML = '';
         if (!selectedDate || !selectedMdId) return;
@@ -181,25 +206,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- FLOW 2: Date -> Time -> MD ---
-    function handleDateChangeInFlow2(e) {
-        selectedDate = e.target.value;
+    // Flow 2에서 날짜 선택 시 처리하는 함수
+    function handleDateSelectInFlow2(dateObj) {
+        selectedDate = dateObj.toISOString().split('T')[0];
         resetSelectionsForFlow2(false);
         timeSelectorContainer2.style.display = 'block';
         timeSelectorContainer2.querySelector('h3').innerHTML = `${ICONS.clock} 2. 시간을 선택해주세요.`;
         renderTimeSelectors();
     }
     
+    // Flow 2에서 시간 선택 목록을 렌더링하는 함수
     function renderTimeSelectors() {
         timeListWrapper2.innerHTML = '';
-        const availableTimes = new Set(allSlots
-            .filter(s => s.startTime.startsWith(selectedDate) && s.status === 'OPEN')
-            .map(s => {
-                const d = new Date(s.startTime);
-                const h = String(d.getHours()).padStart(2, '0');
-                const m = String(d.getMinutes()).padStart(2, '0');
-                return `${h}:${m}`;
-            })
-        );
         
         for (let h = 9; h < 18; h++) {
             for (let m = 0; m < 60; m += 30) {
@@ -207,16 +225,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const el = document.createElement('div');
                 el.className = 'time-item';
                 el.textContent = timeStr;
-                if (availableTimes.has(timeStr)) {
-                    el.addEventListener('click', () => handleTimeSelect(timeStr));
-                } else {
-                    el.classList.add('disabled');
-                }
+                el.addEventListener('click', () => handleTimeSelect(timeStr));
                 timeListWrapper2.appendChild(el);
             }
         }
     }
 
+    // Flow 2에서 시간 선택 시 처리하는 함수
     function handleTimeSelect(time) {
         selectedTime = time;
         // Robust selection highlighting
@@ -229,17 +244,36 @@ document.addEventListener('DOMContentLoaded', () => {
         mdListContainer2.style.display = 'block';
         mdListContainer2.querySelector('h3').innerHTML = `${ICONS.md} 3. 예약 가능한 MD를 선택해주세요.`;
         
-        const mdsWithSlot = new Set(allSlots.filter(s => s.startTime.startsWith(selectedDate) && s.startTime.includes(time) && s.status === 'OPEN').map(s => s.mdId));
-        const availableMds = allMds.filter(md => mdsWithSlot.has(md.id));
+        const availableMds = allMds.filter(md => {
+            if (md.status === 'AWAY' || md.status === 'ON_LEAVE') return false;
+            const slot = allSlots.find(s => s.startTime.startsWith(selectedDate) && s.startTime.includes(time) && s.mdId === md.id);
+            // 슬롯이 존재하는데 OPEN이 아니면 예약 불가 (이미 예약됨 등)
+            if (slot && slot.status !== 'OPEN') return false;
+            return true;
+        });
         renderMDs(availableMds, mdListWrapper2, handleMdSelectInFlow2);
     }
     
+    // Flow 2에서 MD 선택 시 처리하는 함수
     function handleMdSelectInFlow2(md) {
         selectedMdId = md.id;
-        const slot = allSlots.find(s => s.startTime.startsWith(selectedDate) && s.startTime.includes(selectedTime) && s.mdId === selectedMdId && s.status === 'OPEN');
-        if (slot) openBookingModal(slot);
+        let slot = allSlots.find(s => s.startTime.startsWith(selectedDate) && s.startTime.includes(selectedTime) && s.mdId === selectedMdId);
+        
+        if (!slot) {
+            slot = {
+                id: `virtual-${selectedDate}-${selectedTime}-md${selectedMdId}`,
+                mdId: selectedMdId,
+                startTime: `${selectedDate}T${selectedTime}:00`,
+                endTime: `${selectedDate}T${selectedTime === '17:00' ? '17:30' : selectedTime}:30`,
+                status: 'OPEN',
+                capacity: 1
+            };
+        }
+        
+        if (slot.status === 'OPEN') openBookingModal(slot);
     }
 
+    // Flow 2의 선택 상태를 초기화하는 함수
     function resetSelectionsForFlow2(isFullReset = true) {
         if(isFullReset) selectedDate = null;
         selectedTime = null;
@@ -252,6 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.resetSelectionsForFlow2 = resetSelectionsForFlow2;
 
     // --- GENERIC RENDERERS & MODAL ---
+    // MD 목록을 렌더링하는 공통 함수
     function renderMDs(mdsToRender, container, onSelect) {
         container.innerHTML = '';
         if (mdsToRender.length === 0) {
@@ -282,8 +317,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 예약 신청 폼(모달/인라인)을 여는 함수
     function openBookingModal(slot) {
-        document.getElementById('flow-md-first').style.display = 'none';
+        if (currentFlow === 'md-first') {
+            document.getElementById('flow-md-first').style.display = 'none';
+        } else {
+            document.getElementById('flow-date-first').style.display = 'none';
+        }
         document.getElementById('inline-booking-form-container').style.display = 'none';
         const main = document.querySelector('main');
         const md = allMds.find(m => m.id === slot.mdId);
@@ -303,6 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <form id="inline-booking-form">
                     <input type="hidden" id="slot-id-input" value="${slot.id}">
+                    <input type="hidden" id="meeting-time-input" value="${slot.startTime}">
                     <div class="form-group">
                         <label for="user-name">이름</label>
                         <input type="text" id="user-name" required>
@@ -335,6 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('cancel-booking').addEventListener('click', closeBookingStep);
     }
 
+    // 예약 신청 단계를 닫고 이전 화면으로 돌아가는 함수
     function closeBookingStep() {
         // 예약신청 화면 닫고, 시간 선택 화면으로 복귀
         const bookingStepDiv = document.getElementById('booking-step-container');
@@ -342,23 +384,33 @@ document.addEventListener('DOMContentLoaded', () => {
             bookingStepDiv.style.display = 'none';
             bookingStepDiv.innerHTML = '';
         }
-        document.getElementById('flow-md-first').style.display = 'block';
+        if (currentFlow === 'md-first') {
+            document.getElementById('flow-md-first').style.display = 'block';
+        } else {
+            document.getElementById('flow-date-first').style.display = 'block';
+        }
     }
     
 
+    // 인라인 예약 폼을 닫는 함수
     function closeInlineBookingForm() {
         const container = document.getElementById('inline-booking-form-container');
         container.style.display = 'none';
         container.innerHTML = '';
     }
 
+    // 예약 신청 폼 제출을 처리하는 함수
+    // DB 연동 시 실제 예약 데이터를 서버로 전송해야 함
     function handleBookingSubmitInline(e) {
         e.preventDefault();
         const formMessage = document.getElementById('form-message');
         const submitButton = document.querySelector('#inline-booking-form button[type="submit"]');
         const slotIdInput = document.getElementById('slot-id-input');
+        const meetingTimeInput = document.getElementById('meeting-time-input');
         const bookingData = {
             slotId: slotIdInput.value,
+            mdId: selectedMdId,
+            meetingTime: meetingTimeInput.value,
             userName: document.getElementById('user-name').value,
             userAffiliation: document.getElementById('user-affiliation').value,
             userEmail: document.getElementById('user-email').value,
@@ -367,14 +419,33 @@ document.addEventListener('DOMContentLoaded', () => {
             status: 'PENDING',
             createdAt: new Date().toISOString()
         };
-        formMessage.textContent = '예약 신청이 성공적으로 완료되었습니다. 잠시 후 시간 선택 화면으로 돌아갑니다.';
-        formMessage.style.color = 'var(--primary-color)';
+        
+        console.log(JSON.stringify(bookingData, null, 2));
+
         submitButton.disabled = true;
-        setTimeout(() => {
+        
+        const layer = document.createElement('div');
+        layer.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:9999;';
+        layer.innerHTML = `
+            <div style="background:white;padding:40px;border-radius:16px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.2);max-width:90%;width:400px;">
+                <h3 style="margin:0 0 10px;color:#333;font-size:1.5rem;">예약이 완료 되었습니다.</h3>
+                <p style="color:#666;margin-bottom:25px;">MD 승인 후 최종 확정 됩니다.</p>
+                <button id="layer-confirm-btn" style="background:#0066CC;color:white;border:none;padding:12px 30px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1rem;">확인</button>
+            </div>
+        `;
+        document.body.appendChild(layer);
+
+        document.getElementById('layer-confirm-btn').addEventListener('click', () => {
+            document.body.removeChild(layer);
             closeBookingStep();
             formMessage.textContent = '';
             submitButton.disabled = false;
-            // 슬롯 상태 갱신
+            
+            // 메모리 상의 데이터 업데이트 (시뮬레이션용)
+            const slotInMem = allSlots.find(s => s.id === bookingData.slotId);
+            if (slotInMem) slotInMem.status = 'BOOKED';
+
+            // 슬롯 상태 갱신 (Flow 1)
             const bookedSlotEl = document.querySelector(`[data-slot-id="${bookingData.slotId}"]`);
             if(bookedSlotEl) {
                 bookedSlotEl.classList.remove('OPEN');
@@ -382,14 +453,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 bookedSlotEl.textContent += ' (신청완료)';
                 bookedSlotEl.replaceWith(bookedSlotEl.cloneNode(true));
             }
-        }, 2500);
+
+            // Flow 2 UI 갱신
+            if (currentFlow === 'date-first' && selectedTime) {
+                handleTimeSelect(selectedTime);
+            }
+        });
     
     }
 
+    // 모달을 닫는 함수 (구버전 호환)
     function closeBookingModal() {
         modal.style.display = 'none';
     }
 
+    // 예약 제출 처리 (구버전 호환)
     function handleBookingSubmit(e) {
         e.preventDefault();
         const formMessage = document.getElementById('form-message');
@@ -431,75 +509,103 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2500);
     }
 
+    // 달력을 렌더링하는 함수
+    // 공휴일 및 주말 처리 로직 포함
+    function renderCalendar(container, onSelect) {
+        if (!container) return;
+        container.innerHTML = '';
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startDay = firstDay.getDay();
+
+        // 공휴일 목록 (2024~2026)
+        const holidays = new Set([
+            '2024-01-01', '2024-02-09', '2024-02-10', '2024-02-11', '2024-02-12', '2024-03-01', '2024-04-10', '2024-05-05', '2024-05-06', '2024-05-15', '2024-06-06', '2024-08-15', '2024-09-16', '2024-09-17', '2024-09-18', '2024-10-03', '2024-10-09', '2024-12-25',
+            '2025-01-01', '2025-01-28', '2025-01-29', '2025-01-30', '2025-03-01', '2025-03-03', '2025-05-05', '2025-05-06', '2025-06-06', '2025-08-15', '2025-10-03', '2025-10-05', '2025-10-06', '2025-10-07', '2025-10-08', '2025-10-09', '2025-12-25',
+            '2026-01-01', '2026-02-16', '2026-02-17', '2026-02-18', '2026-03-01', '2026-03-02', '2026-05-05', '2026-05-24', '2026-05-25', '2026-06-06', '2026-08-15', '2026-09-24', '2026-09-25', '2026-09-26', '2026-10-03', '2026-10-09', '2026-12-25'
+        ]);
+
+        // 워킹데이 10일 계산
+        let workingDaysCount = 0;
+        let cursor = new Date(today);
+        while (workingDaysCount < 10) {
+             const y = cursor.getFullYear();
+             const m = String(cursor.getMonth() + 1).padStart(2, '0');
+             const d = String(cursor.getDate()).padStart(2, '0');
+             const dateStr = `${y}-${m}-${d}`;
+             const dayOfWeek = cursor.getDay();
+             const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+             const isHoliday = holidays.has(dateStr);
+             
+             if (!isWeekend && !isHoliday) {
+                 workingDaysCount++;
+             }
+             
+             if (workingDaysCount < 10) {
+                 cursor.setDate(cursor.getDate() + 1);
+             }
+        }
+        const maxDate = new Date(cursor);
+
+        // 캘린더 헤더
+        const header = document.createElement('div');
+        header.className = 'calendar-header';
+        header.innerHTML = `<strong>${year}년 ${month + 1}월</strong>`;
+        container.appendChild(header);
+
+        // 요일
+        const daysRow = document.createElement('div');
+        daysRow.className = 'calendar-days-row';
+        ['일','월','화','수','목','금','토'].forEach((d, i) => {
+            const day = document.createElement('span');
+            day.className = 'calendar-day-label';
+            if (i === 0) day.classList.add('sunday');
+            if (i === 6) day.classList.add('saturday');
+            day.textContent = d;
+            daysRow.appendChild(day);
+        });
+        container.appendChild(daysRow);
+
+        // 날짜
+        const grid = document.createElement('div');
+        grid.className = 'calendar-grid';
+        for (let i = 0; i < startDay; i++) {
+            const empty = document.createElement('span');
+            empty.className = 'calendar-date empty';
+            grid.appendChild(empty);
+        }
+        for (let date = 1; date <= daysInMonth; date++) {
+            const cellDate = new Date(year, month, date);
+            const cell = document.createElement('span');
+            const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+            const dayOfWeek = cellDate.getDay();
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+            const isHoliday = holidays.has(dateString);
+
+            cell.className = 'calendar-date';
+            cell.textContent = date;
+            
+            if (dayOfWeek === 0) cell.classList.add('sunday');
+            if (dayOfWeek === 6) cell.classList.add('saturday');
+            if (isHoliday) cell.classList.add('holiday');
+
+            // 예약 가능 날짜: 오늘~오늘+7일 (주말/공휴일 제외)
+            if (cellDate >= today && cellDate <= maxDate && !isWeekend && !isHoliday) {
+                cell.classList.add('available');
+                cell.addEventListener('click', () => onSelect(cellDate));
+            } else {
+                cell.classList.add('disabled');
+            }
+            grid.appendChild(cell);
+        }
+        container.appendChild(grid);
+    }
+
     // --- START ---
     initialize();
 });
-
-function renderCalendar() {
-    const calendarContainer = document.getElementById('calendar-container');
-    if (!calendarContainer) return;
-    calendarContainer.innerHTML = '';
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startDay = firstDay.getDay();
-    const maxDate = new Date(today);
-    maxDate.setDate(today.getDate() + 7);
-
-    // 캘린더 헤더
-    const header = document.createElement('div');
-    header.className = 'calendar-header';
-    header.innerHTML = `<strong>${year}년 ${month + 1}월</strong>`;
-    calendarContainer.appendChild(header);
-
-    // 요일
-    const daysRow = document.createElement('div');
-    daysRow.className = 'calendar-days-row';
-    ['일','월','화','수','목','금','토'].forEach(d => {
-        const day = document.createElement('span');
-        day.className = 'calendar-day-label';
-        day.textContent = d;
-        daysRow.appendChild(day);
-    });
-    calendarContainer.appendChild(daysRow);
-
-    // 날짜
-    const grid = document.createElement('div');
-    grid.className = 'calendar-grid';
-    for (let i = 0; i < startDay; i++) {
-        const empty = document.createElement('span');
-        empty.className = 'calendar-date empty';
-        grid.appendChild(empty);
-    }
-    for (let date = 1; date <= daysInMonth; date++) {
-        const cellDate = new Date(year, month, date);
-        const cell = document.createElement('span');
-        cell.className = 'calendar-date';
-        cell.textContent = date;
-        // 예약 가능 날짜: 오늘~오늘+7일
-        if (cellDate >= today && cellDate <= maxDate) {
-            cell.classList.add('available');
-            cell.addEventListener('click', () => handleCalendarDateSelect(cellDate));
-        } else {
-            cell.classList.add('disabled');
-        }
-        grid.appendChild(cell);
-    }
-    calendarContainer.appendChild(grid);
-}
-
-function handleCalendarDateSelect(dateObj) {
-    selectedDate = dateObj.toISOString().split('T')[0];
-    window.resetSelectionsForFlow2(false);
-    const timeSelectorContainer2 = document.getElementById('time-selector-container-2');
-    const ICONS = window.ICONS || {
-        clock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
-    };
-    timeSelectorContainer2.style.display = 'block';
-    timeSelectorContainer2.querySelector('h3').innerHTML = `${ICONS.clock} 2. 시간을 선택해주세요.`;
-    window.renderTimeSelectors = renderTimeSelectors;
-    renderTimeSelectors();
-}
