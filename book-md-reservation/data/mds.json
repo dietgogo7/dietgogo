@@ -1,46 +1,62 @@
 [
   {
-    "id": "md-01",
-    "name": "김철수 MD",
-    "category": "소설/시/에세이",
-    "email": "chulsoo@yes24.com",
-    "phone": "010-1234-1111"
+    "Md_No": "md-01",
+    "Md_Name": "김철수",
+    "Team_Name": "도서1팀",
+    "Category_Name": "소설/시/에세이",
+    "Status": "ACTIVE",
+    "Email": "chulsoo@yes24.com",
+    "Phone_No": "010-1234-1111",
+    "Regist_Datetime": "2026-02-10T00:00:00"
   },
   {
-    "id": "md-02",
-    "name": "이영희 MD",
-    "category": "경제/경영",
-    "email": "younghee@yes24.com",
-    "phone": "010-1234-2222"
+    "Md_No": "md-02",
+    "Md_Name": "이영희",
+    "Team_Name": "도서2팀",
+    "Category_Name": "경제/경영",
+    "Status": "ACTIVE",
+    "Email": "younghee@yes24.com",
+    "Phone_No": "010-1234-2222",
+    "Regist_Datetime": "2026-02-10T00:00:00"
   },
   {
-    "id": "md-03",
-    "name": "박지성 MD",
-    "category": "인문/사회/역사",
-    "email": "jisung@yes24.com",
-    "phone": "010-1234-3333"
+    "Md_No": "md-03",
+    "Md_Name": "박민수",
+    "Team_Name": "도서1팀",
+    "Category_Name": "인문/사회",
+    "Status": "ACTIVE",
+    "Email": "minsoo@yes24.com",
+    "Phone_No": "010-1234-3333",
+    "Regist_Datetime": "2026-02-10T00:00:00"
   },
   {
-    "id": "md-04",
-    "name": "최수진 MD",
-    "category": "아동/청소년",
-    "status": "AWAY",
-    "email": "sujin@yes24.com",
-    "phone": "010-1234-4444"
+    "Md_No": "md-04",
+    "Md_Name": "최지혜",
+    "Team_Name": "도서3팀",
+    "Category_Name": "유아/어린이",
+    "Status": "AWAY",
+    "Email": "jihye@yes24.com",
+    "Phone_No": "010-1234-4444",
+    "Regist_Datetime": "2026-02-10T00:00:00"
   },
   {
-    "id": "md-05",
-    "name": "정민호 MD",
-    "category": "과학/기술",
-    "status": "ON_LEAVE",
-    "email": "minho@yes24.com",
-    "phone": "010-1234-5555"
+    "Md_No": "md-05",
+    "Md_Name": "정우성",
+    "Team_Name": "도서2팀",
+    "Category_Name": "자기계발",
+    "Status": "ACTIVE",
+    "Email": "woosung@yes24.com",
+    "Phone_No": "010-1234-5555",
+    "Regist_Datetime": "2026-02-10T00:00:00"
   },
   {
-    "id": "md-06",
-    "name": "한지은 MD",
-    "category": "예술/디자인",
-    "email": "jieun@yes24.com",
-    "phone": "010-1234-6666"
+    "Md_No": "md-06",
+    "Md_Name": "강하늘",
+    "Team_Name": "도서3팀",
+    "Category_Name": "가정/생활",
+    "Status": "ACTIVE",
+    "Email": "haneul@yes24.com",
+    "Phone_No": "010-1234-6666",
+    "Regist_Datetime": "2026-02-10T00:00:00"
   }
 ]

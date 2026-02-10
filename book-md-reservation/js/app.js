@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
         md: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-4-3-5s-4-1-6-1-4 1-6 1-3 3-3 5a7 7 0 0 0 7 7z"/><path d="M12 12V2l-4 4-4-4"/></svg>',
         calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
         clock: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
-        slot: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7 7 7-7 7z"/></svg>'
+        slot: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7 7 7-7 7z"/></svg>',
+        away: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>'
     };
 
     // --- STATE ---
@@ -45,10 +46,39 @@ document.addEventListener('DOMContentLoaded', () => {
         if (flowDateBtn) flowDateBtn.addEventListener('click', () => switchFlow('date-first'));
         // Flow 2: 달력 컨트롤은 switchFlow('date-first')에서 렌더링
         try {
-            const [mdsRes, slotsRes, noticesRes] = await Promise.all([fetch('data/mds.json'), fetch('data/slots.json'), fetch('data/notices.json')]);
-            allMds = await mdsRes.json();
-            allSlots = await slotsRes.json();
-            const notices = await noticesRes.json();
+            const [mdsRes, slotsRes, noticesRes] = await Promise.all([
+                fetch('data/mds.json'), 
+                fetch('data/slots.json'), 
+                fetch('data/notices.json')
+            ]);
+            const rawMds = await mdsRes.json();
+            const rawSlots = await slotsRes.json();
+            const rawNotices = await noticesRes.json();
+
+            // --- Data Normalization for backward compatibility ---
+            // 이전 버전의 속성 이름(id, name 등)과 새 버전(Md_Id, Md_Name 등)을 모두 지원합니다.
+            allMds = rawMds.map(item => ({
+                Md_No: item.Md_No || item.Md_Id || item.id,
+                Md_Name: item.Md_Name || item.name,
+                Team_Name: item.Team_Name,
+                Category_Name: item.Category_Name || item.category,
+                Status: item.Status || item.status,
+                Email: item.Email || item.email
+            }));
+            allSlots = rawSlots.map(item => ({
+                Slot_Seq: item.Slot_Seq || item.Slot_Id || item.id,
+                Md_No: item.Md_No || item.Md_Id || item.mdId,
+                Start_Datetime: item.Start_Datetime || item.startTime,
+                End_Datetime: item.End_Datetime || item.endTime,
+                Status: item.Status || item.status
+            }));
+            const notices = rawNotices.map(item => ({
+                Notice_Seq: item.Notice_Seq || item.Notice_Id || item.id,
+                Notice_Date: item.Notice_Date || item.date,
+                Title: item.Title || item.title,
+                Content: item.Content || item.content
+            }));
+
             switchFlow('md-first');
             renderFrontNotices(notices);
         } catch (error) {
@@ -71,13 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!notices || notices.length === 0) return;
 
         // Sort by date desc
-        notices.sort((a, b) => new Date(b.date) - new Date(a.date));
+        notices.sort((a, b) => new Date(b.Notice_Date) - new Date(a.Notice_Date));
 
         list.innerHTML = notices.map(n => `
             <div class="notice-item">
-                <span class="notice-date">${n.date}</span>
-                <strong>${n.title}</strong>
-                <span style="display:block; margin-top:4px; color:#666; font-size:0.9em;">${n.content}</span>
+                <span class="notice-date">${n.Notice_Date}</span>
+                <strong>${n.Title}</strong>
+                <span style="display:block; margin-top:4px; color:#666; font-size:0.9em;">${n.Content}</span>
             </div>
         `).join('');
         container.style.display = 'block';
@@ -127,10 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Flow 1에서 MD 선택 시 처리하는 함수
     function handleMdSelectInFlow1(md) {
-        selectedMdId = md.id;
+        selectedMdId = md.Md_No;
         // Robust selection highlighting
         document.querySelectorAll('#flow-md-first .md-item').forEach(el => el.classList.remove('selected'));
-        document.querySelector(`#flow-md-first .md-item[data-md-id="${md.id}"]`).classList.add('selected');
+        document.querySelector(`#flow-md-first .md-item[data-md-id="${md.Md_No}"]`).classList.add('selected');
 
         dateSelectorContainer1.style.display = 'block';
         dateSelectorContainer1.querySelector('h3').innerHTML = `${ICONS.calendar} 2. 날짜를 선택해주세요.`;
@@ -155,19 +185,19 @@ document.addEventListener('DOMContentLoaded', () => {
         slotsContainer1.innerHTML = '';
         if (!selectedDate || !selectedMdId) return;
 
-        const slotsForDay = allSlots.filter(s => s.startTime.startsWith(selectedDate) && s.mdId === selectedMdId);
+        const slotsForDay = allSlots.filter(s => s.Start_Datetime.startsWith(selectedDate) && s.Md_No === selectedMdId);
         const slotLookup = new Map(slotsForDay.map(s => {
-            const d = new Date(s.startTime);
+            const d = new Date(s.Start_Datetime);
             const h = String(d.getHours()).padStart(2, '0');
             const m = String(d.getMinutes()).padStart(2, '0');
             return [`${h}:${m}`, s];
         }));
 
         // MD 상태 확인
-        const md = allMds.find(m => m.id === selectedMdId);
-        const isMdAway = md && (md.status === 'AWAY' || md.status === 'ON_LEAVE');
+        const md = allMds.find(m => m.Md_No === selectedMdId);
+        const isMdAway = md && (md.Status === 'AWAY' || md.Status === 'ON_LEAVE');
 
-        for (let h = 9; h < 18; h++) {
+        for (let h = 10; h < 17; h++) {
             for (let m = 0; m < 60; m += 30) {
                 const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
                 let slotData = slotLookup.get(timeStr);
@@ -178,27 +208,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 스케쥴이 없으면 OPEN 상태로 가상 슬롯 생성
                 if (!slotData) {
                     slotData = {
-                        id: `virtual-${selectedDate}-${timeStr}-md${selectedMdId}`,
-                        mdId: selectedMdId,
-                        startTime: `${selectedDate}T${timeStr}:00`,
-                        endTime: `${selectedDate}T${timeStr === '17:00' ? '17:30' : timeStr}:30`,
-                        status: 'OPEN',
-                        capacity: 1
+                        Slot_Seq: `virtual-${selectedDate}-${timeStr}-md${selectedMdId}`,
+                        Md_No: selectedMdId,
+                        Start_Datetime: `${selectedDate}T${timeStr}:00`,
+                        End_Datetime: `${selectedDate}T${timeStr === '17:00' ? '17:30' : timeStr}:30`,
+                        Status: 'OPEN',
+                        Capacity: 1
                     };
                 }
 
-                el.dataset.slotId = slotData.id;
+                el.dataset.slotId = slotData.Slot_Seq;
 
                 // MD가 부재중이면 모든 슬롯 disabled
                 if (isMdAway) {
                     el.classList.add('disabled');
                     el.textContent += ' (MD 부재중)';
-                } else if (slotData.status === 'OPEN') {
+                } else if (slotData.Status === 'OPEN') {
                     el.classList.add('OPEN');
                     el.addEventListener('click', () => openBookingModal(slotData));
                 } else {
-                    el.classList.add('disabled', slotData.status);
-                    el.textContent += ` (${slotData.status})`;
+                    el.classList.add('disabled', slotData.Status);
+                    el.textContent += ` (${slotData.Status})`;
                 }
                 slotsContainer1.appendChild(el);
             }
@@ -219,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderTimeSelectors() {
         timeListWrapper2.innerHTML = '';
         
-        for (let h = 9; h < 18; h++) {
+        for (let h = 10; h < 17; h++) {
             for (let m = 0; m < 60; m += 30) {
                 const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
                 const el = document.createElement('div');
@@ -245,10 +275,10 @@ document.addEventListener('DOMContentLoaded', () => {
         mdListContainer2.querySelector('h3').innerHTML = `${ICONS.md} 3. 예약 가능한 MD를 선택해주세요.`;
         
         const availableMds = allMds.filter(md => {
-            if (md.status === 'AWAY' || md.status === 'ON_LEAVE') return false;
-            const slot = allSlots.find(s => s.startTime.startsWith(selectedDate) && s.startTime.includes(time) && s.mdId === md.id);
+            if (md.Status === 'AWAY' || md.Status === 'ON_LEAVE') return false;
+            const slot = allSlots.find(s => s.Start_Datetime.startsWith(selectedDate) && s.Start_Datetime.includes(time) && s.Md_No === md.Md_No);
             // 슬롯이 존재하는데 OPEN이 아니면 예약 불가 (이미 예약됨 등)
-            if (slot && slot.status !== 'OPEN') return false;
+            if (slot && slot.Status !== 'OPEN') return false;
             return true;
         });
         renderMDs(availableMds, mdListWrapper2, handleMdSelectInFlow2);
@@ -256,21 +286,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Flow 2에서 MD 선택 시 처리하는 함수
     function handleMdSelectInFlow2(md) {
-        selectedMdId = md.id;
-        let slot = allSlots.find(s => s.startTime.startsWith(selectedDate) && s.startTime.includes(selectedTime) && s.mdId === selectedMdId);
+        selectedMdId = md.Md_No;
+        let slot = allSlots.find(s => s.Start_Datetime.startsWith(selectedDate) && s.Start_Datetime.includes(selectedTime) && s.Md_No === selectedMdId);
         
         if (!slot) {
             slot = {
-                id: `virtual-${selectedDate}-${selectedTime}-md${selectedMdId}`,
-                mdId: selectedMdId,
-                startTime: `${selectedDate}T${selectedTime}:00`,
-                endTime: `${selectedDate}T${selectedTime === '17:00' ? '17:30' : selectedTime}:30`,
-                status: 'OPEN',
-                capacity: 1
+                Slot_Seq: `virtual-${selectedDate}-${selectedTime}-md${selectedMdId}`,
+                Md_No: selectedMdId,
+                Start_Datetime: `${selectedDate}T${selectedTime}:00`,
+                End_Datetime: `${selectedDate}T${selectedTime === '17:00' ? '17:30' : selectedTime}:30`,
+                Status: 'OPEN',
+                Capacity: 1
             };
         }
         
-        if (slot.status === 'OPEN') openBookingModal(slot);
+        if (slot.Status === 'OPEN') openBookingModal(slot);
     }
 
     // Flow 2의 선택 상태를 초기화하는 함수
@@ -296,22 +326,22 @@ document.addEventListener('DOMContentLoaded', () => {
         mdsToRender.forEach(md => {
             const el = document.createElement('div');
             el.className = 'md-item';
-            el.dataset.mdId = md.id;
+            el.dataset.mdId = md.Md_No;
             let label = '';
-            if (md.status === 'AWAY' || md.status === 'ON_LEAVE') {
-                label = `<span class="md-away-label">부재중</span>`;
+            if (md.Status === 'AWAY' || md.Status === 'ON_LEAVE') {
+                label = `<span class="md-away-icon" title="부재중">${ICONS.away}</span>`;
                 el.classList.add('disabled');
             }
-            el.innerHTML = `<strong>${md.name}</strong><small>${md.category}</small> ${label}`;
-            if (md.id === selectedMdId) {
+            el.innerHTML = `<strong>${md.Md_Name} MD ${label}</strong><small>${md.Category_Name}</small><small>${md.Email || ''}</small>`;
+            if (md.Md_No === selectedMdId) {
                 el.classList.add('selected');
             }
-            if (!(md.status === 'AWAY' || md.status === 'ON_LEAVE')) {
+            if (!(md.Status === 'AWAY' || md.Status === 'ON_LEAVE')) {
                 el.addEventListener('click', () => onSelect(md));
             }
             const style = document.createElement('style');
             style.textContent = `.md-item small { display: block; color: inherit; opacity: 0.7; font-size: 0.8rem; margin-top: 4px; }
-            .md-away-label { display: inline-block; background: #FFB800; color: #fff; font-size: 0.85rem; font-weight: 600; border-radius: 8px; padding: 2px 10px; margin-left: 8px; }`;
+            .md-away-icon { display: inline-flex; color: #FFB800; margin-left: 4px; vertical-align: text-bottom; }`;
             el.appendChild(style);
             container.appendChild(el);
         });
@@ -326,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         document.getElementById('inline-booking-form-container').style.display = 'none';
         const main = document.querySelector('main');
-        const md = allMds.find(m => m.id === slot.mdId);
+        const md = allMds.find(m => m.Md_No === slot.Md_No);
         let bookingStepDiv = document.getElementById('booking-step-container');
         if (!bookingStepDiv) {
             bookingStepDiv = document.createElement('div');
@@ -339,14 +369,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h2 class="service-title">예약 신청</h2>
                 <div class="service-info">
                     <div class="service-md-wrap">
-                        <span class="service-md">${md ? md.name : 'MD'}</span>
-                        <span class="service-md-cat">${md ? md.category : ''}</span>
+                        <span class="service-md">${md ? md.Md_Name : 'MD'}</span>
+                        <span class="service-md-cat">${md ? md.Category_Name : ''}</span>
                     </div>
-                    <div class="service-time">${new Date(slot.startTime).toLocaleString('ko-KR', { dateStyle: 'full', timeStyle: 'short' })}</div>
+                    <div class="service-time">${new Date(slot.Start_Datetime).toLocaleString('ko-KR', { dateStyle: 'full', timeStyle: 'short' })}</div>
                 </div>
                 <form id="inline-booking-form">
-                    <input type="hidden" id="slot-id-input" value="${slot.id}">
-                    <input type="hidden" id="meeting-time-input" value="${slot.startTime}">
+                    <input type="hidden" id="slot-id-input" value="${slot.Slot_Seq}">
+                    <input type="hidden" id="meeting-time-input" value="${slot.Start_Datetime}">
                     <div class="form-group">
                         <label for="user-name">이름</label>
                         <input type="text" id="user-name" required>
@@ -406,21 +436,54 @@ document.addEventListener('DOMContentLoaded', () => {
     // DB 연동 시 실제 예약 데이터를 서버로 전송해야 함
     function handleBookingSubmitInline(e) {
         e.preventDefault();
+
+        // Add styles for confirmation layer if not exists
+        if (!document.getElementById('confirmation-layer-style')) {
+            const style = document.createElement('style');
+            style.id = 'confirmation-layer-style';
+            style.textContent = `
+                .confirmation-layer {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 9999;
+                }
+                .confirmation-dialog {
+                    background: white;
+                    padding: 30px;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    text-align: center;
+                    width: 90%;
+                    max-width: 400px;
+                }
+                .confirmation-dialog h3 { margin: 0 0 10px; color: #333; font-size: 1.2rem; }
+                .confirmation-dialog p { margin: 0 0 20px; color: #666; line-height: 1.5; }
+            `;
+            document.head.appendChild(style);
+        }
+
         const formMessage = document.getElementById('form-message');
         const submitButton = document.querySelector('#inline-booking-form button[type="submit"]');
         const slotIdInput = document.getElementById('slot-id-input');
         const meetingTimeInput = document.getElementById('meeting-time-input');
         const bookingData = {
-            slotId: slotIdInput.value,
-            mdId: selectedMdId,
-            meetingTime: meetingTimeInput.value,
-            userName: document.getElementById('user-name').value,
-            userAffiliation: document.getElementById('user-affiliation').value,
-            userEmail: document.getElementById('user-email').value,
-            userPhone: document.getElementById('user-phone').value,
-            notes: document.getElementById('notes').value,
-            status: 'PENDING',
-            createdAt: new Date().toISOString()
+            Slot_Seq: slotIdInput.value,
+            Md_No: selectedMdId,
+            Meeting_Datetime: meetingTimeInput.value,
+            User_Name: document.getElementById('user-name').value,
+            User_Affiliation: document.getElementById('user-affiliation').value,
+            User_Email: document.getElementById('user-email').value,
+            User_Phone: document.getElementById('user-phone').value,
+            Notes: document.getElementById('notes').value,
+            Status: 'PENDING',
+            Regist_Datetime: new Date().toISOString()
         };
         
         console.log(JSON.stringify(bookingData, null, 2));
@@ -432,10 +495,9 @@ document.addEventListener('DOMContentLoaded', () => {
         layer.innerHTML = `
             <div class="confirmation-dialog" role="dialog" aria-modal="true">
                 <h3>예약이 완료되었습니다.</h3>
-                <p>MD 승인 후 최종 확정됩니다. 안내 문자를 확인해 주세요.</p>
+                <p>MD 승인 후 최종 확정되며, 안내 문자가 발송 됩니다.</p>
                 <div class="confirmation-actions">
                     <button id="layer-confirm-btn" class="btn btn-primary">확인</button>
-                    <button id="layer-close-btn" class="btn btn-secondary">닫기</button>
                 </div>
             </div>
         `;
@@ -448,11 +510,28 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = false;
              
              // 메모리 상의 데이터 업데이트 (시뮬레이션용)
-             const slotInMem = allSlots.find(s => s.id === bookingData.slotId);
-             if (slotInMem) slotInMem.status = 'BOOKED';
+             const slotInMem = allSlots.find(s => s.Slot_Seq === bookingData.Slot_Seq);
+             if (slotInMem) {
+                 slotInMem.Status = 'BOOKED';
+             } else {
+                 // 암묵적 OPEN 슬롯이었던 경우, 예약 확정 시 BOOKED 상태의 슬롯 데이터를 생성하여 추가
+                 const start = new Date(bookingData.Meeting_Datetime);
+                 const end = new Date(start.getTime() + 30 * 60000); // 30분 더하기
+                 const pad = n => String(n).padStart(2, '0');
+                 const endTimeStr = `${end.getFullYear()}-${pad(end.getMonth()+1)}-${pad(end.getDate())}T${pad(end.getHours())}:${pad(end.getMinutes())}:00`;
+
+                 allSlots.push({
+                     Slot_Seq: bookingData.Slot_Seq,
+                     Md_No: selectedMdId,
+                     Start_Datetime: bookingData.Meeting_Datetime,
+                     End_Datetime: endTimeStr,
+                     Status: 'BOOKED',
+                     Capacity: 1
+                 });
+             }
  
              // 슬롯 상태 갱신 (Flow 1)
-             const bookedSlotEl = document.querySelector(`[data-slot-id="${bookingData.slotId}"]`);
+             const bookedSlotEl = document.querySelector(`[data-slot-id="${bookingData.Slot_Seq}"]`);
              if(bookedSlotEl) {
                  bookedSlotEl.classList.remove('OPEN');
                  bookedSlotEl.classList.add('disabled', 'BOOKED');
@@ -465,10 +544,6 @@ document.addEventListener('DOMContentLoaded', () => {
                  handleTimeSelect(selectedTime);
              }
          });
-        document.getElementById('layer-close-btn').addEventListener('click', () => {
-            document.body.removeChild(layer);
-            submitButton.disabled = false;
-        });
     
     }
 
@@ -484,14 +559,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const submitButton = bookingForm.querySelector('button[type="submit"]');
 
         const bookingData = {
-            slotId: slotIdInput.value,
-            userName: document.getElementById('user-name').value,
-            userAffiliation: document.getElementById('user-affiliation').value,
-            userEmail: document.getElementById('user-email').value,
-            userPhone: document.getElementById('user-phone').value,
-            notes: document.getElementById('notes').value,
-            status: 'PENDING',
-            createdAt: new Date().toISOString()
+            Slot_Seq: slotIdInput.value,
+            User_Name: document.getElementById('user-name').value,
+            User_Affiliation: document.getElementById('user-affiliation').value,
+            User_Email: document.getElementById('user-email').value,
+            User_Phone: document.getElementById('user-phone').value,
+            Notes: document.getElementById('notes').value,
+            Status: 'PENDING',
+            Regist_Datetime: new Date().toISOString()
         };
 
         console.log('New Booking Submitted (Simulation):', bookingData);
@@ -507,7 +582,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formMessage.textContent = '';
             submitButton.disabled = false;
 
-            const bookedSlotEl = document.querySelector(`[data-slot-id="${bookingData.slotId}"]`);
+            const bookedSlotEl = document.querySelector(`[data-slot-id="${bookingData.Slot_Seq}"]`);
             if(bookedSlotEl) {
                 bookedSlotEl.classList.remove('OPEN');
                 bookedSlotEl.classList.add('disabled', 'BOOKED');
@@ -604,18 +679,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dayOfWeek === 6) cell.classList.add('saturday');
             if (isHoliday) cell.classList.add('holiday');
 
-            // 예약 가능 날짜: 오늘~오늘+7일 (주말/공휴일 제외)
-            if (cellDate >= today && cellDate <= maxDate && !isWeekend && !isHoliday) {
-                cell.classList.add('available');
-                cell.addEventListener('click', () => onSelect(cellDate));
-            } else {
+            if (cellDate < today || isWeekend || isHoliday || cellDate > maxDate) {
                 cell.classList.add('disabled');
+            } else {
+                cell.classList.add('available');
+                cell.addEventListener('click', () => {
+                    container.querySelectorAll('.calendar-date').forEach(c => c.classList.remove('selected'));
+                    cell.classList.add('selected');
+                    onSelect(cellDate);
+                });
             }
+
+            if (selectedDate === dateString) {
+                cell.classList.add('selected');
+            }
+
             grid.appendChild(cell);
         }
         container.appendChild(grid);
     }
 
-    // --- START ---
     initialize();
 });

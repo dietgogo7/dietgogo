@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>도서 MD 미팅 예약</title>
     <style>
+        @font-face {
+            font-family: 'Pretendard';
+            font-weight: 300;
+            src: url('https://image.yes24.com/sysimage/font/Ptd/Pretendard-Light.woff2') format('woff2');
+        }
+        @font-face {
+            font-family: 'Pretendard';
+            font-weight: 400;
+            src: url('https://image.yes24.com/sysimage/font/Ptd/Pretendard-Regular.woff2') format('woff2');
+        }
+        @font-face {
+            font-family: 'Pretendard';
+            font-weight: 600;
+            src: url('https://image.yes24.com/sysimage/font/Ptd/Pretendard-SemiBold.woff2') format('woff2');
+        }
         :root {
             --background: #f7f6f3;
             --panel: #ffffff;
@@ -28,7 +43,7 @@
         #app {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px 16px 40px;
+            padding: 10px 16px 40px;
         }
         main {
             display: flex;
@@ -184,42 +199,22 @@
             font-weight: 600;
             cursor: pointer;
         }
-        .stepper {
+        .info-body {
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.8;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
         }
-        .stepper-body {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 6px;
+        .info-item strong {
+            font-weight: 600;
+            color: var(--primary-dark);
         }
-        .step {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 150px;
-        }
-        .step-number {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1px solid #d7dbe3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: var(--primary);
-            background: #fff;
-        }
-        .step-connector {
-            flex: 1;
-            min-width: 60px;
-            height: 2px;
-            border-radius: 2px;
-            background: #dfe2ea;
+        .info-item p {
+            margin: 4px 0 0 0;
+            padding-left: 15px;
+            color: #555;
         }
         .notice-card {
             display: flex;
@@ -281,9 +276,9 @@
         }
         .flow-container {
             background: #fbfbfb;
-            border: 1px solid #e4e6ef;
-            border-radius: 14px;
-            padding: 20px;
+            
+            
+            padding: 0px;
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -293,6 +288,7 @@
             border: 1px solid #e5e7ef;
             border-radius: 12px;
             padding: 18px;
+            margin-bottom: 10px;
         }
         .selection-area h3 {
             margin: 0;
@@ -394,6 +390,7 @@
             font-size: 1.15rem;
             font-weight: 700;
             color: var(--primary);
+            margin-top: 15px;
             margin-bottom: 8px;
         }
         .calendar-days-row {
@@ -538,6 +535,8 @@
             justify-content: center;
             gap: 12px;
             flex-wrap: wrap;
+            width: 100%;
+            padding-bottom: 20px;
         }
         .main-footer a {
             color: var(--primary);
@@ -600,7 +599,7 @@
                 flex: initial;
             }
             .yes24-logo {
-                width: 120px;
+                width: 140px;
             }
         }
 
@@ -636,46 +635,38 @@
                 </div>
             </div>
             <div class="header-meta">
-                <small>예약 내역은 전화번호로 바로 확인됩니다.</small>
+                <small>예약 내역은 휴대폰번호로 확인 가능 합니다.</small>
                 <a href="#" class="my-bookings-link" onclick="openMyBookingsPopup()">예약 내역 조회</a>
             </div>
         </header>
         <main>
-            <section class="stepper card">
+            <section class="card">
                 <div class="card-header">
                     <h2>안내사항</h2>
-                    <small>담당MD, 희망일시,신청자 정보 및 사유를 입력해주세요.</small>
+                    <small>MD 미팅 예약 전 아래 내용을 확인해주세요.</small>
                 </div>
-                <div class="stepper-body">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div>
-                            <strong>예약확정</strong>
-                            <small>담당자 확인 후 최종 확정 됩니다.</small>
-                        </div>
+                <div class="info-body">
+                    <div class="info-item">
+                        <strong>미팅 시간</strong>
+                        <p>매주 월 ~ 목 14:00 - 15:30 (회차별 15분 / 일 6회)</p>
                     </div>
-                    <div class="step-connector"></div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div>
-                            <strong>미팅일자</strong>
-                            <small>업무일 기준 10일 이내만 예약 가능 합니다.</small>
-                        </div>
+                    <div class="info-item">
+                        <strong>미팅 예약</strong>
+                        <p>1주 전부터 가능하며, 분야별 1일 6회로 제한됩니다.</p>
                     </div>
-                    <div class="step-connector"></div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div>
-                            <strong>취소관련</strong>
-                            <small>미팅 한 시간 전까지 취소 가능합니다.</small>
-                        </div>
+                    <div class="info-item">
+                        <strong>예약 확정</strong>
+                        <p>MD 승인 후 확인 문자(메일) 수신 시 예약이 완료됩니다. <br>확정된 내역은 '예약 내역 조회' 페이지에서 확인 가능합니다.</p>
+                    </div>
+                    <div class="info-item">
+                        <strong>기타 안내</strong>
+                        <p>미팅 신청은 선착순 마감되며 MD의 일정에 따라 취소 후 안내될 수 있습니다. 예약이 어려우신 경우, 이메일로 업무 내용을 보내주세요.</p>
                     </div>
                 </div>
             </section>
             <section class="notice-card card">
                 <div class="card-header">
                     <h2>공지사항</h2>
-                    <small>MD 미팅 운영과 주요 일정을 안내합니다.</small>
                 </div>
                 <div id="notice-alert-container" class="notice-content" style="display:none;">
                     <div class="notice-header">📢 최신 업데이트</div>
@@ -722,14 +713,52 @@
                     </div>
                 </div>
             </section>
+            <section class="card">
+                <div class="card-header">
+                    <h2>오시는 길</h2>
+                </div>
+                <div style="margin-top: 12px;">
+                    <strong style="display:block; font-size:16px; margin-bottom:4px; color:var(--text);">서울시 영등포구 은행로 11 일신빌딩</strong>
+                    <span style="color:var(--muted); font-size:14px;">지하1층 예스이십사 라운지</span>
+                </div>
+                <div id="map" style="width:100%;height:300px;margin-top:15px;border-radius:8px; border: 1px solid #eee;"></div>
+            </section>
+            <section class="card">
+                <div class="card-header">
+                    <h2>연락처 및 문의</h2>
+                </div>
+                <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <strong style="display:block; font-size:14px; color:var(--muted); margin-bottom:4px;">전화</strong>
+                        <span style="font-size:16px; color:var(--text);">02-3215-9(내선번호3자리 / 하단 링크 참조)</span>
+                    </div>
+                    <div>
+                        <strong style="display:block; font-size:14px; color:var(--muted); margin-bottom:4px;">Website</strong>
+                        <a href="http://www.yes24.com/company/info.aspx" target="_blank" style="font-size:16px; color:var(--primary); text-decoration:none;">www.yes24.com/company/info.aspx</a>
+                    </div>
+                </div>
+            </section>
             <div id="inline-booking-form-container" class="inline-form-slot" style="display:none;"></div>
         </main>
         <footer class="main-footer">
             <span>Copyright © YES24 Corp. All Rights Reserved.</span>
         </footer>
     </div>
+    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID"></script>
     <script src="js/app.js"></script>
     <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof naver !== 'undefined' && document.getElementById('map')) {
+            var map = new naver.maps.Map('map', {
+                center: new naver.maps.LatLng(37.5283169, 126.9294254),
+                zoom: 16
+            });
+            var marker = new naver.maps.Marker({
+                position: new naver.maps.LatLng(37.5283169, 126.9294254),
+                map: map
+            });
+        }
+    });
     function openMyBookingsPopup() {
         const phone = prompt('예약 조회를 위해 전화번호를 입력하세요 (예: 01012345678):', '');
         if (!phone) return;
