@@ -338,8 +338,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="service-card">
                 <h2 class="service-title">예약 신청</h2>
                 <div class="service-info">
-                    <span class="service-md">${md ? md.name : 'MD'} <span class="service-md-cat">${md ? md.category : ''}</span></span>
-                    <span class="service-time">${new Date(slot.startTime).toLocaleString('ko-KR', { dateStyle: 'full', timeStyle: 'short' })}</span>
+                    <div class="service-md-wrap">
+                        <span class="service-md">${md ? md.name : 'MD'}</span>
+                        <span class="service-md-cat">${md ? md.category : ''}</span>
+                    </div>
+                    <div class="service-time">${new Date(slot.startTime).toLocaleString('ko-KR', { dateStyle: 'full', timeStyle: 'short' })}</div>
                 </div>
                 <form id="inline-booking-form">
                     <input type="hidden" id="slot-id-input" value="${slot.id}">
@@ -425,39 +428,46 @@ document.addEventListener('DOMContentLoaded', () => {
         submitButton.disabled = true;
         
         const layer = document.createElement('div');
-        layer.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:9999;';
+        layer.className = 'confirmation-layer';
         layer.innerHTML = `
-            <div style="background:white;padding:40px;border-radius:16px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.2);max-width:90%;width:400px;">
-                <h3 style="margin:0 0 10px;color:#333;font-size:1.5rem;">예약이 완료 되었습니다.</h3>
-                <p style="color:#666;margin-bottom:25px;">MD 승인 후 최종 확정 됩니다.</p>
-                <button id="layer-confirm-btn" style="background:#0066CC;color:white;border:none;padding:12px 30px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:1rem;">확인</button>
+            <div class="confirmation-dialog" role="dialog" aria-modal="true">
+                <h3>예약이 완료되었습니다.</h3>
+                <p>MD 승인 후 최종 확정됩니다. 안내 문자를 확인해 주세요.</p>
+                <div class="confirmation-actions">
+                    <button id="layer-confirm-btn" class="btn btn-primary">확인</button>
+                    <button id="layer-close-btn" class="btn btn-secondary">닫기</button>
+                </div>
             </div>
         `;
-        document.body.appendChild(layer);
+         document.body.appendChild(layer);
 
         document.getElementById('layer-confirm-btn').addEventListener('click', () => {
             document.body.removeChild(layer);
             closeBookingStep();
             formMessage.textContent = '';
             submitButton.disabled = false;
-            
-            // 메모리 상의 데이터 업데이트 (시뮬레이션용)
-            const slotInMem = allSlots.find(s => s.id === bookingData.slotId);
-            if (slotInMem) slotInMem.status = 'BOOKED';
-
-            // 슬롯 상태 갱신 (Flow 1)
-            const bookedSlotEl = document.querySelector(`[data-slot-id="${bookingData.slotId}"]`);
-            if(bookedSlotEl) {
-                bookedSlotEl.classList.remove('OPEN');
-                bookedSlotEl.classList.add('disabled', 'BOOKED');
-                bookedSlotEl.textContent += ' (신청완료)';
-                bookedSlotEl.replaceWith(bookedSlotEl.cloneNode(true));
-            }
-
-            // Flow 2 UI 갱신
-            if (currentFlow === 'date-first' && selectedTime) {
-                handleTimeSelect(selectedTime);
-            }
+             
+             // 메모리 상의 데이터 업데이트 (시뮬레이션용)
+             const slotInMem = allSlots.find(s => s.id === bookingData.slotId);
+             if (slotInMem) slotInMem.status = 'BOOKED';
+ 
+             // 슬롯 상태 갱신 (Flow 1)
+             const bookedSlotEl = document.querySelector(`[data-slot-id="${bookingData.slotId}"]`);
+             if(bookedSlotEl) {
+                 bookedSlotEl.classList.remove('OPEN');
+                 bookedSlotEl.classList.add('disabled', 'BOOKED');
+                 bookedSlotEl.textContent += ' (신청완료)';
+                 bookedSlotEl.replaceWith(bookedSlotEl.cloneNode(true));
+             }
+ 
+             // Flow 2 UI 갱신
+             if (currentFlow === 'date-first' && selectedTime) {
+                 handleTimeSelect(selectedTime);
+             }
+         });
+        document.getElementById('layer-close-btn').addEventListener('click', () => {
+            document.body.removeChild(layer);
+            submitButton.disabled = false;
         });
     
     }

@@ -14,6 +14,16 @@
     --card-shadow-hover: 0 8px 32px rgba(0,102,204,0.12);
 }
 
+/* add aliases so admin.html (which uses --primary / --panel / --border etc.) maps to existing vars */
+:root {
+	--primary: var(--primary-color);
+	--primary-dark: var(--primary-dark);
+	--panel: var(--card-bg);
+	--border: var(--border-color);
+	--muted: var(--text-secondary);
+	--text: var(--text-primary);
+}
+
 body {
     font-family: var(--font-family);
     margin: 0;

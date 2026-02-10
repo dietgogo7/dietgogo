@@ -4,242 +4,728 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>도서 MD 미팅 예약</title>
-    <link rel="stylesheet" href="css/style.css">
     <style>
-    .yes24-logo {
-        width: 160px;
-        margin-bottom: 9px;
-        margin-top: 10px;
-    }
-    .main-header h1 {
-        font-size: 2.2rem;
-        color: var(--primary-color);
-        font-weight: 800;
-        margin-bottom: 8px;
-    }
-    .my-bookings-entry {
-        margin-top: 18px;
-        text-align: center;
-    }
-    .my-bookings-link {
-        display: inline-flex;
-        align-items: center;
-        color: var(--primary-color);
-        font-size: 1.02rem;
-        font-weight: 600;
-        text-decoration: none;
-        padding: 0 4px;
-        border-radius: 6px;
-        transition: background 0.2s, color 0.2s;
-        background: none;
-        border: none;
-        cursor: pointer;
-    }
-    .my-bookings-link:hover {
-        background: #F0F6FF;
-        color: var(--primary-dark);
-    }
-    .my-bookings-link .arrow {
-        display: inline-block;
-        margin-left: 6px;
-        font-size: 1.1em;
-        transition: transform 0.2s;
-    }
-    .my-bookings-link:hover .arrow {
-        transform: translateX(3px);
-    }
+        :root {
+            --background: #f7f6f3;
+            --panel: #ffffff;
+            --border: #e2e4eb;
+            --primary: #1f4ed8;
+            --primary-dark: #0b3d91;
+            --text: #1f1f24;
+            --muted: #5b6373;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        #app {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 16px 40px;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        img {
+            max-width: 100%;
+            display: block;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 0;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 0;
+        }
+        small,
+        .small-text {
+            font-size: 13px;
+            line-height: 1.4;
+            color: var(--muted);
+        }
+        p.subtitle {
+            margin: 6px 0 0;
+            font-size: 16px;
+            color: #4c5460;
+        }
+        .main-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            border-bottom: 1px solid #e0e3ea;
+            padding-bottom: 22px;
+            margin-bottom: 12px;
+        }
+        .header-branding {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .header-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            font-size: 11px;
+            color: var(--muted);
+        }
+        .header-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin-top: 6px;
+        }
+        .my-bookings-link {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+        }
+        .my-bookings-link:hover {
+            border-bottom-color: var(--primary-dark);
+        }
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+            padding: 20px;
+        }
+        .card-header {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .hero-card {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .hero-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: flex-end;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+            max-width: 360px;
+        }
+        .field label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2a2d37;
+        }
+        .field input {
+            border: 1px solid #dfe2ea;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #fbfcff;
+        }
+        .field small {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .hero-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .btn-primary {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 28px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            border: 1px solid #dfe2ea;
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 22px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .stepper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .stepper-body {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 150px;
+        }
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #d7dbe3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary);
+            background: #fff;
+        }
+        .step-connector {
+            flex: 1;
+            min-width: 60px;
+            height: 2px;
+            border-radius: 2px;
+            background: #dfe2ea;
+        }
+        .notice-card {
+            display: flex;
+            flex-direction: column;
+        }
+        .notice-content {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .notice-header {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .notice-content .notice-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #edeff3;
+            font-size: 14px;
+            color: #373c46;
+        }
+        .notice-content .notice-item:last-child {
+            border-bottom: none;
+        }
+        .flow-card {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .flow-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 6px;
+        }
+        .flow-btn {
+            border-radius: 12px;
+            padding: 12px 28px;
+            border: 1px solid #dfe4f3;
+            background: #eef2ff;
+            color: #1d1d24;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, border 0.2s;
+        }
+        .flow-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .flow-btn:not(.active):hover {
+            background: #dbe4ff;
+        }
+        .flow-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-top: 12px;
+        }
+        .flow-container {
+            background: #fbfbfb;
+            border: 1px solid #e4e6ef;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .selection-area {
+            background: #fff;
+            border: 1px solid #e5e7ef;
+            border-radius: 12px;
+            padding: 18px;
+        }
+        .selection-area h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .list-wrapper {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            min-height: 48px;
+        }
+        .md-item {
+            flex: 1 1 220px;
+            border: 1px solid #d9dce6;
+            border-radius: 12px;
+            padding: 14px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            transition: border 0.2s, box-shadow 0.2s;
+            min-width: 200px;
+        }
+        .md-item strong {
+            font-size: 16px;
+        }
+        .md-item small {
+            font-size: 13px;
+            color: #676d7b;
+        }
+        .md-item.selected {
+            border-color: var(--primary);
+            box-shadow: 0 12px 32px rgba(31, 78, 216, 0.15);
+        }
+        .md-item.disabled {
+            border-color: #e0e2e8;
+            background: #f5f6fb;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .md-away-label {
+            display: inline-block;
+            background: #fcd34d;
+            color: #7c2d12;
+            border-radius: 10px;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+        .slot {
+            border: 1px solid #dfe2ea;
+            border-radius: 10px;
+            padding: 10px 14px;
+            min-width: 120px;
+            text-align: center;
+            font-weight: 600;
+            background: #fff;
+            cursor: pointer;
+            transition: border 0.2s, background 0.2s;
+        }
+        .slot.OPEN {
+            border-color: var(--primary);
+            background: #e7edff;
+            color: #1f3f8a;
+        }
+        .slot.disabled {
+            border-color: #eef1f6;
+            background: #f6f6f8;
+            color: #8b92a3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .slot:not(.disabled):hover {
+            border-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(31, 78, 216, 0.12);
+        }
+        .time-item {
+            border: 1px solid #d8dbe3;
+            border-radius: 12px;
+            padding: 10px 16px;
+            min-width: 110px;
+            text-align: center;
+            font-weight: 600;
+            background: #fff;
+            cursor: pointer;
+            transition: border 0.2s, transform 0.2s;
+        }
+        .time-item.selected {
+            border-color: var(--primary);
+            background: #eef4ff;
+        }
+        .time-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+        .calendar-header {
+            text-align: center;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .calendar-days-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-bottom: 4px;
+            font-size: 0.98rem;
+            color: #6b7a99;
+        }
+        .calendar-day-label {
+            text-align: center;
+            font-weight: 600;
+            padding: 2px 0;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .calendar-date {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 1rem;
+            border-radius: 8px;
+            background: #f9fafc;
+            color: #3a4a6b;
+            cursor: default;
+            transition: background 0.2s, color 0.2s;
+        }
+        .calendar-date.available {
+            background: #e3f1ff;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .calendar-date.available:hover {
+            background: #c3ddff;
+            color: #0d3c91;
+        }
+        .calendar-date.disabled {
+            background: #f0f2f5;
+            color: #b0b8c9;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .calendar-date.empty {
+            background: transparent;
+            border: none;
+        }
+        .calendar-day-label.sunday,
+        .calendar-date.sunday {
+            color: #e03e52 !important;
+        }
+        .calendar-day-label.saturday,
+        .calendar-date.saturday {
+            color: #0066cc !important;
+        }
+        .calendar-date.holiday {
+            color: #e03e52 !important;
+        }
+        .calendar-date.disabled.sunday,
+        .calendar-date.disabled.saturday,
+        .calendar-date.disabled.holiday {
+            opacity: 0.5;
+            background: #f0f2f5;
+        }
+        .inline-form-slot {
+            margin-top: 16px;
+        }
+      
+        .service-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e4e7ef;
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.06);
+        }
+        .service-title {
+            margin: 0 0 12px;
+        }
+        .service-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+        .service-info .service-md-wrap { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+        .service-info .service-md {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.01em;
+        }
+        .service-info .service-md-cat {
+            background: #eef4ff;
+            color: var(--primary);
+            border: 1px solid rgba(31,78,216,0.08);
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .service-info .service-time {
+            display: inline-block;
+            margin-top: 2px;
+            background: #fbfcff;
+            border-radius: 10px;
+            color: #d32323;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .form-group input,
+        .form-group textarea {
+            border: 1px solid #dfe2ea;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-family: inherit;
+            font-size: 15px;
+            background: #fafbff;
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .message-area {
+            min-height: 22px;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+        .main-footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .main-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+        }
+        .main-footer a:hover {
+            border-color: var(--primary);
+        }
+        button {
+            font-family: inherit;
+        }
+        /* 최상단 중앙 로고 컨테이너 */
+        .top-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .yes24-logo {
+            width: 120px;
+            display: block;
+            margin: 0 auto;
+        }
 
-    /* flow-selector 버튼 스타일 원래대로 복원 */
-    .flow-selector {
-        display: flex;
-        justify-content: center;
-        gap: 16px;
-        margin-bottom: 32px;
-    }
-    .flow-btn {
-        background: var(--primary-color);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        font-size: 1.08rem;
-        font-weight: 700;
-        padding: 14px 32px;
-        cursor: pointer;
-        box-shadow: 0 4px 16px rgba(0,102,204,0.08);
-        transition: background 0.2s, transform 0.2s;
-        margin-top: 0;
-        letter-spacing: 0.02em;
-        height: 44px;
-        line-height: 1.2;
-    }
-    .flow-btn.active {
-        background: var(--primary-dark);
-        color: #fff;
-    }
-    .flow-btn:hover {
-        background: var(--primary-dark);
-        color: #fff;
-        transform: translateY(-2px);
-    }
+        @media (max-width: 900px) {
+            .main-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding-bottom: 12px;
+            }
+            .header-branding { gap: 10px; align-items:center; }
+            .header-copy { align-items:center; }
 
-    /* 달력 스타일 개선 */
-    .calendar-header {
-        text-align: center;
-        font-size: 1.15rem;
-        font-weight: 700;
-        margin-bottom: 8px;
-        color: var(--primary-color);
-    }
-    .calendar-days-row {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        margin-bottom: 4px;
-        font-size: 0.98rem;
-        color: #6B7A99;
-    }
-    .calendar-day-label {
-        text-align: center;
-        font-weight: 600;
-        padding: 2px 0;
-    }
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 2px;
-    }
-    .calendar-date {
-        text-align: center;
-        padding: 8px 0;
-        font-size: 1.02rem;
-        border-radius: 6px;
-        background: #F7F9FB;
-        color: #3A4A6B;
-        cursor: default;
-        transition: background 0.2s, color 0.2s;
-    }
-    .calendar-date.available {
-        background: #E3F1FF;
-        color: var(--primary-color);
-        cursor: pointer;
-        font-weight: 700;
-    }
-    .calendar-date.available:hover {
-        background: #B3D8FF;
-        color: var(--primary-dark);
-    }
-    .calendar-date.disabled {
-        background: #F0F2F5;
-        color: #B0B8C9;
-        cursor: not-allowed;
-        opacity: 0.6;
-    }
-    .calendar-date.empty {
-        background: transparent;
-        cursor: default;
-    }
-    .calendar-day-label.sunday, .calendar-date.sunday { color: #E03E52 !important; }
-    .calendar-day-label.saturday, .calendar-date.saturday { color: #0066CC !important; }
-    .calendar-date.holiday { color: #E03E52 !important; }
-    
-    .calendar-date.disabled.sunday, 
-    .calendar-date.disabled.saturday, 
-    .calendar-date.disabled.holiday {
-        opacity: 0.5;
-        background-color: #F0F2F5;
-    }
+            .header-meta {
+                align-items: center;
+                gap: 4px;
+                margin-top: 6px;
+            }
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
 
-    /* Notice Styles */
-    .notice-container {
-        background-color: #fff;
-        border: 1px solid #e1e4e8;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-    .notice-header {
-        font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .notice-item {
-        padding: 8px 0;
-        border-bottom: 1px solid #f0f0f0;
-        font-size: 0.95rem;
-        color: #444;
-    }
-    .notice-item:last-child { border-bottom: none; }
-    .notice-date {
-        display: inline-block;
-        background: #f0f2f5;
-        color: #666;
-        font-size: 0.8rem;
-        padding: 2px 6px;
-        border-radius: 4px;
-        margin-right: 8px;
-    }
+            .flow-selector {
+                flex-direction: column;
+            }
+            .stepper-body {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .step-connector {
+                width: 100%;
+                flex: initial;
+            }
+            .yes24-logo {
+                width: 88px;
+                margin-bottom: 4px;
+            }
+        }
+
+        /* 모바일에서 MD 항목을 한 줄에 2개 표시 */
+        @media (max-width: 600px) {
+            .list-wrapper {
+                gap: 10px;
+            }
+            .md-item {
+                /* flex 기반 레이아웃에서 두 열로 고정 */
+                flex: 0 1 calc(50% - 10px);
+                min-width: 0;
+            }
+            /* 슬롯/시간 항목은 기존 스타일 유지하되 간격 보정 */
+            .slot, .time-item {
+                min-width: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- Header: 로고 및 예약 조회 링크 -->
-        <header class="main-header">
+        <!-- 최상단 중앙 로고 -->
+        <div class="top-logo">
             <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.svg" alt="yes24.com 로고" class="yes24-logo">
-            <h1>MD 미팅 예약시스템</h1>
-            <p class="subtitle">원하는 날짜와 MD를 선택해 예약을 진행하세요.</p>
-            <div class="my-bookings-entry">
-                <a class="my-bookings-link" href="#" onclick="openMyBookingsPopup()">
-                    예약 내역 조회 <span class="arrow">→</span>
-                </a>
+        </div>
+
+        <header class="main-header">
+            <div class="header-branding">
+                <div class="header-copy">
+                    <small class="eyebrow">Editorial · Calm · Trust</small>
+                    <h1>MD 미팅 예약시스템</h1>
+                </div>
+            </div>
+            <div class="header-meta">
+                <small>예약 내역은 전화번호로 바로 확인됩니다.</small>
+                <a href="#" class="my-bookings-link" onclick="openMyBookingsPopup()">예약 내역 조회</a>
             </div>
         </header>
         <main>
-            <!-- Notice Section: 상단 공지사항 노출 영역 -->
-            <div id="notice-alert-container" class="notice-container" style="display:none;">
-                <div class="notice-header">📢 공지사항</div>
-                <div id="front-notice-list"></div>
-            </div>
-
-            <!-- Flow Selector: 예약 방식 선택 (MD 먼저 vs 날짜 먼저) -->
-            <div class="flow-selector">
-                <button id="select-flow-md" class="flow-btn active">MD 먼저 선택</button>
-                <button id="select-flow-date" class="flow-btn">날짜 먼저 선택</button>
-            </div>
-            <!-- Flow 1: MD First (MD 선택 -> 날짜 선택 -> 시간 선택) -->
-            <div id="flow-md-first" class="flow-container">
-                <div id="md-list-container-1" class="selection-area">
-                    <h3>1. MD를 선택해주세요.</h3>
-                    <div class="list-wrapper"></div>
+            <section class="stepper card">
+                <div class="card-header">
+                    <h2>안내사항</h2>
+                    <small>담당MD, 희망일시,신청자 정보 및 사유를 입력해주세요.</small>
                 </div>
-                <div id="date-selector-container-1" class="selection-area" style="display: none;">
-                    <h3>2. 날짜를 선택해주세요.</h3>
-                    <div id="calendar-container-1"></div>
+                <div class="stepper-body">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>
+                            <strong>예약확정</strong>
+                            <small>담당자 확인 후 최종 확정 됩니다.</small>
+                        </div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>
+                            <strong>미팅일자</strong>
+                            <small>업무일 기준 10일 이내만 예약 가능 합니다.</small>
+                        </div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div>
+                            <strong>취소관련</strong>
+                            <small>미팅 한 시간 전까지 취소 가능합니다.</small>
+                        </div>
+                    </div>
                 </div>
-                <div id="slots-area-1" class="selection-area" style="display: none;">
-                    <h3>3. 시간을 선택해주세요.</h3>
-                    <div class="list-wrapper"></div>
+            </section>
+            <section class="notice-card card">
+                <div class="card-header">
+                    <h2>공지사항</h2>
+                    <small>MD 미팅 운영과 주요 일정을 안내합니다.</small>
                 </div>
-            </div>
-            <!-- Flow 2: Date First (날짜 선택 -> 시간 선택 -> MD 선택) -->
-            <div id="flow-date-first" class="flow-container" style="display: none;">
-                <div class="selection-area">
-                    <h3>1. 날짜를 선택해주세요.</h3>
-                    <div id="calendar-container"></div>
+                <div id="notice-alert-container" class="notice-content" style="display:none;">
+                    <div class="notice-header">📢 최신 업데이트</div>
+                    <div id="front-notice-list"></div>
                 </div>
-                <div id="time-selector-container-2" class="selection-area" style="display: none;">
-                    <h3>2. 시간을 선택해주세요.</h3>
-                    <div class="list-wrapper"></div>
+            </section>
+            <section class="flow-card card">
+                <div class="card-header">
+                    <h2>예약 플로우</h2>
+                    <small>‘MD 먼저’와 ‘날짜 먼저’를 자유롭게 전환하세요.</small>
                 </div>
-                <div id="md-list-container-2" class="selection-area" style="display: none;">
-                    <h3>3. 예약 가능한 MD를 선택해주세요.</h3>
-                    <div class="list-wrapper"></div>
+                <div class="flow-selector">
+                    <button id="select-flow-md" class="flow-btn active">MD 먼저 선택</button>
+                    <button id="select-flow-date" class="flow-btn">날짜 먼저 선택</button>
                 </div>
-            </div>
-            <!-- 예약신청 폼은 JS에서 동적으로 표시 (inline-booking-form-container) -->
-            <div id="inline-booking-form-container" style="display:none; margin-top:10px;"></div>
+                <div class="flow-grid">
+                    <div id="flow-md-first" class="flow-container">
+                        <div id="md-list-container-1" class="selection-area">
+                            <h3>1. MD를 선택해주세요.</h3>
+                            <div class="list-wrapper"></div>
+                        </div>
+                        <div id="date-selector-container-1" class="selection-area" style="display: none;">
+                            <h3>2. 날짜를 선택해주세요.</h3>
+                            <div id="calendar-container-1"></div>
+                        </div>
+                        <div id="slots-area-1" class="selection-area" style="display: none;">
+                            <h3>3. 시간을 선택해주세요.</h3>
+                            <div class="list-wrapper"></div>
+                        </div>
+                    </div>
+                    <div id="flow-date-first" class="flow-container" style="display: none;">
+                        <div class="selection-area">
+                            <h3>1. 날짜를 선택해주세요.</h3>
+                            <div id="calendar-container"></div>
+                        </div>
+                        <div id="time-selector-container-2" class="selection-area" style="display: none;">
+                            <h3>2. 시간을 선택해주세요.</h3>
+                            <div class="list-wrapper"></div>
+                        </div>
+                        <div id="md-list-container-2" class="selection-area" style="display: none;">
+                            <h3>3. 예약 가능한 MD를 선택해주세요.</h3>
+                            <div class="list-wrapper"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div id="inline-booking-form-container" class="inline-form-slot" style="display:none;"></div>
         </main>
         <footer class="main-footer">
             <span>© 2026 MD 예약 서비스</span>
@@ -249,7 +735,7 @@
     <script src="js/app.js"></script>
     <script>
     function openMyBookingsPopup() {
-        const phone = prompt('예약 조회를 위해 전화번호를 입력하세요 (예: 010-1234-5678):', '');
+        const phone = prompt('예약 조회를 위해 전화번호를 입력하세요 (예: 01012345678):', '');
         if (!phone) return;
         window.location.href = 'my-bookings.html?phone=' + encodeURIComponent(phone);
     }
