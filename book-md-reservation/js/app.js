@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="form-group">
                         <label for="notes">미팅 안건</label>
-                        <textarea id="notes" rows="7"></textarea>
+                        <textarea id="notes" rows="5"></textarea>
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">신청하기</button>
