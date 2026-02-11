@@ -7,9 +7,48 @@
     "User_Affiliation": "예스24 도서팀",
     "User_Email": "minjun.kim@example.com",
     "User_Phone": "010-1234-5678",
-    "Meeting_Datetime": "2024-09-01T10:30:00",
+    "Meeting_Datetime": "2026-02-01T10:30:00",
     "Notes": "신간 관련 미팅",
     "Status": "APPROVED",
-    "Regist_Datetime": "2024-08-28T10:00:00.000Z"
+    "Regist_Datetime": "2026-01-28T10:00:00.000Z"
+  },
+    {
+    "Booking_Seq": "booking-001",
+    "Slot_Seq": "slot-20240901-1030",
+    "Md_No": "md-01",
+    "User_Name": "김민준",
+    "User_Affiliation": "예스24 도서팀",
+    "User_Email": "minjun.kim@example.com",
+    "User_Phone": "010-1234-5678",
+    "Meeting_Datetime": "2026-02-01T12:30:00",
+    "Notes": "신간 관련 미팅",
+    "Status": "APPROVED",
+    "Regist_Datetime": "2026-01-28T10:00:00.000Z"
+  },
+    {
+    "Booking_Seq": "booking-001",
+    "Slot_Seq": "slot-20240901-1030",
+    "Md_No": "md-02",
+    "User_Name": "김민준",
+    "User_Affiliation": "예스24 도서팀",
+    "User_Email": "minjun.kim@example.com",
+    "User_Phone": "010-1234-5678",
+    "Meeting_Datetime": "2026-02-01T11:30:00",
+    "Notes": "신간 관련 미팅",
+    "Status": "APPROVED",
+    "Regist_Datetime": "2026-01-28T10:00:00.000Z"
+  },
+    {
+    "Booking_Seq": "booking-001",
+    "Slot_Seq": "slot-20240901-1030",
+    "Md_No": "md-03",
+    "User_Name": "김민준",
+    "User_Affiliation": "예스24 도서팀",
+    "User_Email": "minjun.kim@example.com",
+    "User_Phone": "010-1234-5678",
+    "Meeting_Datetime": "2026-02-01T11:30:00",
+    "Notes": "신간 관련 미팅",
+    "Status": "APPROVED",
+    "Regist_Datetime": "2026-01-28T10:00:00.000Z"
   }
 ]

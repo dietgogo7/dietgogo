@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h2 class="service-title">예약 신청</h2>
                 <div class="service-info">
                     <div class="service-md-wrap">
-                        <span class="service-md">${md ? md.Md_Name : 'MD'}</span>
+                        <span class="service-md">${md ? md.Md_Name + '  MD': 'MD'}</span>
                         <span class="service-md-cat">${md ? md.Category_Name : ''}</span>
                     </div>
                     <div class="service-time">${new Date(slot.Start_Datetime).toLocaleString('ko-KR', { dateStyle: 'full', timeStyle: 'short' })}</div>
