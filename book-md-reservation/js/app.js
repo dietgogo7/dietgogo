@@ -197,42 +197,63 @@ document.addEventListener('DOMContentLoaded', () => {
         const md = allMds.find(m => m.Md_No === selectedMdId);
         const isMdAway = md && (md.Status === 'AWAY' || md.Status === 'ON_LEAVE');
 
-        for (let h = 10; h < 17; h++) {
-            for (let m = 0; m < 60; m += 30) {
-                const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-                let slotData = slotLookup.get(timeStr);
-                const el = document.createElement('div');
-                el.className = 'slot';
-                el.textContent = timeStr;
+        var times = generateTimeSlots('14:00', '15:15', 15);
+        times.forEach(function(timeStr){
+            let slotData = slotLookup.get(timeStr);
+            const el = document.createElement('div');
+            el.className = 'slot';
+            el.textContent = timeStr;
 
-                // 스케쥴이 없으면 OPEN 상태로 가상 슬롯 생성
-                if (!slotData) {
-                    slotData = {
-                        Slot_Seq: `virtual-${selectedDate}-${timeStr}-md${selectedMdId}`,
-                        Md_No: selectedMdId,
-                        Start_Datetime: `${selectedDate}T${timeStr}:00`,
-                        End_Datetime: `${selectedDate}T${timeStr === '17:00' ? '17:30' : timeStr}:30`,
-                        Status: 'OPEN',
-                        Capacity: 1
-                    };
-                }
+            if (!slotData) {
+                // Start/End ISO 생성 (종료 = 시작 + 15분)
+                const startIso = selectedDate + 'T' + timeStr + ':00';
+                const startDate = new Date(startIso);
+                const endDate = new Date(startDate.getTime() + 15 * 60000);
+                function pad(n){ return String(n).padStart(2,'0'); }
+                const endIso = `${endDate.getFullYear()}-${pad(endDate.getMonth()+1)}-${pad(endDate.getDate())}T${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:00`;
 
-                el.dataset.slotId = slotData.Slot_Seq;
-
-                // MD가 부재중이면 모든 슬롯 disabled
-                if (isMdAway) {
-                    el.classList.add('disabled');
-                    el.textContent += ' (MD 부재중)';
-                } else if (slotData.Status === 'OPEN') {
-                    el.classList.add('OPEN');
-                    el.addEventListener('click', () => openBookingModal(slotData));
-                } else {
-                    el.classList.add('disabled', slotData.Status);
-                    el.textContent += ` (${slotData.Status})`;
-                }
-                slotsContainer1.appendChild(el);
+                slotData = {
+                    Slot_Seq: `virtual-${selectedDate}-${timeStr}-md${selectedMdId}`,
+                    Md_No: selectedMdId,
+                    Start_Datetime: startIso,
+                    End_Datetime: endIso,
+                    Status: 'OPEN',
+                    Capacity: 1
+                };
             }
+
+            el.dataset.slotId = slotData.Slot_Seq;
+
+            if (isMdAway) {
+                el.classList.add('disabled');
+                el.textContent += ' (MD 부재중)';
+            } else if (slotData.Status === 'OPEN') {
+                el.classList.add('OPEN');
+                el.addEventListener('click', () => openBookingModal(slotData));
+            } else {
+                el.classList.add('disabled', slotData.Status);
+                el.textContent += ` (${slotData.Status})`;
+            }
+            slotsContainer1.appendChild(el);
+        });
+    }
+
+    // --- 추가: 시간 슬롯 생성 유틸(시작,종료,간격분) ---
+    function generateTimeSlots(start, end, intervalMin) {
+        function toMinutes(hm) {
+            var parts = hm.split(':');
+            return parseInt(parts[0],10)*60 + parseInt(parts[1],10);
         }
+        function pad(n){ return (n<10? '0':'') + n; }
+        var startMin = toMinutes(start);
+        var endMin = toMinutes(end);
+        var arr = [];
+        for (var t = startMin; t <= endMin; t += intervalMin) {
+            var h = Math.floor(t/60);
+            var m = t%60;
+            arr.push(pad(h) + ':' + pad(m));
+        }
+        return arr;
     }
 
     // --- FLOW 2: Date -> Time -> MD ---
@@ -248,17 +269,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Flow 2에서 시간 선택 목록을 렌더링하는 함수
     function renderTimeSelectors() {
         timeListWrapper2.innerHTML = '';
-        
-        for (let h = 10; h < 17; h++) {
-            for (let m = 0; m < 60; m += 30) {
-                const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-                const el = document.createElement('div');
-                el.className = 'time-item';
-                el.textContent = timeStr;
-                el.addEventListener('click', () => handleTimeSelect(timeStr));
-                timeListWrapper2.appendChild(el);
-            }
-        }
+        var times = generateTimeSlots('14:00','15:30',15);
+        times.forEach(function(timeStr){
+            const el = document.createElement('div');
+            el.className = 'time-item';
+            el.textContent = timeStr;
+            el.addEventListener('click', () => handleTimeSelect(timeStr));
+            timeListWrapper2.appendChild(el);
+        });
     }
 
     // Flow 2에서 시간 선택 시 처리하는 함수
@@ -290,11 +308,17 @@ document.addEventListener('DOMContentLoaded', () => {
         let slot = allSlots.find(s => s.Start_Datetime.startsWith(selectedDate) && s.Start_Datetime.includes(selectedTime) && s.Md_No === selectedMdId);
         
         if (!slot) {
+            const startIso = `${selectedDate}T${selectedTime}:00`;
+            const startDate = new Date(startIso);
+            const endDate = new Date(startDate.getTime() + 15 * 60000);
+            function pad(n){ return String(n).padStart(2,'0'); }
+            const endIso = `${endDate.getFullYear()}-${pad(endDate.getMonth()+1)}-${pad(endDate.getDate())}T${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:00`;
+
             slot = {
                 Slot_Seq: `virtual-${selectedDate}-${selectedTime}-md${selectedMdId}`,
                 Md_No: selectedMdId,
-                Start_Datetime: `${selectedDate}T${selectedTime}:00`,
-                End_Datetime: `${selectedDate}T${selectedTime === '17:00' ? '17:30' : selectedTime}:30`,
+                Start_Datetime: startIso,
+                End_Datetime: endIso,
                 Status: 'OPEN',
                 Capacity: 1
             };
@@ -514,9 +538,8 @@ document.addEventListener('DOMContentLoaded', () => {
              if (slotInMem) {
                  slotInMem.Status = 'BOOKED';
              } else {
-                 // 암묵적 OPEN 슬롯이었던 경우, 예약 확정 시 BOOKED 상태의 슬롯 데이터를 생성하여 추가
                  const start = new Date(bookingData.Meeting_Datetime);
-                 const end = new Date(start.getTime() + 30 * 60000); // 30분 더하기
+                 const end = new Date(start.getTime() + 15 * 60000); // 15분 더하기
                  const pad = n => String(n).padStart(2, '0');
                  const endTimeStr = `${end.getFullYear()}-${pad(end.getMonth()+1)}-${pad(end.getDate())}T${pad(end.getHours())}:${pad(end.getMinutes())}:00`;
 

@@ -79,18 +79,53 @@
         }
         .main-header {
             display: flex;
-            align-items: flex-start;
+            align-items: center; /* 세로 중앙 정렬 */
             justify-content: space-between;
             gap: 24px;
             border-bottom: 1px solid #e0e3ea;
             padding-bottom: 22px;
             margin-bottom: 12px;
+            /* position: relative; 절대배치 불필요 */
         }
+
+        /* header-branding을 중앙 정렬 컨테이너로 변경 */
         .header-branding {
             display: flex;
             gap: 10px;
-            align-items: center;
+            align-items: left;
+            flex: 1;                /* 가로 확장하여 중앙 정렬 가능하게 함 */
+            
         }
+
+        /* 헤더 텍스트 블록 중앙정렬 */
+        .header-copy{
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center; /* 텍스트 수평 중앙 정렬 */
+            text-align: center;
+        }
+
+        /* 마스코드: 텍스트 옆에 인접하도록 조정 */
+        .mascode{
+            width:60px;
+            height:auto;
+            margin-right:5px; /* 아이콘이 왼쪽에 있을 때 텍스트와 간격 */
+            
+            pointer-events: none;
+            opacity:0.98;
+        }
+        @media (max-width: 900px) {
+            .header-branding { justify-content: center; }
+            .mascode{
+                width:40px;
+                margin:10px 2px 0 -50px;
+                display:block;
+            }
+            .main-header { flex-direction: column; gap:8px; }
+            .header-meta { margin-top: 6px; }
+        }
+
         .header-copy {
             display: flex;
             flex-direction: column;
@@ -557,7 +592,7 @@
             margin-bottom: 12px;
         }
         .yes24-logo {
-            width: 120px;
+            width: 180px;
             display: block;
             margin: 0 auto;
         }
@@ -629,6 +664,9 @@
 
         <header class="main-header">
             <div class="header-branding">
+                <!-- 마스코드: 텍스트 왼쪽으로 이동 -->
+                <img src="https://image.yes24.com/sysimage/mv3/com/ico_ai02.svg" alt="마스코드" class="mascode">
+
                 <div class="header-copy">
                     <small class="eyebrow">YOUR · EVERY · STORY</small>
                     <h1>MD 미팅 예약시스템</h1>
@@ -638,6 +676,8 @@
                 <small>예약 내역은 휴대폰번호로 확인 가능 합니다.</small>
                 <a href="#" class="my-bookings-link" onclick="openMyBookingsPopup()">예약 내역 조회</a>
             </div>
+
+            <!-- 마스코드 이미지를 header-branding 내부로 이동. -->
         </header>
         <main>
             <section class="card">
@@ -744,26 +784,93 @@
             <span>Copyright © YES24 Corp. All Rights Reserved.</span>
         </footer>
     </div>
-    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID"></script>
+    <!-- 변경: 네이버 지도 SDK 로드 - 올바른 파라미터명(ncpClientId), callback, async/defer 추가 -->
+    <script async defer type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=3r1jlsgk8r&submodules=geocoder&callback=initNaverMap"></script>
     <script src="js/app.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        if (typeof naver !== 'undefined' && document.getElementById('map')) {
+      // 전역 콜백: SDK 로드 후 자동 실행
+      function initNaverMap() {
+            if (!window.naver || !naver.maps) {
+                console.error("네이버 지도 SDK 로드 실패");
+                return;
+            }
+
+            var lat = 33.450701;
+            var lng = 126.570667;
+
+            var position = new naver.maps.LatLng(lat, lng);
             var map = new naver.maps.Map('map', {
-                center: new naver.maps.LatLng(37.5283169, 126.9294254),
-                zoom: 16
+                center: position,
+                zoom: 17
             });
-            var marker = new naver.maps.Marker({
-                position: new naver.maps.LatLng(37.5283169, 126.9294254),
-                map: map
+
+            // 마커 생성 (아이콘을 HTTPS로 변경)
+            new naver.maps.Marker({
+                position: position,
+                map: map,
+                 icon: {
+                    url: 'https://image.yes24.com/sysimage/renew/common/marker_Custom.png',
+                    size: new naver.maps.Size(40, 43),
+                    scaledSize: new naver.maps.Size(40, 43),
+                    origin: new naver.maps.Point(0, 0),
+                    anchor: new naver.maps.Point(12, 34)
+                }
             });
         }
-    });
-    function openMyBookingsPopup() {
-        const phone = prompt('예약 조회를 위해 전화번호를 입력하세요 (예: 01012345678):', '');
-        if (!phone) return;
-        window.location.href = 'my-bookings.html?phone=' + encodeURIComponent(phone);
-    }
+
+        // 시간 슬롯 생성: start "HH:MM", end "HH:MM", 간격 분
+        function generateTimeSlots(start, end, intervalMin) {
+            function toMinutes(hm) {
+                var parts = hm.split(':');
+                return parseInt(parts[0],10)*60 + parseInt(parts[1],10);
+            }
+            function pad(n){ return (n<10? '0':'') + n; }
+            var startMin = toMinutes(start);
+            var endMin = toMinutes(end);
+            var arr = [];
+            for (var t = startMin; t <= endMin; t += intervalMin) {
+                var h = Math.floor(t/60);
+                var m = t%60;
+                arr.push(pad(h) + ':' + pad(m));
+            }
+            return arr;
+        }
+
+        // 렌더링 함수: 지정된 .list-wrapper들에 time-item 요소 추가
+        function renderTimeSlotsInto(selectors, slots) {
+            selectors.forEach(function(sel){
+                var container = document.querySelector(sel);
+                if (!container) return;
+                container.innerHTML = '';
+                slots.forEach(function(time){
+                    var el = document.createElement('div');
+                    el.className = 'time-item';
+                    el.textContent = time;
+                    el.addEventListener('click', function(){
+                        var siblings = container.querySelectorAll('.time-item');
+                        siblings.forEach(function(s){ s.classList.remove('selected'); });
+                        el.classList.add('selected');
+                        console.log('선택된 시간:', time);
+                    });
+                    container.appendChild(el);
+                });
+            });
+        }
+
+        // 페이지 로드 시 14:00 ~ 15:30, 15분 간격으로 렌더
+        document.addEventListener('DOMContentLoaded', function(){
+            var slots = generateTimeSlots('14:00','15:30',15);
+            renderTimeSlotsInto([
+                '#slots-area-1 .list-wrapper',
+                '#time-selector-container-2 .list-wrapper'
+            ], slots);
+        });
+
+        function openMyBookingsPopup() {
+            const phone = prompt('예약 조회를 위해 전화번호를 입력하세요 (예: 01012345678):', '');
+            if (!phone) return;
+            window.location.href = 'my-bookings.html?phone=' + encodeURIComponent(phone);
+        }
     </script>
 </body>
 </html>
