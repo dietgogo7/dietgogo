@@ -8,6 +8,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentViewMode = 'all'; // 'all', 'md', 'date'
     let currentPage = 1;
     const itemsPerPage = 10;
+    // Schedule pagination state
+    let scheduleCurrentPage = 1;
+    const scheduleItemsPerPage = 6; // number of time slots per page
+
+    const formatWithYear = (dateStr) => {
+        if (!dateStr) return '-';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    };
 
     // --- CONSTANTS ---
     const statusLabels = {
@@ -15,7 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'APPROVED': '예약확정',
         'REJECTED': '승인거절',
         'CANCELLED': '예약취소',
-        'COMPLETED': '이용완료'
+        'COMPLETED': '이용완료',
+        'AWAY': '부재',
+        'ON_LEAVE': '휴가',
+        'OPEN': '예약가능',
+        'CLOSED': '예약불가'
     };
 
     // --- DOM ELEMENTS ---
@@ -37,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const vacationToggle = document.getElementById('vacation-toggle');
     const timeSettingsArea = document.getElementById('time-settings-area');
     const timeGrid = document.getElementById('time-grid');
+    const schedulePaginationContainer = document.getElementById('schedule-pagination');
 
     // MD Management Elements
     const mdsTbody = document.getElementById('mds-tbody');
@@ -131,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Join Data
             const now = new Date();
+
             allBookings.forEach(b => {
                 const slot = allSlots.find(s => s.Slot_Seq === b.Slot_Seq);
                 
@@ -144,13 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // fallback for meetingTime if still missing
                 if (!b.Meeting_Datetime) b.Meeting_Datetime = b.Regist_Datetime;
-
-                // 날짜가 지난 예약은 자동으로 'COMPLETED' 처리
-                if (b.Meeting_Datetime && new Date(b.Meeting_Datetime) < now) {
-                    if (b.Status === 'PENDING' || b.Status === 'APPROVED') {
-                        b.Status = 'COMPLETED';
-                    }
-                }
             });
 
             // Sort bookings
@@ -178,6 +192,9 @@ document.addEventListener('DOMContentLoaded', () => {
             renderNotices();
             renderBlacklist();
             renderMeetingKing();
+            if (document.getElementById('admin-calendar-view')) {
+                renderAdminCalendar();
+            }
         } catch (error) {
             console.error(error);
             if(bookingsTbody) bookingsTbody.innerHTML = `<tr><td colspan="7" style="color: red;">데이터 로드 실패: ${error.message}</td></tr>`;
@@ -301,12 +318,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             groups[key].forEach(booking => {
                 const row = document.createElement('tr');
-                const createdAt = new Date(booking.Regist_Datetime).toLocaleString('ko-KR', {
-                    month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-                });
-                const meetingTime = booking.Meeting_Datetime ? new Date(booking.Meeting_Datetime).toLocaleString('ko-KR', {
-                    month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-                }) : '-';
+                const createdAt = formatWithYear(booking.Regist_Datetime);
+                const meetingTime = formatWithYear(booking.Meeting_Datetime);
 
                 const statusLabel = statusLabels[booking.Status] || booking.Status;
 
@@ -324,14 +337,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${booking.User_Phone}</td>
                     <td>${meetingTime}</td>
                     <td><span class="status-badge status-${booking.Status}">${statusLabel}</span></td>
-                    <td>
-                        ${booking.Status === 'PENDING' ? `
-                            <button class="btn-xs btn-approve" onclick="event.stopPropagation(); updateStatus('${booking.Slot_Seq}', 'APPROVED')">승인</button>
-                            <button class="btn-xs btn-reject" onclick="event.stopPropagation(); updateStatus('${booking.Slot_Seq}', 'REJECTED')">거절</button>
-                        ` : booking.Status === 'APPROVED' ? `
-                            <button class="btn-xs btn-reject" onclick="event.stopPropagation(); updateStatus('${booking.Slot_Seq}', 'CANCELLED')">취소</button>
-                        ` : '-'}
-                    </td>
+                        <td>
+                            ${booking.Status === 'PENDING' ? `
+                                <button class="btn-xs btn-approve" onclick="event.stopPropagation(); updateStatus('${booking.Booking_Seq}', 'APPROVED')">승인</button>
+                                <button class="btn-xs btn-reject" onclick="event.stopPropagation(); updateStatus('${booking.Booking_Seq}', 'REJECTED')">거절</button>
+                                <button class="btn-xs btn-reject" onclick="event.stopPropagation(); updateStatus('${booking.Booking_Seq}', 'CANCELLED')">취소</button>
+                            ` : booking.Status === 'APPROVED' ? `
+                                <button class="btn-xs btn-reject" onclick="event.stopPropagation(); updateStatus('${booking.Booking_Seq}', 'CANCELLED')">취소</button>
+                            ` : '-'}
+                        </td>
                 `;
                 bookingsTbody.appendChild(row);
             });
@@ -374,8 +388,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 예약 상태를 변경하는 함수
     // DB 연동 시 서버로 상태 변경 요청을 보내야 함
-    window.updateStatus = function(slotSeq, newStatus) {
-        const booking = allBookings.find(b => b.Slot_Seq === slotSeq);
+    window.updateStatus = function(bookingSeq, newStatus) {
+        const booking = allBookings.find(b => b.Booking_Seq === bookingSeq);
         if (booking) {
             booking.Status = newStatus;
             // Simulate server update
@@ -391,8 +405,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = document.getElementById('admin-modal-body');
         
         const fields = [
-            { label: '신청일시', value: new Date(booking.Regist_Datetime).toLocaleString('ko-KR') },
-            { label: '예약시간', value: booking.Meeting_Datetime ? new Date(booking.Meeting_Datetime).toLocaleString('ko-KR') : '-' },
+            { label: '신청일시', value: formatWithYear(booking.Regist_Datetime) },
+            { label: '예약시간', value: formatWithYear(booking.Meeting_Datetime) },
             { label: '담당 MD', value: booking.Md_Name },
             { label: '상태', value: statusLabels[booking.Status] || booking.Status },
             { label: '신청자', value: booking.User_Name },
@@ -421,6 +435,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 스케줄 설정용 MD 선택 드롭다운을 채우는 함수
     // MD 목록이 변경될 때마다 호출되어야 함
     function populateMdSelect() {
+        if (!mdSelect) return;
+        mdSelect.innerHTML = '<option value="">MD를 선택하세요</option>';
         allMds.forEach(md => {
             const option = document.createElement('option');
             option.value = md.Md_No;
@@ -534,55 +550,207 @@ document.addEventListener('DOMContentLoaded', () => {
         mdPhoneInput.value = '';
     }
 
+    // --- CALENDAR LOGIC (Admin) ---
+    let calendarCurrentMonth = new Date();
+    
+    function renderAdminCalendar() {
+        const area = document.getElementById('admin-calendar-view');
+        if (!area) return;
+
+        const year = calendarCurrentMonth.getFullYear();
+        const month = calendarCurrentMonth.getMonth();
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        
+        // Month navigation header
+        let html = `
+            <div class="calendar-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                <button type="button" class="page-btn" id="admin-cal-prev" style="padding: 2px 8px; font-size: 12px;">&lt;</button>
+                <div style="font-weight:700; font-size:16px; color: var(--text);">${year}.${String(month + 1).padStart(2, '0')}</div>
+                <button type="button" class="page-btn" id="admin-cal-next" style="padding: 2px 8px; font-size: 12px;">&gt;</button>
+            </div>
+            <div class="calendar-days-row" style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 8px;">
+                <div class="calendar-day-label sunday" style="color: #e11d48; font-size: 12px; font-weight: 600;">일</div>
+                <div class="calendar-day-label" style="font-size: 12px; font-weight: 600;">월</div>
+                <div class="calendar-day-label" style="font-size: 12px; font-weight: 600;">화</div>
+                <div class="calendar-day-label" style="font-size: 12px; font-weight: 600;">수</div>
+                <div class="calendar-day-label" style="font-size: 12px; font-weight: 600;">목</div>
+                <div class="calendar-day-label" style="font-size: 12px; font-weight: 600;">금</div>
+                <div class="calendar-day-label saturday" style="color: #2563eb; font-size: 12px; font-weight: 600;">토</div>
+            </div>
+            <div class="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
+        `;
+
+        // Empty slots for previous month
+        for (let i = 0; i < firstDay; i++) {
+            html += '<div class="calendar-date empty"></div>';
+        }
+
+        const selectedDate = dateInput ? dateInput.value : '';
+
+        for (let d = 1; d <= lastDate; d++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const dateObj = new Date(year, month, d);
+            const dayOfWeek = dateObj.getDay();
+            
+            let classes = ['calendar-date'];
+            const isAllowedDay = dayOfWeek >= 1 && dayOfWeek <= 4; // Mon(1) ~ Thu(4)
+            
+            if (isAllowedDay) {
+                classes.push('available');
+            } else {
+                classes.push('disabled');
+            }
+            
+            if (dayOfWeek === 0) classes.push('sunday');
+            if (dayOfWeek === 6) classes.push('saturday');
+            
+            // Highlight selected date
+            let extraStyles = '';
+            if (dateStr === selectedDate) {
+                extraStyles = 'background-color: var(--primary); color: #fff; font-weight: 700;';
+            }
+
+            const cursorStyle = isAllowedDay ? 'cursor: pointer;' : 'cursor: not-allowed; opacity: 0.4;';
+            html += `<div class="${classes.join(' ')}" data-date="${dateStr}" style="${extraStyles} font-size: 13px; height: 36px; display: flex; align-items: center; justify-content: center; ${cursorStyle} border-radius: 8px;">${d}</div>`;
+        }
+        
+        html += '</div>';
+        area.innerHTML = html;
+
+        // Add events
+        const prevBtn = document.getElementById('admin-cal-prev');
+        const nextBtn = document.getElementById('admin-cal-next');
+
+        if (prevBtn) {
+            prevBtn.onclick = (e) => {
+                e.stopPropagation();
+                calendarCurrentMonth.setMonth(calendarCurrentMonth.getMonth() - 1);
+                renderAdminCalendar();
+            };
+        }
+        if (nextBtn) {
+            nextBtn.onclick = (e) => {
+                e.stopPropagation();
+                calendarCurrentMonth.setMonth(calendarCurrentMonth.getMonth() + 1);
+                renderAdminCalendar();
+            };
+        }
+        area.querySelectorAll('.calendar-date.available').forEach(el => {
+            el.onclick = () => {
+                if (dateInput) {
+                    dateInput.value = el.dataset.date;
+                    renderAdminCalendar();
+                    renderScheduleGrid();
+                }
+            };
+        });
+    }
+
     // 스케줄 설정 그리드를 렌더링하는 함수
     function renderScheduleGrid() {
+        if (!mdSelect || !dateInput || !timeSettingsArea || !timeGrid) return;
         const mdId = mdSelect.value;
         const date = dateInput.value;
-        
+
+        // reset page when md/date changes
+        scheduleCurrentPage = 1;
+
         if (!mdId || !date) {
             timeSettingsArea.style.display = 'none';
+            if (schedulePaginationContainer) schedulePaginationContainer.innerHTML = '';
+            return;
+        }
+
+        // Only allow Mon(1) - Thu(4)
+        const d = new Date(date + 'T00:00:00');
+        const day = d.getDay();
+        const allowed = [1,2,3,4]; // Mon-Thu
+        timeGrid.innerHTML = '';
+
+        if (!allowed.includes(day)) {
+            timeSettingsArea.style.display = 'block';
+            timeGrid.innerHTML = '<div style="color:#c94b4b; padding:12px;">선택한 날짜는 월~목이 아닙니다. 스케줄은 매주 월요일~목요일 14:00~15:30(15분 단위)만 설정 가능합니다.</div>';
+            if (schedulePaginationContainer) schedulePaginationContainer.innerHTML = '';
             return;
         }
 
         timeSettingsArea.style.display = 'block';
-        timeGrid.innerHTML = '';
 
-        // Check if MD is on leave for this date (Simulated logic)
-        // In a real app, we would check a 'vacations' array.
-        // Here we just check if all slots are closed or if MD status is AWAY globally.
-        const md = allMds.find(m => m.Md_No === mdId);
-        
-        // Render 10:00 - 17:00 (1 hour blocks)
-        for (let h = 10; h < 17; h++) {
-            const hourStr = String(h).padStart(2, '0');
-            const timeLabel = `${hourStr}:00 - ${String(h+1).padStart(2, '0')}:00`;
-            
-            // Check slots for this hour
-            const slot1Time = `${date}T${hourStr}:00:00`;
-            const slot2Time = `${date}T${hourStr}:30:00`;
-            
-            const slot1 = allSlots.find(s => s.Md_No === mdId && s.Start_Datetime === slot1Time);
-            const slot2 = allSlots.find(s => s.Md_No === mdId && s.Start_Datetime === slot2Time);
+        // Generate 15-minute slots from 14:00 to 15:30 (last start at 15:15)
+        const startMin = 14 * 60; // 840
+        const endMin = 15 * 60 + 15; // 915 (inclusive start)
 
-            // Determine if "Closed" (Unavailable)
-            // If both slots are CLOSED or missing, we consider it unavailable.
-            const isClosed = (slot1?.Status === 'CLOSED' && slot2?.Status === 'CLOSED');
+        // collect slot descriptors first so we can paginate
+        const slotDescriptors = [];
+        for (let t = startMin; t <= endMin; t += 15) {
+            const hh = String(Math.floor(t / 60)).padStart(2, '0');
+            const mm = String(t % 60).padStart(2, '0');
+            const timeLabel = `${hh}:${mm}`;
+            const fullTime = `${date}T${hh}:${mm}:00`;
 
-            const btn = document.createElement('div');
-            btn.className = `time-slot-btn ${isClosed ? 'disabled' : ''}`;
-            btn.textContent = timeLabel;
-            btn.dataset.hour = h;
-            btn.onclick = function() { this.classList.toggle('selected'); };
-            
-            timeGrid.appendChild(btn);
+            const slot = allSlots.find(s => s.Md_No === mdId && s.Start_Datetime === fullTime);
+            const isClosed = slot && slot.Status === 'CLOSED';
+
+            slotDescriptors.push({ timeLabel, fullTime, isClosed });
         }
+
+        const totalItems = slotDescriptors.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / scheduleItemsPerPage));
+        if (scheduleCurrentPage > totalPages) scheduleCurrentPage = totalPages;
+
+        const startIndex = (scheduleCurrentPage - 1) * scheduleItemsPerPage;
+        const pageSlice = slotDescriptors.slice(startIndex, startIndex + scheduleItemsPerPage);
+
+        pageSlice.forEach(sd => {
+            const btn = document.createElement('div');
+            btn.className = `time-slot-btn ${sd.isClosed ? 'disabled' : ''}`;
+            btn.textContent = sd.timeLabel;
+            btn.dataset.time = sd.fullTime;
+            btn.onclick = function() { if (!this.classList.contains('disabled')) this.classList.toggle('selected'); };
+            timeGrid.appendChild(btn);
+        });
+
+        // render pager
+        renderSchedulePager(totalPages);
+    }
+
+    function renderSchedulePager(totalPages) {
+        if (!schedulePaginationContainer) return;
+        schedulePaginationContainer.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        // Prev
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'page-btn';
+        prevBtn.textContent = '<';
+        prevBtn.disabled = scheduleCurrentPage === 1;
+        prevBtn.onclick = () => { if (scheduleCurrentPage > 1) { scheduleCurrentPage--; renderScheduleGrid(); } };
+        schedulePaginationContainer.appendChild(prevBtn);
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.className = `page-btn ${i === scheduleCurrentPage ? 'active' : ''}`;
+            btn.textContent = i;
+            btn.onclick = () => { scheduleCurrentPage = i; renderScheduleGrid(); };
+            schedulePaginationContainer.appendChild(btn);
+        }
+
+        // Next
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'page-btn';
+        nextBtn.textContent = '>';
+        nextBtn.disabled = scheduleCurrentPage === totalPages;
+        nextBtn.onclick = () => { if (scheduleCurrentPage < totalPages) { scheduleCurrentPage++; renderScheduleGrid(); } };
+        schedulePaginationContainer.appendChild(nextBtn);
     }
 
     // 선택된 시간대의 스케줄 상태를 일괄 변경하는 함수
     // DB 연동 시 변경된 스케줄 정보를 서버에 저장해야 함
     window.applyBatchSchedule = function(status) {
+        if (!mdSelect) return;
         const mdId = mdSelect.value;
-        const date = dateInput.value;
         const selectedBtns = document.querySelectorAll('.time-slot-btn.selected');
 
         if (selectedBtns.length === 0) {
@@ -591,57 +759,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         selectedBtns.forEach(btn => {
-            const hour = parseInt(btn.dataset.hour);
-            const hourStr = String(hour).padStart(2, '0');
-            const times = [`${hourStr}:00:00`, `${hourStr}:30:00`];
+            const fullTime = btn.dataset.time; // YYYY-MM-DDTHH:MM:00
+            let slotIndex = allSlots.findIndex(s => s.Md_No === mdId && s.Start_Datetime === fullTime);
 
-            times.forEach(t => {
-                const fullTime = `${date}T${t}`;
-                let slotIndex = allSlots.findIndex(s => s.Md_No === mdId && s.Start_Datetime === fullTime);
-                
-                if (status === 'OPEN') {
-                    // OPEN 상태는 데이터를 저장하지 않으므로 기존 슬롯이 있다면 삭제
-                    if (slotIndex !== -1) {
-                        allSlots.splice(slotIndex, 1);
-                    }
+            if (status === 'OPEN') {
+                if (slotIndex !== -1) allSlots.splice(slotIndex, 1);
+            } else {
+                if (slotIndex !== -1) {
+                    allSlots[slotIndex].Status = status;
                 } else {
-                    if (slotIndex !== -1) {
-                        allSlots[slotIndex].Status = status;
-                    } else {
-                        allSlots.push({
-                            Slot_Seq: `new-${mdId}-${date}-${t}`,
-                            Md_No: mdId,
-                            Start_Datetime: fullTime,
-                            End_Datetime: fullTime,
-                            Status: status,
-                            Capacity: 1
-                        });
-                    }
+                    allSlots.push({
+                        Slot_Seq: `new-${mdId}-${fullTime}`,
+                        Md_No: mdId,
+                        Start_Datetime: fullTime,
+                        End_Datetime: fullTime,
+                        Status: status,
+                        Capacity: 1
+                    });
                 }
-            });
+            }
         });
 
         alert('스케줄이 변경되었습니다.');
         renderScheduleGrid();
     };
 
-    mdSelect.addEventListener('change', renderScheduleGrid);
-    dateInput.addEventListener('change', renderScheduleGrid);
+    if (mdSelect && dateInput) {
+        mdSelect.addEventListener('change', renderScheduleGrid);
+        dateInput.addEventListener('change', renderScheduleGrid);
+    }
     
-    vacationToggle.addEventListener('change', (e) => {
-        if (!mdSelect.value || !dateInput.value) return;
-        const isVacation = e.target.checked;
-        // Toggle all hours
-        for (let h = 9; h < 18; h++) {
-            const hourStr = String(h).padStart(2, '0');
-            const times = [`${hourStr}:00:00`, `${hourStr}:30:00`];
-            times.forEach(t => {
-                const fullTime = `${dateInput.value}T${t}`;
+    if (vacationToggle && mdSelect && dateInput) {
+        vacationToggle.addEventListener('change', (e) => {
+            if (!mdSelect.value || !dateInput.value) return;
+            const isVacation = e.target.checked;
+
+            // Only apply to Mon-Thu 14:00-15:30 in 15-minute steps
+            const startMin = 14 * 60;
+            const endMin = 15 * 60 + 15;
+            for (let t = startMin; t <= endMin; t += 15) {
+                const hh = String(Math.floor(t / 60)).padStart(2, '0');
+                const mm = String(t % 60).padStart(2, '0');
+                const fullTime = `${dateInput.value}T${hh}:${mm}:00`;
                 let slotIndex = allSlots.findIndex(s => s.Md_No === mdSelect.value && s.Start_Datetime === fullTime);
                 const status = isVacation ? 'CLOSED' : 'OPEN';
-                
+
                 if (status === 'OPEN') {
-                    // OPEN 상태는 데이터를 저장하지 않으므로 기존 슬롯이 있다면 삭제
                     if (slotIndex !== -1) {
                         allSlots.splice(slotIndex, 1);
                     }
@@ -650,7 +813,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         allSlots[slotIndex].Status = status;
                     } else {
                         allSlots.push({
-                            Slot_Seq: `vac-${mdSelect.value}-${dateInput.value}-${t}`,
+                            Slot_Seq: `vac-${mdSelect.value}-${dateInput.value}-${hh}${mm}`,
                             Md_No: mdSelect.value,
                             Start_Datetime: fullTime,
                             End_Datetime: fullTime,
@@ -659,10 +822,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     }
                 }
-            });
-        }
-        renderScheduleGrid();
-    });
+            }
+            renderScheduleGrid();
+        });
+    }
 
     // --- NOTICE MANAGEMENT ---
     // 공지사항 목록을 렌더링하는 함수
