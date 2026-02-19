@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - MD 관리 (V2)</title>
+    <link rel="stylesheet" href="../css/adminv2.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Sidebar -->
+        <nav class="admin-sidebar" aria-label="Main Navigation">
+            <h1>예약 관리자</h1>
+            <a class="nav-item" href="index.html"><span>예약 관리</span></a>
+            <a class="nav-item" href="schedule.html"><span>스케줄 설정</span></a>
+            <a class="nav-item active" href="mds.html" aria-current="page"><span>MD 관리</span></a>
+            <a class="nav-item" href="notices.html"><span>공지사항 관리</span></a>
+            <a class="nav-item" href="blacklist.html"><span>블랙리스트 관리</span></a>
+
+            <div id="meeting-king-area" class="meeting-king-area">
+                <h3 class="meeting-king-title">🏆 이달의 미팅왕</h3>
+                <div id="meeting-king-list" class="meeting-king-list"></div>
+            </div>
+
+            <div style="margin-top: var(--space-4);">
+                <a href="../index.html" class="nav-item" style="color: var(--primary-600);">
+                    <span>← 예약 페이지</span>
+                </a>
+            </div>
+        </nav>
+
+        <main class="admin-content">
+            <header class="content-header">
+                <div>
+                    <span class="header-badge">Admin Dashboard</span>
+                    <h2>MD 관리</h2>
+                    <p>MD 정보를 등록하고 관리합니다.</p>
+                </div>
+            </header>
+
+            <div id="section-mds" class="section-panel" style="display:block;">
+                <!-- Form Area -->
+                <div
+                    style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8);">
+                    <input type="hidden" id="Md_No">
+
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                        <div>
+                            <label class="detail-label" style="display:block; margin-bottom: 4px;">이름</label>
+                            <input type="text" id="Md_Name" class="admin-input" placeholder="이름 입력"
+                                style="width: 100%;">
+                        </div>
+                        <div>
+                            <label class="detail-label" style="display:block; margin-bottom: 4px;">팀명</label>
+                            <input type="text" id="Team_Name" class="admin-input" placeholder="팀명 입력"
+                                style="width: 100%;">
+                        </div>
+                    </div>
+
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                        <div>
+                            <label class="detail-label" style="display:block; margin-bottom: 4px;">분야</label>
+                            <input type="text" id="Category_Name" class="admin-input" placeholder="담당 분야 입력"
+                                style="width: 100%;">
+                        </div>
+                        <div>
+                            <label class="detail-label" style="display:block; margin-bottom: 4px;">이메일</label>
+                            <input type="email" id="Email" class="admin-input" placeholder="example@yes24.com"
+                                style="width: 100%;">
+                        </div>
+                    </div>
+
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                        <div>
+                            <label class="detail-label" style="display:block; margin-bottom: 4px;">휴대폰번호</label>
+                            <input type="tel" id="Md_Phone_No" class="admin-input" placeholder="010-0000-0000"
+                                style="width: 100%;">
+                        </div>
+                        <div></div>
+                    </div>
+
+                    <div style="text-align: right; display: flex; justify-content: flex-end; gap: var(--space-2);">
+                        <button id="btn-reset-md" class="btn-secondary">초기화</button>
+                        <button id="btn-save-md" class="btn-primary">저장</button>
+                    </div>
+                </div>
+
+                <!-- List Area -->
+                <div class="table-container">
+                    <table id="mds-table">
+                        <thead>
+                            <tr>
+                                <th>이름</th>
+                                <th>팀명</th>
+                                <th>분야</th>
+                                <th>휴대폰번호</th>
+                                <!-- <th>상태</th> Removed -->
+                                <th style="text-align: right;">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mds-tbody">
+                            <!-- JS injects rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

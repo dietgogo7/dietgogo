@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - 스케줄 설정 (V2)</title>
+    <link rel="stylesheet" href="../css/adminv2.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Sidebar -->
+        <nav class="admin-sidebar" aria-label="Main Navigation">
+            <h1>예약 관리자</h1>
+            <a class="nav-item" href="index.html"><span>예약 관리</span></a>
+            <a class="nav-item active" href="schedule.html" aria-current="page"><span>스케줄 설정</span></a>
+            <a class="nav-item" href="mds.html"><span>MD 관리</span></a>
+            <a class="nav-item" href="notices.html"><span>공지사항 관리</span></a>
+            <a class="nav-item" href="blacklist.html"><span>블랙리스트 관리</span></a>
+
+            <div id="meeting-king-area" class="meeting-king-area">
+                <h3 class="meeting-king-title">🏆 이달의 미팅왕</h3>
+                <div id="meeting-king-list" class="meeting-king-list"></div>
+            </div>
+
+            <div style="margin-top: var(--space-4);">
+                <a href="../index.html" class="nav-item" style="color: var(--primary-600);">
+                    <span>← 예약 페이지</span>
+                </a>
+            </div>
+        </nav>
+
+        <main class="admin-content">
+            <header class="content-header">
+                <div>
+                    <span class="header-badge">Admin Dashboard</span>
+                    <h2>스케줄 설정</h2>
+                    <p>MD별 휴가 및 미팅 불가 시간을 설정합니다.</p>
+                </div>
+            </header>
+
+            <div id="section-schedule" class="section-panel" style="display:block;">
+                <!-- Ensure it's visible by default in this file context -->
+                <div style="display: grid; grid-template-columns: 320px 1fr; gap: var(--space-6); align-items: start;">
+                    <!-- Controls -->
+                    <div
+                        style="background: var(--gray-0); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6);">
+                        <div style="margin-bottom: var(--space-6);">
+                            <label style="display: block; font-weight: 600; margin-bottom: var(--space-2);">1. MD
+                                선택</label>
+                            <select id="schedule-md-select" class="admin-input" style="width: 100%;">
+                                <option value="">MD를 선택하세요</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom: var(--space-6);">
+                            <label style="display: block; font-weight: 600; margin-bottom: var(--space-2);">2. 날짜
+                                선택</label>
+                            <input type="hidden" id="schedule-date-input">
+                            <div id="admin-calendar-view" style="margin-top: var(--space-2);">
+                                <!-- Calendar UI injected here -->
+                            </div>
+                        </div>
+
+                        <div style="padding-top: var(--space-4); border-top: 1px solid var(--gray-200);">
+                            <label for="vacation-toggle" style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="vacation-toggle"
+                                    style="width: 18px; height: 18px; margin-right: 12px; accent-color: var(--primary-500);">
+                                <span style="font-weight: 600; font-size: var(--text-sm); color: var(--gray-700);">휴가 설정
+                                    (하루 종일 불가)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Time Slots -->
+                    <div id="time-settings-area"
+                        style="background: var(--gray-0); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6); display: none; min-height: 400px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); padding-bottom: var(--space-4); border-bottom: 1px solid var(--gray-100);">
+                            <div>
+                                <h3 style="font-size: var(--text-lg);">3. 시간별 설정</h3>
+                                <p style="color: var(--gray-500); font-size: var(--text-sm); margin-top: 4px;">설정 가능한
+                                    시간: 월~목 14:00~15:30</p>
+                            </div>
+                            <div style="display: flex; gap: var(--space-2);">
+                                <button class="btn-primary" onclick="applyBatchSchedule('OPEN')"
+                                    style="padding: 8px 16px; background-color: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-bg);">가능</button>
+                                <button class="btn-primary" onclick="applyBatchSchedule('CLOSED')"
+                                    style="padding: 8px 16px; background-color: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-bg);">불가</button>
+                            </div>
+                        </div>
+
+                        <div id="time-grid"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: var(--space-2);">
+                        </div>
+                        <div id="schedule-pagination" class="pagination" style="margin-top: var(--space-6);"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script to set default date -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var el = document.getElementById('schedule-date-input');
+            if (el && !el.value) {
+                var t = new Date();
+                var yyyy = t.getFullYear();
+                var mm = String(t.getMonth() + 1).padStart(2, '0');
+                var dd = String(t.getDate()).padStart(2, '0');
+                el.value = yyyy + '-' + mm + '-' + dd;
+            }
+        });
+    </script>
+
+    <script src="js/holidays.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

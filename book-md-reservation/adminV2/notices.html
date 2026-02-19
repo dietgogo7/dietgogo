@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - 공지사항 관리 (V2)</title>
+    <link rel="stylesheet" href="../css/adminv2.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Sidebar -->
+        <nav class="admin-sidebar" aria-label="Main Navigation">
+            <h1>예약 관리자</h1>
+            <a class="nav-item" href="index.html"><span>예약 관리</span></a>
+            <a class="nav-item" href="schedule.html"><span>스케줄 설정</span></a>
+            <a class="nav-item" href="mds.html"><span>MD 관리</span></a>
+            <a class="nav-item active" href="notices.html" aria-current="page"><span>공지사항 관리</span></a>
+            <a class="nav-item" href="blacklist.html"><span>블랙리스트 관리</span></a>
+
+            <div id="meeting-king-area" class="meeting-king-area">
+                <h3 class="meeting-king-title">🏆 이달의 미팅왕</h3>
+                <div id="meeting-king-list" class="meeting-king-list"></div>
+            </div>
+
+            <div style="margin-top: var(--space-4);">
+                <a href="../index.html" class="nav-item" style="color: var(--primary-600);">
+                    <span>← 예약 페이지</span>
+                </a>
+            </div>
+        </nav>
+
+        <main class="admin-content">
+            <header class="content-header">
+                <div>
+                    <span class="header-badge">Admin Dashboard</span>
+                    <h2>공지사항 관리</h2>
+                    <p>사용자 페이지 상단에 노출될 공지사항을 등록합니다.</p>
+                </div>
+            </header>
+
+            <div id="section-notices" class="section-panel" style="display:block;">
+                <!-- Form Area -->
+                <div
+                    style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8);">
+                    <div
+                        style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                        <div>
+                            <label class="detail-label" style="display:block; margin-bottom: 4px;">날짜</label>
+                            <input type="date" id="Notice_Date" class="admin-input" style="width: 100%;">
+                        </div>
+                        <div>
+                            <label class="detail-label" style="display:block; margin-bottom: 4px;">제목</label>
+                            <input type="text" id="Title" placeholder="공지 제목을 입력하세요" class="admin-input"
+                                style="width: 100%;">
+                        </div>
+                    </div>
+                    <div style="margin-bottom: var(--space-4);">
+                        <label class="detail-label" style="display:block; margin-bottom: 4px;">내용</label>
+                        <textarea id="Content" rows="3" placeholder="공지 내용을 입력하세요" class="admin-input"
+                            style="width: 100%;"></textarea>
+                    </div>
+                    <div style="text-align: right;">
+                        <button id="btn-add-notice" class="btn-primary">공지 등록</button>
+                    </div>
+                </div>
+
+                <!-- List Area -->
+                <div class="table-container">
+                    <table id="notices-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px; text-align:center;">날짜</th>
+                                <th style="width: 250px;">제목</th>
+                                <th>내용</th>
+                                <th style="width: 80px; text-align: right;">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notices-tbody">
+                            <!-- JS injects rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

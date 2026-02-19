@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - 예약 관리 (V2)</title>
+    <!-- Use new adminv2.css which includes reset and variables -->
+    <link rel="stylesheet" href="../css/adminv2.css">
+
+    <!-- Inline styles removed and moved to CSS where possible -->
+</head>
+
+<body>
+    <div id="app">
+        <!-- Sidebar -->
+        <nav class="admin-sidebar" aria-label="Main Navigation">
+            <h1>예약 관리자</h1>
+
+            <!-- Navigation Items -->
+            <a class="nav-item active" href="index.html" aria-current="page">
+                <span>예약 관리</span>
+            </a>
+            <a class="nav-item" href="schedule.html">
+                <span>스케줄 설정</span>
+            </a>
+            <a class="nav-item" href="mds.html">
+                <span>MD 관리</span>
+            </a>
+            <a class="nav-item" href="notices.html">
+                <span>공지사항 관리</span>
+            </a>
+            <a class="nav-item" href="blacklist.html">
+                <span>블랙리스트 관리</span>
+            </a>
+
+            <!-- Meeting King Area -->
+            <div id="meeting-king-area" class="meeting-king-area">
+                <h3 class="meeting-king-title">🏆 이달의 미팅왕</h3>
+                <div id="meeting-king-list"></div>
+            </div>
+
+            <div style="margin-top: var(--space-4);">
+                <a href="../index.html" class="nav-item" style="color: var(--primary-600);">
+                    <span>← 예약 페이지</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+
+            <!-- Header Section -->
+            <header class="content-header">
+                <div>
+                    <span class="header-badge">Admin Dashboard</span>
+                    <h2>예약 관리</h2>
+                    <p>접수된 예약 현황을 실시간으로 확인하고 관리합니다.</p>
+                </div>
+            </header>
+
+            <!-- Reservation Management Section -->
+            <section id="section-bookings" class="section-panel">
+
+                <!-- Filters Toolbar -->
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                    <!-- View Mode Tabs -->
+                    <div class="view-filters" role="group" aria-label="View Filters">
+                        <button class="filter-btn active" onclick="setViewMode('all')">전체</button>
+                        <button class="filter-btn" onclick="setViewMode('md')">MD별</button>
+                        <button class="filter-btn" onclick="setViewMode('date')">날짜별</button>
+                    </div>
+
+                    <!-- Date Range Picker -->
+                    <div class="date-filters">
+                        <label for="filter-start-date" style="font-size: var(--text-sm); font-weight: 500;">기간:</label>
+                        <input type="date" id="filter-start-date" class="admin-input">
+                        <span style="color: var(--gray-400);">~</span>
+                        <input type="date" id="filter-end-date" class="admin-input">
+                        <button id="btn-search-date" class="btn-primary">조회</button>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="table-container">
+                    <table id="bookings-table">
+                        <thead>
+                            <tr>
+                                <th>신청일시</th>
+                                <th>MD</th>
+                                <th>신청자</th>
+                                <th>연락처</th>
+                                <th>예약 시간</th>
+                                <th>상태</th>
+                                <!-- Status Badge will be applied via JS classes or inline styles if JS not updated -->
+                                <th style="text-align: right;">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-tbody">
+                            <!-- JS injects rows here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Table pagination">
+                    <div id="pagination-controls" class="pagination"></div>
+                </nav>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modal Dialog -->
+    <div id="admin-detail-modal" class="modal-overlay" aria-modal="true" role="dialog" style="display: none;">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeDetailModal()" aria-label="Close modal">&times;</button>
+            <h2 style="margin-bottom: var(--space-6); color: var(--primary-700);">예약 상세 정보</h2>
+
+            <div id="admin-modal-body">
+                <!-- Details injected here -->
+            </div>
+
+            <div
+                style="text-align: right; margin-top: var(--space-8); padding-top: var(--space-4); border-top: 1px solid var(--gray-200);">
+                <button class="btn-secondary" onclick="closeDetailModal()">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initialization Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fix: Correctly initialize the existing date inputs for THIS page
+            var today = new Date();
+            var yyyy = today.getFullYear();
+            var mm = String(today.getMonth() + 1).padStart(2, '0');
+            var dd = String(today.getDate()).padStart(2, '0');
+            var dateString = yyyy + '-' + mm + '-' + dd;
+
+            var startEl = document.getElementById('filter-start-date');
+            var endEl = document.getElementById('filter-end-date');
+
+            if (startEl && !startEl.value) startEl.value = dateString;
+            if (endEl && !endEl.value) endEl.value = dateString;
+        });
+    </script>
+
+    <!-- Core Logic -->
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
