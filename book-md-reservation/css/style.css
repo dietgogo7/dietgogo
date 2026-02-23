@@ -10,18 +10,18 @@
     --card-bg: #fff;
     --border-color: #E3E8EE;
     --font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --card-shadow: 0 4px 16px rgba(0,102,204,0.08);
-    --card-shadow-hover: 0 8px 32px rgba(0,102,204,0.12);
+    --card-shadow: 0 4px 16px rgba(0, 102, 204, 0.08);
+    --card-shadow-hover: 0 8px 32px rgba(0, 102, 204, 0.12);
 }
 
 /* add aliases so admin.html (which uses --primary / --panel / --border etc.) maps to existing vars */
 :root {
-	--primary: var(--primary-color);
-	--primary-dark: var(--primary-dark);
-	--panel: var(--card-bg);
-	--border: var(--border-color);
-	--muted: var(--text-secondary);
-	--text: var(--text-primary);
+    --primary: var(--primary-color);
+    --primary-dark: var(--primary-dark);
+    --panel: var(--card-bg);
+    --border: var(--border-color);
+    --muted: var(--text-secondary);
+    --text: var(--text-primary);
 }
 
 body {
@@ -116,7 +116,9 @@ body {
     gap: 18px;
 }
 
-.md-item, .time-item, .slot {
+.md-item,
+.time-item,
+.slot {
     border: 1.5px solid var(--border-color);
     padding: 14px 22px;
     border-radius: 12px;
@@ -128,13 +130,17 @@ body {
     font-size: 1.08rem;
 }
 
-.md-item:hover, .time-item:hover, .slot.OPEN:hover {
+.md-item:hover,
+.time-item:hover,
+.slot.OPEN:hover {
     transform: translateY(-2px);
     box-shadow: var(--card-shadow-hover);
     border-color: var(--primary-color);
 }
 
-.md-item.selected, .time-item.selected, .slot.selected {
+.md-item.selected,
+.time-item.selected,
+.slot.selected {
     background-color: var(--primary-color);
     color: #fff;
     border-color: var(--primary-dark);
@@ -143,7 +149,8 @@ body {
     box-shadow: var(--card-shadow-hover);
 }
 
-.time-item.disabled, .slot.disabled {
+.time-item.disabled,
+.slot.disabled {
     cursor: not-allowed;
     background-color: var(--bg-color);
     color: var(--text-secondary);
@@ -151,13 +158,15 @@ body {
     box-shadow: none;
 }
 
-	slot.disabled.BOOKED, .slot.disabled.CLOSED {
+slot.disabled.BOOKED,
+.slot.disabled.CLOSED {
     background-color: var(--text-secondary);
     color: #fff;
     opacity: 0.8;
 }
 
-	slot.CLOSED, .slot.BOOKED {
+slot.CLOSED,
+.slot.BOOKED {
     background-color: var(--text-secondary);
     color: #fff;
     cursor: not-allowed;
@@ -179,14 +188,14 @@ input[type="date"] {
 input[type="date"]:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0,102,204,0.15);
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
 }
 
 /* YES24 서비스형 예약신청 카드 스타일 */
 .service-card {
     background: #fff;
     border-radius: 18px;
-    box-shadow: 0 8px 32px rgba(0,102,204,0.12);
+    box-shadow: 0 8px 32px rgba(0, 102, 204, 0.12);
     padding: 48px 36px;
     max-width: 520px;
     margin: 70px auto;
@@ -246,7 +255,7 @@ input[type="date"]:focus {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0,102,204,0.15);
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
 }
 
 .form-actions {
@@ -256,7 +265,8 @@ input[type="date"]:focus {
     gap: 12px;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
     padding: 14px 32px;
     border: none;
     border-radius: 12px;

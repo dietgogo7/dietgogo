@@ -1,196 +1,198 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나의 예약 현황</title>
+    <title>나의 예약 현황 - MD 미팅 예약 시스템</title>
+    <link rel="stylesheet" href="css/app.css">
     <style>
-        @font-face {
-            font-family: 'Pretendard';
-            font-weight: 300;
-            src: url('https://image.yes24.com/sysimage/font/Ptd/Pretendard-Light.woff2') format('woff2');
-        }
-        @font-face {
-            font-family: 'Pretendard';
-            font-weight: 400;
-            src: url('https://image.yes24.com/sysimage/font/Ptd/Pretendard-Regular.woff2') format('woff2');
-        }
-        @font-face {
-            font-family: 'Pretendard';
-            font-weight: 600;
-            src: url('https://image.yes24.com/sysimage/font/Ptd/Pretendard-SemiBold.woff2') format('woff2');
-        }
-        :root {
-            --background: #f7f6f3;
-            --panel: #ffffff;
-            --border: #e2e4eb;
-            --primary: #1f4ed8;
-            --primary-dark: #0b3d91;
-            --text: #1f1f24;
-            --muted: #5b6373;
-        }
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            margin: 0;
-            background: var(--background);
-            color: var(--text);
-            font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-        }
-        #app {
-            max-width: 1200px;
+        /* 페이지 특화 스타일 */
+        #my-bookings-container {
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px 16px 40px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-        img {
-            max-width: 100%;
-            display: block;
-        }
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            line-height: 1.3;
-            margin: 0;
-        }
-        p.subtitle {
-            margin: 6px 0 0;
-            font-size: 16px;
-            color: #4c5460;
-        }
-        .main-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            border-bottom: 1px solid #e0e3ea;
-            padding-bottom: 22px;
-            margin-bottom: 30px;
-        }
-        .yes24-logo {
-            width: 120px;
-            margin-bottom: 15px;
-        }
-        .btn-secondary {
-            border: 1px solid #dfe2ea;
-            background: #fff;
-            border-radius: 12px;
-            padding: 10px 22px;
-            font-weight: 600;
-            cursor: pointer;
-            color: var(--text);
-            text-decoration: none;
-            display: inline-block;
-            transition: background 0.2s;
-        }
-        .btn-secondary:hover {
-            background: #f9fafb;
-        }
-        .main-footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 14px;
-            color: #6b7280;
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
             width: 100%;
-            padding-bottom: 20px;
         }
-        .booking-card {
-            background: white;
-            border: 1px solid #e1e4e8;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+        .booking-item-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e4e7ef;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+            margin-bottom: 20px;
         }
-        .booking-header {
+
+        .booking-item-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #f0f0f0;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f3f7;
         }
-        .booking-date {
+
+        .booking-item-date {
+            font-size: 18px;
             font-weight: 700;
-            color: #333;
-            font-size: 1.1rem;
+            color: #1a1a1a;
         }
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 40px;
+        }
+
+        .info-entry {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-entry .label {
+            font-size: 13px;
+            color: #64748b;
             font-weight: 600;
         }
-        .status-PENDING { background-color: #fff3cd; color: #856404; }
-        .status-APPROVED { background-color: #d4edda; color: #155724; }
-        .status-REJECTED { background-color: #f8d7da; color: #721c24; }
-        .status-CANCELLED { background-color: #e2e3e5; color: #383d41; }
-        .status-COMPLETED { background-color: #cce5ff; color: #004085; }
-        
-        .info-row {
-            display: flex;
-            margin-bottom: 8px;
-        }
-        .info-label {
-            width: 80px;
-            color: #666;
-            font-size: 0.95rem;
-        }
-        .info-value {
-            color: #333;
+
+        .info-entry .value {
+            font-size: 15px;
+            color: #1e293b;
             font-weight: 500;
         }
-        .no-bookings {
-            text-align: center;
-            padding: 40px;
-            color: #666;
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
         }
-        .yes24-logo {
-            width: 160px;
-            margin-bottom: 9px;
-            margin-top: 10px;
+
+        .status-PENDING {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-APPROVED {
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .status-REJECTED {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .status-CANCELLED {
+            background: #f8fafc;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .status-COMPLETED {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .btn-cancel-sm {
+            margin-top: 20px;
+            padding: 10px 16px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            color: #64748b;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel-sm:hover {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+
+        @media (max-width: 600px) {
+            .booking-item-header {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div id="app">
-        <!-- Header -->
         <header class="main-header">
-            <a href="index.html">
-                <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.svg" alt="yes24.com 로고" class="yes24-logo">
-            </a>
-            <h1>나의 예약 현황</h1>
-            <p class="subtitle">신청하신 예약 내역을 확인하세요.</p>
-        </header>
-        <main>
-            <!-- 예약 내역 리스트 컨테이너 -->
-            <div id="my-bookings-container" style="max-width: 600px; margin: 0 auto;">
-                <!-- Bookings will be loaded here via JS -->
-                <p class="no-bookings">예약 내역을 불러오는 중입니다...</p>
+            <div class="header-branding">
+                <a href="index.html">
+                    <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.svg" alt="YES24" class="yes24-logo">
+                </a>
             </div>
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="index.html" class="btn-secondary" style="text-decoration: none; padding: 10px 20px; display: inline-block;">메인으로 돌아가기</a>
+            <div class="header-copy">
+                <h1>나의 예약 내역</h1>
+                <p class="subtitle">신청하신 미팅 예약 정보를 한눈에 확인하세요.</p>
+            </div>
+            <div class="header-meta" style="flex:1; align-items: flex-end;">
+                <a href="index.html" class="btn-secondary">예약 페이지로 돌아가기</a>
+            </div>
+        </header>
+
+        <main>
+            <div id="my-bookings-container">
+                <p class="no-bookings" style="text-align:center; padding:50px; color:#94a3b8;">데이터를 불러오는 중입니다...</p>
             </div>
         </main>
+
         <footer class="main-footer">
             <span>Copyright © YES24 Corp. All Rights Reserved.</span>
         </footer>
     </div>
+
+    <!-- 목록 아이템 템플릿 -->
+    <script id="booking-item-template" type="text/template">
+        <div class="booking-item-card">
+            <div class="booking-item-header">
+                <div class="booking-item-date">{{DATE_STR}}</div>
+                <div class="status-badge status-{{STATUS_CODE}}">{{STATUS_TEXT}}</div>
+            </div>
+            <div class="info-grid">
+                <div class="info-entry">
+                    <div class="label">담당 MD</div>
+                    <div class="value">{{MD_NAME}} MD ({{MD_CAT}})</div>
+                </div>
+                <div class="info-entry">
+                    <div class="label">신청자</div>
+                    <div class="value">{{USER_NAME}}</div>
+                </div>
+                <div class="info-entry">
+                    <div class="label">출판사(소속)</div>
+                    <div class="value">{{USER_AFFILIATION}}</div>
+                </div>
+                <div class="info-entry">
+                    <div class="label">휴대폰 번호</div>
+                    <div class="value">{{USER_PHONE}}</div>
+                </div>
+                <div class="info-entry">
+                    <div class="label">이메일 주소</div>
+                    <div class="value">{{USER_EMAIL}}</div>
+                </div>
+                <div class="info-entry" style="grid-column: 1 / -1; margin-top:10px;">
+                    <div class="label">미팅 목적 및 내용</div>
+                    <div class="value" style="white-space: pre-wrap; margin-top:5px;">{{NOTES}}</div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px; border-top: 1px solid #f1f3f7; padding-top: 15px;">
+                {{CANCEL_BUTTON}}
+            </div>
+        </div>
+    </script>
+
+    <!-- 제이쿼리 3.5.1 로드 -->
+    <script src="https://image.yes24.com/sysimage/Contents/Scripts/m/jquery/jquery-3.5.1.min.js"></script>
     <script src="js/my-bookings.js"></script>
 </body>
+
 </html>
