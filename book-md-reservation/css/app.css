@@ -23,7 +23,7 @@
     --primary: #1C6EA4;
     --primary-dark: #154D71;
     --text: #1f1f24;
-    --muted: #33A1E0;
+    --muted: #D34E4E;
 }
 
 * {
@@ -35,7 +35,7 @@ body {
     background: var(--background);
     color: var(--text);
     font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif;
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1.6;
 }
 
@@ -72,7 +72,7 @@ h2 {
 
 small,
 .small-text {
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.4;
     color: var(--muted);
 }
@@ -1008,11 +1008,12 @@ button {
 .btn-confirm:hover {
     background: var(--primary-dark);
 }
+
 /* Step Transition Styles */
 .selection-area {
     animation: fadeIn 0.4s ease-out;
     position: relative;
-    display: none; 
+    display: none;
 }
 
 .selection-area.active {
@@ -1020,8 +1021,15 @@ button {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .step-nav-header {
