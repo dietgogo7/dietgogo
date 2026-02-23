@@ -78,31 +78,114 @@
                     <button id="select-flow-date" class="flow-btn">날짜 먼저 선택</button>
                 </div>
                 <div class="flow-grid">
+                    <!-- Flow 1: MD First -->
                     <div id="flow-md-first" class="flow-container">
-                        <div id="md-list-container-1" class="selection-area">
-                            <h3>1. MD를 선택해주세요.</h3>
+                        <!-- Step 1: MD Select -->
+                        <div id="md-list-container-1" class="selection-area active">
+                            <div class="step-progress-wrap">
+                                <div class="step-progress-dots">
+                                    <div class="progress-dot active"></div>
+                                    <div class="progress-dot"></div>
+                                    <div class="progress-dot"></div>
+                                </div>
+                            </div>
+                            <div class="step-nav-header">
+                                <h3>MD를 선택해주세요.</h3>
+                            </div>
                             <div class="list-wrapper"></div>
                         </div>
-                        <div id="date-selector-container-1" class="selection-area" style="display: none;">
-                            <h3>2. 날짜를 선택해주세요.</h3>
-                            <div id="calendar-container-1"></div>
+
+                        <!-- Step 2: Date Select -->
+                        <div id="date-selector-container-1" class="selection-area">
+                            <div class="step-progress-wrap">
+                                <div class="step-progress-dots">
+                                    <div class="progress-dot active"></div>
+                                    <div class="progress-dot active"></div>
+                                    <div class="progress-dot"></div>
+                                </div>
+                            </div>
+                            <div class="step-nav-header">
+                                <h3>날짜를 선택해주세요.</h3>
+                                <div class="step-nav-btns">
+                                    <button class="btn-step-prev"
+                                        onclick="goToStep('md-list-container-1', 'flow-md-first')">이전</button>
+                                </div>
+                            </div>
+                            <div id="calendar-container-1" class="calendar-container"></div>
                         </div>
-                        <div id="slots-area-1" class="selection-area" style="display: none;">
-                            <h3>3. 시간을 선택해주세요.</h3>
+
+                        <!-- Step 3: Time Select -->
+                        <div id="slots-area-1" class="selection-area">
+                            <div class="step-progress-wrap">
+                                <div class="step-progress-dots">
+                                    <div class="progress-dot active"></div>
+                                    <div class="progress-dot active"></div>
+                                    <div class="progress-dot active"></div>
+                                </div>
+                            </div>
+                            <div class="step-nav-header">
+                                <h3>시간을 선택해주세요.</h3>
+                                <div class="step-nav-btns">
+                                    <button class="btn-step-prev"
+                                        onclick="goToStep('date-selector-container-1', 'flow-md-first')">이전</button>
+                                </div>
+                            </div>
                             <div class="list-wrapper"></div>
                         </div>
                     </div>
+
+                    <!-- Flow 2: Date First -->
                     <div id="flow-date-first" class="flow-container" style="display: none;">
-                        <div class="selection-area">
-                            <h3>1. 날짜를 선택해주세요.</h3>
-                            <div id="calendar-container"></div>
+                        <!-- Step 1: Date Select -->
+                        <div id="date-selector-container-2" class="selection-area active">
+                            <div class="step-progress-wrap">
+                                <div class="step-progress-dots">
+                                    <div class="progress-dot active"></div>
+                                    <div class="progress-dot"></div>
+                                    <div class="progress-dot"></div>
+                                </div>
+                            </div>
+                            <div class="step-nav-header">
+                                <h3>날짜를 선택해주세요.</h3>
+                            </div>
+                            <div id="calendar-container" class="calendar-container"></div>
                         </div>
-                        <div id="time-selector-container-2" class="selection-area" style="display: none;">
-                            <h3>2. 시간을 선택해주세요.</h3>
+
+                        <!-- Step 2: Time Select -->
+                        <div id="time-selector-container-2" class="selection-area">
+                            <div class="step-progress-wrap">
+                                <div class="step-progress-dots">
+                                    <div class="progress-dot active"></div>
+                                    <div class="progress-dot active"></div>
+                                    <div class="progress-dot"></div>
+                                </div>
+                            </div>
+                            <div class="step-nav-header">
+                                <h3>시간을 선택해주세요.</h3>
+                                <div class="step-nav-btns">
+                                    <button class="btn-step-prev"
+                                        onclick="goToStep('date-selector-container-2', 'flow-date-first')">이전</button>
+                                </div>
+                            </div>
                             <div class="list-wrapper"></div>
                         </div>
-                        <div id="md-list-container-2" class="selection-area" style="display: none;">
-                            <h3>3. 예약 가능한 MD를 선택해주세요.</h3>
+
+                        <!-- Step 3: MD Select -->
+                        <div id="md-list-container-2" class="selection-area">
+                            <div class="step-progress-wrap">
+                                <div class="step-progress-dots">
+                                    <div class="progress-dot active"></div>
+                                    <div class="progress-dot active"></div>
+                                    <div class="progress-dot active"></div>
+                                </div>
+                            </div>
+                            <div class="step-nav-header">
+                                <h3>MD를 선택해주세요.</h3>
+                                <div class="step-nav-btns">
+                                    <button class="btn-step-prev"
+                                        onclick="goToStep('time-selector-container-2', 'flow-date-first')">이전</button>
+                                </div>
+                            </div>
                             <div class="list-wrapper"></div>
                         </div>
                     </div>

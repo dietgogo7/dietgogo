@@ -827,7 +827,7 @@ button {
     border-color: var(--primary);
 }
 
-#calendar-container-1 {
+.calendar-container {
     margin-top: 20px;
 }
 
@@ -1007,4 +1007,94 @@ button {
 
 .btn-confirm:hover {
     background: var(--primary-dark);
+}
+/* Step Transition Styles */
+.selection-area {
+    animation: fadeIn 0.4s ease-out;
+    position: relative;
+    display: none; 
+}
+
+.selection-area.active {
+    display: block !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.step-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f3f7;
+}
+
+.step-nav-header h3 {
+    margin: 0 !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: var(--text) !important;
+}
+
+.step-nav-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-step-prev {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-step-prev:hover {
+    background: #e2e8f0;
+}
+
+.btn-step-cancel {
+    background: #fff;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-step-cancel:hover {
+    background: #fef2f2;
+}
+
+.step-progress-wrap {
+    margin: 10px 0 24px;
+}
+
+.step-progress-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.progress-dot {
+    height: 6px;
+    flex: 1;
+    background: #e2e4eb;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+    background: var(--primary);
+    box-shadow: 0 0 10px rgba(28, 110, 164, 0.2);
 }

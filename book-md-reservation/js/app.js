@@ -108,9 +108,25 @@ $(function () {
     function scrollTo($el) {
         if (!$el || $el.length === 0) return;
         $('html, body').animate({
-            scrollTop: $el.offset().top - 40
+            scrollTop: $el.offset().top - 20
         }, 500);
     }
+
+    // --- STEP NAVIGATION ---
+    window.goToStep = function (stepId, flowContainerId) {
+        var $flowContainer = $('#' + flowContainerId);
+        // 애니메이션 효과를 위해 잠시 지연 후 클래스 교체
+        $flowContainer.find('.selection-area').removeClass('active');
+        $('#' + stepId).addClass('active');
+
+        // 최상단으로 부드럽게 이동
+        scrollTo($flowContainer);
+    };
+
+    window.resetAllFlows = function () {
+        if (!confirm('현재 입력된 정보가 초기화됩니다. 처음으로 가시겠습니까?')) return;
+        switchFlow(currentFlow);
+    };
 
     // --- FLOW CONTROL ---
     function switchFlow(flow, skipScroll) {
@@ -145,14 +161,12 @@ $(function () {
         selectedDate = null;
         selectedTime = null;
 
+        // 모든 selection-area 비활성화 후 첫번째만 활성화
+        $('.selection-area').removeClass('active');
+        $('#md-list-container-1').addClass('active');
+        $('#date-selector-container-2').addClass('active');
+
         $('.list-wrapper').empty();
-
-        $dateSelectorContainer1.hide();
-        $slotsArea1.hide();
-        $timeSelectorContainer2.hide();
-        $mdListContainer2.hide();
-
-        $('#flow-md-first h3').html('1. MD를 선택해주세요.');
     }
 
     // --- FLOW 1: MD First ---
@@ -165,28 +179,19 @@ $(function () {
         $('#flow-md-first .md-item').removeClass('selected');
         $('#flow-md-first .md-item[data-md-id="' + md.Md_No + '"]').addClass('selected');
 
-        $dateSelectorContainer1.show();
-        $dateSelectorContainer1.find('h3').html('2. 날짜를 선택해주세요.');
+        // Step 2로 전환
+        goToStep('date-selector-container-1', 'flow-md-first');
 
         OYCalendar.render($calendarContainer1, function (dateObj, dateString) {
             selectedDate = dateString;
             handleDateSelectInFlow1(dateObj);
         }, null, selectedDate);
-
-        if (selectedDate) {
-            $slotsArea1.show();
-            renderFilteredSlots();
-            scrollTo($slotsArea1);
-        } else {
-            scrollTo($dateSelectorContainer1);
-        }
     }
 
     function handleDateSelectInFlow1(dateObj) {
-        $slotsArea1.show();
-        $slotsArea1.find('h3').html('3. 시간을 선택해주세요.');
+        // Step 3로 전환
+        goToStep('slots-area-1', 'flow-md-first');
         if (selectedMdId) renderFilteredSlots();
-        scrollTo($slotsArea1);
     }
 
     function renderFilteredSlots() {
@@ -246,11 +251,10 @@ $(function () {
     // --- FLOW 2: Date -> Time -> MD ---
     function handleDateSelectInFlow2(dateObj, dateString) {
         selectedDate = dateString;
-        resetSelectionsForFlow2(false);
-        $timeSelectorContainer2.show();
-        $timeSelectorContainer2.find('h3').html('2. 시간을 선택해주세요.');
+
+        // Step 2로 전환
+        goToStep('time-selector-container-2', 'flow-date-first');
         renderTimeSelectors();
-        scrollTo($timeSelectorContainer2);
     }
 
     function renderTimeSelectors() {
@@ -270,8 +274,8 @@ $(function () {
         $timeListWrapper2.find('.time-item').removeClass('selected');
         $timeListWrapper2.find('.time-item').filter(function () { return $(this).text() === time; }).addClass('selected');
 
-        $mdListContainer2.show();
-        $mdListContainer2.find('h3').html('3. 예약 가능한 MD를 선택해주세요.');
+        // Step 3로 전환
+        goToStep('md-list-container-2', 'flow-date-first');
 
         var availableMds = $.grep(allMds, function (md) {
             if (md.Status === 'AWAY' || md.Status === 'ON_LEAVE') return false;
@@ -282,7 +286,6 @@ $(function () {
             return true;
         });
         renderMDs(availableMds, $mdListWrapper2, handleMdSelectInFlow2);
-        scrollTo($mdListContainer2);
     }
 
     function handleMdSelectInFlow2(md) {
@@ -310,18 +313,6 @@ $(function () {
 
         if (slot.Status === 'OPEN') openBookingModal(slot);
     }
-
-    function resetSelectionsForFlow2(isFullReset) {
-        if (typeof isFullReset === 'undefined') isFullReset = true;
-        if (isFullReset) selectedDate = null;
-        selectedTime = null;
-        selectedMdId = null;
-        if (isFullReset) $timeSelectorContainer2.hide();
-        $mdListContainer2.hide();
-        $mdListWrapper2.empty();
-        $timeListWrapper2.find('.time-item').removeClass('selected');
-    }
-    window.resetSelectionsForFlow2 = resetSelectionsForFlow2;
 
     // --- GENERIC RENDERERS ---
     function renderMDs(mdsToRender, $container, onSelect) {
@@ -380,7 +371,6 @@ $(function () {
             $main.append($bookingStepDiv);
         }
 
-        // 템플릿 엔진 구현 (문자열 치환 방식)
         var template = $('#booking-template').html();
         var startDate = new Date(slot.Start_Datetime);
 
@@ -475,11 +465,9 @@ $(function () {
         var template = $('#my-bookings-template').html();
         var $modal = $(template).appendTo('body');
 
-        // 팝업 닫기 함수
         var closeModal = function () { $modal.remove(); };
         $modal.find('#close-lookup-modal, #cancel-lookup-modal').on('click', closeModal);
 
-        // 조회 버튼 클릭 처리
         $modal.find('#confirm-lookup-btn').on('click', function () {
             var phone = $('#lookup-phone').val().trim();
             if (!phone) {
@@ -493,7 +481,6 @@ $(function () {
             window.location.href = 'my-bookings.html?phone=' + encodeURIComponent(phone);
         });
 
-        // 엔터키 입력 시 조회 실행
         $modal.find('#lookup-phone').on('keypress', function (e) {
             if (e.which === 13) {
                 $('#confirm-lookup-btn').trigger('click');
