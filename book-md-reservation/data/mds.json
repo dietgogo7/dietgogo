@@ -1,60 +1,54 @@
 [
   {
-    "Md_No": "md-01",
+    "Md_No": "1",
     "Md_Name": "김유리",
     "Team_Name": "도서1팀",
     "Category_Name": "소설/시/희곡",
-    "Status": "ACTIVE",
     "Email": "asalighter@yes24.com",
     "Phone_No": "010-1234-1111",
     "Regist_Datetime": "2026-02-10T00:00:00"
   },
   {
-    "Md_No": "md-02",
+    "Md_No": "2",
     "Md_Name": "이주은",
     "Team_Name": "도서1팀",
     "Category_Name": "에세이, 종교",
-    "Status": "ACTIVE",
     "Email": "lje5371@yes24.com",
     "Phone_No": "010-1234-2222",
     "Regist_Datetime": "2026-02-10T00:00:00"
   },
   {
-    "Md_No": "md-03",
+    "Md_No": "3",
     "Md_Name": "손민규",
     "Team_Name": "도서1팀",
     "Category_Name": "인문,사회 정치,역사",
-    "Status": "ACTIVE",
     "Email": "lugali@yes24.com",
     "Phone_No": "010-1234-3333",
     "Regist_Datetime": "2026-02-10T00:00:00"
   },
   {
-    "Md_No": "md-04",
+    "Md_No": "4",
     "Md_Name": "백정민",
     "Team_Name": "도서2팀",
     "Category_Name": "어린이",
-    "Status": "AWAY",
     "Email": "baek123@yes24.com",
     "Phone_No": "010-1234-4444",
     "Regist_Datetime": "2026-02-10T00:00:00"
   },
   {
-    "Md_No": "md-05",
+    "Md_No": "5",
     "Md_Name": "송고운",
     "Team_Name": "도서2팀",
     "Category_Name": "유아/가정살림",
-    "Status": "ACTIVE",
     "Email": "gwsong@yes24.com",
     "Phone_No": "010-1234-5555",
     "Regist_Datetime": "2026-02-10T00:00:00"
   },
   {
-    "Md_No": "md-06",
+    "Md_No": "6",
     "Md_Name": "김현주",
     "Team_Name": "도서2팀",
     "Category_Name": "중고등학습서,초등학습서",
-    "Status": "ACTIVE",
     "Email": "olivia@yes24.com",
     "Phone_No": "010-1234-6666",
     "Regist_Datetime": "2026-02-10T00:00:00"

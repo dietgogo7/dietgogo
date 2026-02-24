@@ -17,13 +17,17 @@
 }
 
 :root {
-    --background: #F3F4F4;
+    --background: #F0F2F5;
     --panel: #ffffff;
-    --border: #e2e4eb;
-    --primary: #1C6EA4;
-    --primary-dark: #154D71;
-    --text: #1f1f24;
-    --muted: #D34E4E;
+    --border: #CED4DA;
+    /* 경계선 강조 */
+    --primary: #004B87;
+    /* 강렬한 네이비 블루 */
+    --primary-dark: #002D52;
+    --text: #111111;
+    /* 높은 대비의 블랙 */
+    --muted: #CC0000;
+    /* 경고/안내 사항에 시선을 끄는 솔리드 레드 */
 }
 
 * {
@@ -282,27 +286,46 @@ p.subtitle {
     flex-direction: column;
 }
 
-.notice-content {
-    margin-top: 18px;
+#notice-alert-container {
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.notice-item {
+    border-left: 3px solid var(--primary);
+    background: #f7f9ff;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+}
+
+.notice-item-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
     gap: 12px;
+    margin-bottom: 6px;
 }
 
-.notice-header {
-    font-weight: 700;
-    color: var(--primary);
-}
-
-.notice-content .notice-item {
-    padding: 12px 0;
-    border-bottom: 1px solid #edeff3;
+.notice-item-title {
     font-size: 14px;
-    color: #373c46;
+    font-weight: 700;
+    color: #1e293b;
 }
 
-.notice-content .notice-item:last-child {
-    border-bottom: none;
+.notice-item-date {
+    font-size: 12px;
+    color: #94a3b8;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.notice-item-body {
+    margin: 0;
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.6;
 }
 
 .flow-card {
@@ -450,6 +473,11 @@ p.subtitle {
     background-color: #fff1f0;
     color: #cf1322;
     opacity: 0.7;
+}
+
+.status-tag.booked {
+    background-color: #fff8e6;
+    color: #b45309;
 }
 
 .slot {
@@ -783,6 +811,24 @@ p.subtitle {
     margin-top: 4px;
     font-size: 14px;
     color: #718096;
+}
+
+.site-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.site-link:hover {
+    text-decoration: underline;
+}
+
+.site-link-title {
+    color: var(--primary-dark);
+    font-weight: 600;
 }
 
 button {
