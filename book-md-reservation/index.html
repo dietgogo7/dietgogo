@@ -215,9 +215,16 @@
                     </div>
                     <div class="info-item">
                         <strong>
-                            <a href="http://www.yes24.com/company/info.aspx" target="_blank" rel="noopener noreferrer" class="site-link site-link-title">
+                            <a href="http://www.yes24.com/company/info.aspx" target="_blank" rel="noopener noreferrer"
+                                class="site-link site-link-title">
                                 예스24 사업본부 안내
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
                             </a>
                         </strong>
                     </div>
@@ -235,7 +242,7 @@
         <div class="service-card">
             <h2 class="service-title">예약 신청</h2>
             <div class="service-info" style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:20px;">
-                <div style="font-size:13px; color:#64748b; margin-bottom:5px;">선택한 예약 정보</div>
+                
                 <div class="service-md-wrap" style="margin-bottom:8px;">
                     <span class="service-md" style="font-size:16px;">{{MD_NAME}} MD</span>
                     <span class="service-md-cat" style="font-size:12px;">{{MD_CATEGORY}}</span>
@@ -268,12 +275,11 @@
                     <label for="notes">미팅 목적 및 내용 <span class="required">*</span></label>
                     <textarea id="notes" placeholder="미팅 목적, 주요 안건 등을 입력해주세요&#10;(예: 신간 도서 소개, 마케팅 협의 등)" required></textarea>
                 </div>
-                <div class="form-actions" style="margin-top:25px;">
+                <div class="form-actions" style="margin-top:15px;">
                     <button type="submit" class="btn-primary" style="flex:1; padding:16px;">예약 신청완료</button>
                     <button type="button" id="cancel-booking" class="btn-secondary" style="padding:16px;">취소</button>
                 </div>
             </form>
-            <p id="form-message" class="message-area"></p>
         </div>
     </script>
 
