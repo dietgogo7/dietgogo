@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 대시보드 - PD 예약 통계</title>
+    <link rel="stylesheet" href="css/adminv2.css">
+    <script src="https://image.yes24.com/sysimage/Contents/Scripts/m/jquery/jquery-3.5.1.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Sidebar (loaded dynamically by common.js) -->
+        <nav class="admin-sidebar" aria-label="Main Navigation"></nav>
+
+        <main class="admin-content">
+            <header class="content-header">
+                <div>
+                    <span class="header-badge">Admin Dashboard</span>
+                    <h2>대시보드</h2>
+                    <p>PD 예약 현황 및 통계를 한눈에 확인합니다.</p>
+                </div>
+            </header>
+            <div class="kpi-grid" id="kpi-grid"></div>
+            <div class="dash-panel">
+                <div class="dash-panel-header">
+                    <span class="dash-panel-title">PD별 예약 캘린더</span>
+                    <div class="cal-toolbar">
+                        <div class="view-toggle">
+                            <button class="view-toggle-btn active" id="btn-view-month">월간</button>
+                            <button class="view-toggle-btn" id="btn-view-week">주간</button>
+                            <button class="view-toggle-btn" id="btn-view-day">일별</button>
+                        </div>
+                        <button class="cal-today-btn" id="btn-today">오늘</button>
+                        <div class="cal-nav">
+                            <button class="cal-nav-btn" id="btn-prev">&#8249;</button>
+                            <span class="cal-period-label" id="cal-period-label"></span>
+                            <button class="cal-nav-btn" id="btn-next">&#8250;</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="md-legend" id="md-legend"></div>
+                <div id="cal-container"></div>
+                <div class="cal-summary-bar" id="cal-summary"></div>
+            </div>
+        </main>
+    </div>
+    <div id="cal-tooltip" class="cal-tooltip"></div>
+
+    <script src="js/common.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>

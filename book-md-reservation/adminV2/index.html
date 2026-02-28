@@ -5,47 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지 - 예약 관리 (V2)</title>
-    <!-- Use new adminv2.css which includes reset and variables -->
-    <link rel="stylesheet" href="../css/adminv2.css">
-
-    <!-- Inline styles removed and moved to CSS where possible -->
+    <link rel="stylesheet" href="css/adminv2.css">
+    <script src="https://image.yes24.com/sysimage/Contents/Scripts/m/jquery/jquery-3.5.1.min.js"></script>
 </head>
 
 <body>
     <div id="app">
-        <!-- Sidebar -->
-        <nav class="admin-sidebar" aria-label="Main Navigation">
-            <h1>예약 관리자</h1>
-
-            <!-- Navigation Items -->
-            <a class="nav-item active" href="index.html" aria-current="page">
-                <span>예약 관리</span>
-            </a>
-            <a class="nav-item" href="schedule.html">
-                <span>스케줄 설정</span>
-            </a>
-            <a class="nav-item" href="mds.html">
-                <span>MD 관리</span>
-            </a>
-            <a class="nav-item" href="notices.html">
-                <span>공지사항 관리</span>
-            </a>
-            <a class="nav-item" href="blacklist.html">
-                <span>블랙리스트 관리</span>
-            </a>
-
-            <!-- Meeting King Area -->
-            <div id="meeting-king-area" class="meeting-king-area">
-                <h3 class="meeting-king-title">🏆 이달의 미팅왕</h3>
-                <div id="meeting-king-list"></div>
-            </div>
-
-            <div style="margin-top: var(--space-4);">
-                <a href="../index.html" class="nav-item" style="color: var(--primary-600);">
-                    <span>← 예약 페이지</span>
-                </a>
-            </div>
-        </nav>
+        <!-- Sidebar (loaded dynamically by common.js) -->
+        <nav class="admin-sidebar" aria-label="Main Navigation"></nav>
 
         <!-- Main Content -->
         <main class="admin-content">
@@ -63,18 +30,17 @@
             <section id="section-bookings" class="section-panel">
 
                 <!-- Filters Toolbar -->
-                <div
-                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                <div class="filter-toolbar">
                     <!-- View Mode Tabs -->
                     <div class="view-filters" role="group" aria-label="View Filters">
                         <button class="filter-btn active" onclick="setViewMode('all')">전체</button>
-                        <button class="filter-btn" onclick="setViewMode('md')">MD별</button>
+                        <button class="filter-btn" onclick="setViewMode('md')">PD별</button>
                         <button class="filter-btn" onclick="setViewMode('date')">날짜별</button>
                     </div>
 
                     <!-- Date Range Picker -->
                     <div class="date-filters">
-                        <label for="filter-start-date" style="font-size: var(--text-sm); font-weight: 500;">기간:</label>
+                        <label for="filter-start-date">기간:</label>
                         <input type="date" id="filter-start-date" class="admin-input">
                         <span style="color: var(--gray-400);">~</span>
                         <input type="date" id="filter-end-date" class="admin-input">
@@ -82,24 +48,41 @@
                     </div>
                 </div>
 
+                <!-- MD Filter + Status Filter -->
+                <div class="filter-toolbar filter-toolbar-sub">
+                    <div class="md-filter-group" id="md-filter-group">
+                       
+                        <div class="md-legend" id="filter-md-legend"></div>
+                    </div>
+                    <label class="checkbox-label" style="margin-left:auto;">
+                        <input type="checkbox" id="filter-approved-only"> 예약확정만 보기
+                    </label>
+                </div>
+
                 <!-- Data Table -->
                 <div class="table-container">
                     <table id="bookings-table">
+                        <colgroup>
+                            <col style="width:16%">
+                            <col style="width:10%">
+                            <col style="width:18%">
+                            <col style="width:14%">
+                            <col style="width:16%">
+                            <col style="width:10%">
+                            <col style="width:16%">
+                        </colgroup>
                         <thead>
                             <tr>
-                                <th>신청일시</th>
-                                <th>MD</th>
+                                <th class="sortable" data-sort="regist">신청일시 <span class="sort-icon"></span></th>
+                                <th>PD</th>
                                 <th>신청자</th>
                                 <th>연락처</th>
-                                <th>예약 시간</th>
+                                <th class="sortable" data-sort="meeting">예약 시간 <span class="sort-icon"></span></th>
                                 <th>상태</th>
-                                <!-- Status Badge will be applied via JS classes or inline styles if JS not updated -->
                                 <th style="text-align: right;">관리</th>
                             </tr>
                         </thead>
-                        <tbody id="bookings-tbody">
-                            <!-- JS injects rows here -->
-                        </tbody>
+                        <tbody id="bookings-tbody"></tbody>
                     </table>
                 </div>
 
@@ -117,11 +100,7 @@
         <div class="modal-content">
             <button class="close-modal" onclick="closeDetailModal()" aria-label="Close modal">&times;</button>
             <h2 style="margin-bottom: var(--space-6); color: var(--primary-700);">예약 상세 정보</h2>
-
-            <div id="admin-modal-body">
-                <!-- Details injected here -->
-            </div>
-
+            <div id="admin-modal-body"></div>
             <div
                 style="text-align: right; margin-top: var(--space-8); padding-top: var(--space-4); border-top: 1px solid var(--gray-200);">
                 <button class="btn-secondary" onclick="closeDetailModal()">닫기</button>
@@ -129,26 +108,8 @@
         </div>
     </div>
 
-    <!-- Initialization Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Fix: Correctly initialize the existing date inputs for THIS page
-            var today = new Date();
-            var yyyy = today.getFullYear();
-            var mm = String(today.getMonth() + 1).padStart(2, '0');
-            var dd = String(today.getDate()).padStart(2, '0');
-            var dateString = yyyy + '-' + mm + '-' + dd;
-
-            var startEl = document.getElementById('filter-start-date');
-            var endEl = document.getElementById('filter-end-date');
-
-            if (startEl && !startEl.value) startEl.value = dateString;
-            if (endEl && !endEl.value) endEl.value = dateString;
-        });
-    </script>
-
-    <!-- Core Logic -->
-    <script src="js/admin.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/booking.js"></script>
 </body>
 
 </html>

@@ -4,85 +4,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 페이지 - 블랙리스트 관리 (V2)</title>
-    <link rel="stylesheet" href="../css/adminv2.css">
+    <title>관리자 페이지 - 블랙리스트 (V2)</title>
+    <link rel="stylesheet" href="css/adminv2.css">
+    <script src="https://image.yes24.com/sysimage/Contents/Scripts/m/jquery/jquery-3.5.1.min.js"></script>
 </head>
 
 <body>
     <div id="app">
-        <!-- Sidebar -->
-        <nav class="admin-sidebar" aria-label="Main Navigation">
-            <h1>예약 관리자</h1>
-            <a class="nav-item" href="index.html"><span>예약 관리</span></a>
-            <a class="nav-item" href="schedule.html"><span>스케줄 설정</span></a>
-            <a class="nav-item" href="mds.html"><span>MD 관리</span></a>
-            <a class="nav-item" href="notices.html"><span>공지사항 관리</span></a>
-            <a class="nav-item active" href="blacklist.html" aria-current="page"><span>블랙리스트 관리</span></a>
-
-            <div id="meeting-king-area" class="meeting-king-area">
-                <h3 class="meeting-king-title">🏆 이달의 미팅왕</h3>
-                <div id="meeting-king-list" class="meeting-king-list"></div>
-            </div>
-
-            <div style="margin-top: var(--space-4);">
-                <a href="../index.html" class="nav-item" style="color: var(--primary-600);">
-                    <span>← 예약 페이지</span>
-                </a>
-            </div>
-        </nav>
+        <!-- Sidebar (loaded dynamically by common.js) -->
+        <nav class="admin-sidebar" aria-label="Main Navigation"></nav>
 
         <main class="admin-content">
             <header class="content-header">
                 <div>
                     <span class="header-badge">Admin Dashboard</span>
                     <h2>블랙리스트 관리</h2>
-                    <p>예약 제한 대상 전화번호를 관리합니다.</p>
+                    <p>예약 제한 대상을 관리합니다.</p>
                 </div>
             </header>
 
             <div id="section-blacklist" class="section-panel" style="display:block;">
-                <!-- Form Area -->
-                <div
-                    style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8);">
-                    <div
-                        style="display: grid; grid-template-columns: 200px 1fr auto; gap: var(--space-4); align-items: end;">
-                        <div>
-                            <label class="detail-label" style="display:block; margin-bottom: 4px;">전화번호</label>
-                            <input type="text" id="Blacklist_Phone_No" placeholder="010-0000-0000" class="admin-input"
-                                style="width: 100%;">
-                        </div>
-                        <div>
-                            <label class="detail-label" style="display:block; margin-bottom: 4px;">사유</label>
-                            <input type="text" id="Reason" placeholder="등록 사유 입력" class="admin-input"
-                                style="width: 100%;">
-                        </div>
-                        <div>
-                            <button id="btn-add-blacklist" class="btn-primary" style="height: 38px;">등록</button>
-                        </div>
+                <div class="card" style="margin-bottom: var(--space-6);">
+                    <div class="card-body">
+                        <h3 class="card-title">블랙리스트 등록</h3>
+                        <form id="blacklist-form" class="form-grid">
+                            <div>
+                                <label class="form-label">연락처</label>
+                                <input type="text" id="blacklist-phone" class="admin-input" placeholder="연락처"
+                                    required>
+                            </div>
+                            <div>
+                                <label class="form-label">사유</label>
+                                <input type="text" id="blacklist-reason" class="admin-input" placeholder="사유">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary" id="btn-add-blacklist">등록</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
-                <!-- List Area -->
-                <div class="table-container">
-                    <table id="blacklist-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 180px;">전화번호</th>
-                                <th>사유</th>
-                                <th style="width: 150px; text-align:center;">등록일</th>
-                                <th style="width: 80px; text-align: right;">관리</th>
-                            </tr>
-                        </thead>
-                        <tbody id="blacklist-tbody">
-                            <!-- JS injects rows -->
-                        </tbody>
-                    </table>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">블랙리스트 목록</h3>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>연락처</th>
+                                    <th>사유</th>
+                                    <th>등록일</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blacklist-tbody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <script src="js/admin.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/blacklist.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MD 예약 현황 - yes24</title>
+    <script src="https://image.yes24.com/sysimage/Contents/Scripts/m/jquery/jquery-3.5.1.min.js"></script>
+    <style>
+        /* ── FONTS ── */
+        @font-face { font-family:'Pretendard'; font-weight:300; src:url('https://image.yes24.com/sysimage/font/Ptd/Pretendard-Light.woff2') format('woff2'); }
+        @font-face { font-family:'Pretendard'; font-weight:400; src:url('https://image.yes24.com/sysimage/font/Ptd/Pretendard-Regular.woff2') format('woff2'); }
+        @font-face { font-family:'Pretendard'; font-weight:600; src:url('https://image.yes24.com/sysimage/font/Ptd/Pretendard-SemiBold.woff2') format('woff2'); }
+        @font-face { font-family:'Pretendard'; font-weight:700; src:url('https://image.yes24.com/sysimage/font/Ptd/Pretendard-Bold.woff2') format('woff2'); }
+
+        /* ── RESET & TOKENS ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #F0F2F5;
+            --panel: #ffffff;
+            --border: #e2e8f0;
+            --primary: #004B87;
+            --primary-light: #e8f0fe;
+            --primary-50: #f0f5ff;
+            --text: #111111;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-900: #0f172a;
+            --green: #16a34a;
+            --green-bg: #dcfce7;
+            --yellow: #ca8a04;
+            --yellow-bg: #fef9c3;
+            --red: #dc2626;
+            --red-bg: #fee2e2;
+            --radius: 14px;
+            --radius-sm: 8px;
+            --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Pretendard','Apple SD Gothic Neo',system-ui,sans-serif;
+            font-size: 15px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .wrapper { max-width: 860px; margin: 0 auto; padding: 16px; }
+
+        /* ── HEADER ── */
+        .page-header {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; background: linear-gradient(135deg, #f0f5ff 0%, #fff 60%);
+            border: 1px solid #dce6f5; border-radius: var(--radius);
+            padding: 16px 20px; margin-bottom: 16px;
+        }
+        .page-header-left { display: flex; align-items: center; gap: 12px; }
+        .page-header-left img { width: 36px; height: 36px; }
+        .page-header h1 { font-size: 18px; font-weight: 700; color: var(--primary); }
+        .page-header p { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+        .btn-back {
+            font-size: 13px; color: var(--primary); text-decoration: none;
+            border: 1px solid var(--primary); border-radius: 6px;
+            padding: 6px 14px; white-space: nowrap; font-weight: 600;
+        }
+        .btn-back:hover { background: var(--primary-light); }
+
+        /* ── PANEL ── */
+        .panel {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+        }
+        .panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 10px; padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .panel-title { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+
+        /* ── CAL TOOLBAR ── */
+        .cal-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .cal-nav { display: flex; align-items: center; gap: 4px; }
+        .cal-nav-btn {
+            width: 30px; height: 30px; border: 1px solid var(--border);
+            border-radius: 6px; background: var(--panel); cursor: pointer;
+            font-size: 16px; color: var(--gray-600); display: flex;
+            align-items: center; justify-content: center;
+        }
+        .cal-nav-btn:hover { background: var(--primary-light); }
+        .cal-period { font-size: 14px; font-weight: 700; color: var(--gray-900); min-width: 130px; text-align: center; }
+        .btn-today {
+            font-size: 12px; font-weight: 600; color: var(--primary);
+            border: 1px solid var(--primary); border-radius: 6px;
+            padding: 4px 10px; background: transparent; cursor: pointer;
+        }
+        .btn-today:hover { background: var(--primary-light); }
+
+        /* ── LEGEND ── */
+        .legend {
+            display: flex; gap: 14px; padding: 10px 20px;
+            border-bottom: 1px solid var(--border); flex-wrap: wrap;
+        }
+        .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--gray-600); }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .dot-avail { background: var(--green); }
+        .dot-few { background: var(--yellow); }
+        .dot-full { background: var(--red); }
+        .dot-off { background: #cbd5e1; }
+
+        /* ───────────────────────────────────────
+           PC : 주간 그리드 (집계 요약 카드)
+           ─────────────────────────────────────── */
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+        .week-head {
+            font-size: 12px; font-weight: 700; color: var(--gray-500);
+            text-align: center; padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .week-head.sat { color: #3b82f6; }
+        .week-head.sun { color: var(--red); }
+
+        .week-cell {
+            min-height: 160px; padding: 10px 8px;
+            border-right: 1px solid var(--border);
+            cursor: default; position: relative; transition: background .12s;
+        }
+        .week-cell:nth-child(7n+14) { border-right: none; }
+        .week-cell.off { background: #fafbfc; }
+        .week-cell.clickable { cursor: pointer; }
+        .week-cell.clickable:hover { background: var(--primary-50); }
+        .week-cell.is-today { background: #eff6ff; }
+        .week-cell.disabled { opacity: .30; pointer-events: none; }
+        .week-cell.selected { outline: 2px solid var(--primary); outline-offset: -2px; z-index: 1; background: var(--primary-50); }
+
+        /* 날짜 숫자 */
+        .cell-date { text-align: center; margin-bottom: 10px; }
+        .cell-date .date-num {
+            display: block; font-size: 22px; font-weight: 700;
+            color: var(--gray-900); line-height: 1.2;
+        }
+        .cell-date .date-sub {
+            display: block; font-size: 10px; color: var(--gray-400); font-weight: 400; margin-top: 2px;
+        }
+        .cell-date.today-mark .date-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--primary); color: #fff;
+            width: 32px; height: 32px; border-radius: 50%;
+        }
+        .week-cell.off .cell-date .date-num { color: var(--gray-400); }
+
+        /* 잔여율 바 */
+        .avail-bar-wrap {
+            background: var(--gray-200); border-radius: 4px;
+            height: 8px; overflow: hidden; margin-bottom: 8px;
+        }
+        .avail-bar-fill {
+            height: 100%; border-radius: 4px; transition: width .3s;
+        }
+        .avail-bar-fill.high { background: var(--green); }
+        .avail-bar-fill.mid  { background: var(--yellow); }
+        .avail-bar-fill.low  { background: var(--red); }
+
+        /* 요약 뱃지 */
+        .summary-badges { display: flex; flex-direction: column; gap: 3px; }
+        .sum-badge {
+            display: flex; align-items: center; gap: 4px;
+            font-size: 11px; font-weight: 600; padding: 2px 0;
+        }
+        .sum-badge .sb-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .sum-badge .sb-label { color: var(--gray-600); }
+        .sum-badge .sb-count { font-weight: 700; }
+        .sb-count.c-avail { color: var(--green); }
+        .sb-count.c-few   { color: var(--yellow); }
+        .sb-count.c-full  { color: var(--red); }
+
+        .week-off-label {
+            margin-top: 40px; text-align: center; font-size: 11px; color: var(--gray-400);
+        }
+
+        /* ── DAY DETAIL PANEL ── */
+        .day-panel {
+            border-top: 2px solid var(--primary);
+            animation: slideDown .25s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .day-panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 20px; border-bottom: 1px solid var(--border);
+        }
+        .day-panel-title { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+        .day-panel-close {
+            background: none; border: none; font-size: 20px; cursor: pointer;
+            color: var(--gray-400); padding: 4px;
+        }
+        .day-panel-close:hover { color: var(--gray-700); }
+
+        /* 상세: 시간축 테이블 (MD 10+명 대응) */
+        .slot-table-wrap {
+            padding: 16px 20px; overflow-x: auto;
+        }
+        .slot-table {
+            width: 100%; border-collapse: collapse; font-size: 13px;
+        }
+        .slot-table th {
+            padding: 8px 6px; text-align: left; font-weight: 700;
+            color: var(--gray-500); border-bottom: 2px solid var(--border);
+            white-space: nowrap; font-size: 12px; position: sticky; top: 0;
+            background: var(--panel);
+        }
+        .slot-table th.th-time { width: 70px; }
+        .slot-table td {
+            padding: 6px; text-align: center; border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        .slot-table td.td-time {
+            font-weight: 700; color: var(--gray-700); text-align: left;
+            white-space: nowrap; font-size: 13px;
+        }
+        .slot-table tbody tr:hover { background: #f8fafc; }
+
+        .slot-badge {
+            display: inline-block; width: 22px; height: 22px;
+            border-radius: 50%; line-height: 22px; font-size: 10px; font-weight: 700;
+        }
+        .slot-badge.s-avail { background: var(--green-bg); color: var(--green); }
+        .slot-badge.s-full  { background: var(--red-bg); color: var(--red); }
+
+        /* MD 헤더 (가로 텍스트) */
+        .slot-table th.th-md {
+            padding: 8px 6px; min-width: 56px; text-align: center;
+            font-size: 11px; color: var(--gray-700); white-space: nowrap;
+        }
+        .th-md-inner {
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+        }
+        .th-md-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .th-md-name { font-size: 11px; font-weight: 700; line-height: 1.2; }
+        .th-md-cat { font-size: 9px; font-weight: 400; color: var(--gray-400); line-height: 1.2; }
+
+        .day-panel-footer {
+            padding: 12px 20px; border-top: 1px solid var(--border); text-align: center;
+        }
+        .btn-reserve {
+            display: inline-block; font-size: 14px; font-weight: 700;
+            color: #fff; background: var(--primary); border: none;
+            border-radius: 8px; padding: 10px 28px; cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-reserve:hover { opacity: .85; }
+
+        .day-empty {
+            padding: 32px 20px; text-align: center;
+            font-size: 14px; color: var(--gray-400);
+        }
+
+        /* ───────────────────────────────────────
+           MOBILE : 심플 카드 리스트
+           ─────────────────────────────────────── */
+        .mob-cards { display: none; }
+
+        @media (max-width: 640px) {
+            .wrapper { padding: 10px; }
+            .page-header { padding: 12px 14px; }
+            .page-header h1 { font-size: 16px; }
+            .page-header p { font-size: 12px; }
+            .panel-header { padding: 12px 14px; }
+            .legend { padding: 8px 14px; gap: 10px; }
+
+            /* PC 주간 그리드 숨김 */
+            .week-grid { display: none !important; }
+            #day-detail { display: none !important; }
+
+            /* 모바일 카드 표시 */
+            .mob-cards { display: block; }
+
+            .mob-card {
+                border-bottom: 1px solid var(--border);
+                padding: 14px; cursor: pointer; transition: background .12s;
+            }
+            .mob-card:last-child { border-bottom: none; }
+            .mob-card:hover { background: #f8fafc; }
+            .mob-card.disabled { opacity: .3; pointer-events: none; }
+            .mob-card.is-today { background: #eff6ff; }
+            .mob-card-top {
+                display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            }
+            .mob-card-date { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+            .mob-card-date .mob-today {
+                font-size: 10px; font-weight: 700; color: var(--primary);
+                background: var(--primary-light); padding: 2px 6px;
+                border-radius: 4px; margin-left: 6px; vertical-align: middle;
+            }
+            .mob-card-badges { display: flex; gap: 6px; }
+            .mob-stat-badge {
+                font-size: 11px; font-weight: 700; padding: 3px 8px;
+                border-radius: 10px; display: flex; align-items: center; gap: 3px;
+            }
+            .mob-stat-badge.avail { background: var(--green-bg); color: var(--green); }
+            .mob-stat-badge.few   { background: var(--yellow-bg); color: var(--yellow); }
+            .mob-stat-badge.full  { background: var(--red-bg); color: var(--red); }
+
+            .mob-card-bar {
+                margin-top: 8px; background: var(--gray-200);
+                border-radius: 4px; height: 6px; overflow: hidden;
+            }
+            .mob-card-bar-fill { height: 100%; border-radius: 4px; }
+
+            .mob-card-expand {
+                display: none; margin-top: 10px;
+                border-top: 1px dashed var(--border); padding-top: 10px;
+            }
+            .mob-card.open .mob-card-expand { display: block; }
+            .mob-card-arrow {
+                font-size: 12px; color: var(--gray-400);
+                transition: transform .2s;
+            }
+            .mob-card.open .mob-card-arrow { transform: rotate(180deg); }
+
+            /* 모바일 상세: MD별 간소화 리스트 */
+            .mob-md-row {
+                display: flex; align-items: center; gap: 6px;
+                padding: 5px 0; font-size: 13px;
+            }
+            .mob-md-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+            .mob-md-name { font-weight: 600; color: var(--gray-700); flex: 1; }
+            .mob-md-cat { font-size: 11px; color: var(--gray-400); }
+            .mob-md-slots { display: flex; gap: 3px; }
+            .mob-slot {
+                width: 18px; height: 18px; border-radius: 4px;
+                font-size: 9px; font-weight: 700; display: flex;
+                align-items: center; justify-content: center;
+            }
+            .mob-slot.s-avail { background: var(--green-bg); color: var(--green); }
+            .mob-slot.s-full  { background: var(--red-bg); color: var(--red); }
+
+            .mob-card-footer {
+                margin-top: 10px; text-align: center;
+            }
+            .mob-btn-reserve {
+                display: inline-block; font-size: 13px; font-weight: 700;
+                color: #fff; background: var(--primary);
+                border-radius: 6px; padding: 8px 20px;
+                text-decoration: none;
+            }
+
+            /* 상세 테이블 모바일 대응 (PC detail 숨김이므로 불필요하지만 안전) */
+            .slot-table-wrap { padding: 12px 14px; }
+            .day-panel-header { padding: 12px 14px; }
+            .day-panel-footer { padding: 10px 14px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="page-header-left">
+                <img src="https://image.yes24.com/sysimage/mv3/com/ico_ai02.svg" alt="">
+                <div>
+                    <h1>MD 예약 현황</h1>
+                    <p>MD별 예약 가능 여부를 한눈에 확인하세요.</p>
+                </div>
+            </div>
+            <a href="index.html" class="btn-back">← 예약 신청</a>
+        </div>
+
+        <!-- Calendar Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">📅 주간 예약 현황</span>
+                <div class="cal-toolbar">
+                    <button class="btn-today" id="btn-today">이번 주</button>
+                    <div class="cal-nav">
+                        <button class="cal-nav-btn" id="btn-prev">&#8249;</button>
+                        <span class="cal-period" id="cal-period"></span>
+                        <button class="cal-nav-btn" id="btn-next">&#8250;</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot dot-avail"></span>여유</div>
+                <div class="legend-item"><span class="legend-dot dot-few"></span>보통</div>
+                <div class="legend-item"><span class="legend-dot dot-full"></span>마감</div>
+                <div class="legend-item"><span class="legend-dot dot-off"></span>예약불가</div>
+            </div>
+
+            <!-- PC: 주간 그리드 -->
+            <div id="cal-container"></div>
+            <div id="day-detail"></div>
+
+            <!-- Mobile: 카드 리스트 -->
+            <div id="mob-container" class="mob-cards"></div>
+        </div>
+    </div>
+
+    <script>
+    (function ($) {
+        'use strict';
+
+        /* ── CONFIG ── */
+        var SELECTABLE_DAYS = [1, 2, 3, 4]; // Mon-Thu
+        var TIME_SLOTS = [];
+        (function () {
+            var h = 14, m = 0;
+            while (h < 15 || (h === 15 && m <= 15)) {
+                TIME_SLOTS.push(pad2(h) + ':' + pad2(m));
+                m += 15;
+                if (m >= 60) { h++; m = 0; }
+            }
+        })();
+        var CAPACITY_PER_SLOT = 1;
+        var MAX_BOOK_DAYS = 7;
+
+        var DOW_KO = ['일', '월', '화', '수', '목', '금', '토'];
+        var WEEK_HEADS = ['월', '화', '수', '목', '금', '토', '일'];
+        var MD_COLORS = [
+            '#4f46e5','#0891b2','#059669','#d97706','#dc2626',
+            '#7c3aed','#db2777','#0d9488','#4338ca','#0369a1',
+            '#15803d','#b45309','#b91c1c','#6d28d9','#be185d','#0f766e'
+        ];
+
+        /* ── STATE ── */
+        var allMds = [];
+        var allBookings = [];
+        var weekStart;
+        var selectedDay = null;
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        /* ── UTILS ── */
+        function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+        function dateKey(y, m, d) { return y + '-' + pad2(m + 1) + '-' + pad2(d); }
+        function dkFromDate(dt) { return dateKey(dt.getFullYear(), dt.getMonth(), dt.getDate()); }
+
+        function getMonday(d) {
+            var dt = new Date(d);
+            var day = dt.getDay();
+            var diff = day === 0 ? -6 : 1 - day;
+            dt.setDate(dt.getDate() + diff);
+            dt.setHours(0, 0, 0, 0);
+            return dt;
+        }
+        function getDefaultWeekStart() {
+            var d = getMonday(today);
+            var dow = today.getDay();
+            if (dow === 0 || dow >= 5) d.setDate(d.getDate() + 7);
+            return d;
+        }
+
+        function getMdColor(md) {
+            var ci = $.inArray(md, allMds);
+            return MD_COLORS[ci % MD_COLORS.length];
+        }
+
+        /* ── INIT ── */
+        function init() {
+            weekStart = getDefaultWeekStart();
+            $.when(
+                $.getJSON('data/mds.json'),
+                $.getJSON('data/bookings.json')
+            ).done(function (r1, r2) {
+                allMds = r1[0]; allBookings = r2[0];
+                render(); bindEvents();
+            }).fail(function () {
+                $.when(
+                    $.getJSON('adminV2/data/mds.json'),
+                    $.getJSON('adminV2/data/bookings.json')
+                ).done(function (r1, r2) {
+                    allMds = r1[0]; allBookings = r2[0];
+                    render(); bindEvents();
+                });
+            });
+        }
+
+        /* ── DATA HELPERS ── */
+        function getConfirmedCount(dk, mdNo, time) {
+            var count = 0;
+            $.each(allBookings, function (i, b) {
+                if (b.Status !== 'APPROVED') return;
+                if (!b.Meeting_Datetime) return;
+                var bDate = b.Meeting_Datetime.split('T')[0];
+                var bTime = b.Meeting_Datetime.substring(11, 16);
+                var bMd = String(b.Md_No).replace(/^md-0*/i, '');
+                if (bDate === dk && bMd === String(mdNo) && bTime === time) count++;
+            });
+            return count;
+        }
+
+        /* 날짜의 MD별 잔여 요약 */
+        function getDaySummary(dk) {
+            var result = [];
+            var dow = new Date(dk).getDay();
+            if (SELECTABLE_DAYS.indexOf(dow) < 0) return result;
+
+            $.each(allMds, function (idx, md) {
+                var total = TIME_SLOTS.length;
+                var booked = 0;
+                $.each(TIME_SLOTS, function (j, t) {
+                    booked += getConfirmedCount(dk, md.Md_No, t);
+                });
+                var avail = total - booked;
+                var status = avail >= 3 ? 'avail' : (avail >= 1 ? 'few' : 'full');
+                result.push({
+                    mdNo: md.Md_No, mdName: md.Md_Name,
+                    cat: md.Category_Name || '',
+                    color: getMdColor(md),
+                    avail: avail, total: total, status: status
+                });
+            });
+            return result;
+        }
+
+        /* 집계: {avail:N, few:N, full:N, totalSlots:N, availSlots:N} */
+        function getDayAggregate(dk) {
+            var sum = getDaySummary(dk);
+            var agg = { avail: 0, few: 0, full: 0, totalSlots: 0, availSlots: 0 };
+            $.each(sum, function (i, s) {
+                agg[s.status]++;
+                agg.totalSlots += s.total;
+                agg.availSlots += s.avail;
+            });
+            return agg;
+        }
+
+        /* ── RENDER ALL ── */
+        function render() {
+            renderWeekPC();
+            renderMobile();
+        }
+
+        /* ───────────────────────────────────────
+           PC: 주간 그리드 (집계 요약)
+           ─────────────────────────────────────── */
+        function renderWeekPC() {
+            var ws = new Date(weekStart);
+            var we = new Date(ws); we.setDate(we.getDate() + 6);
+            var todayKey = dkFromDate(today);
+            var maxDate = new Date(today); maxDate.setDate(maxDate.getDate() + MAX_BOOK_DAYS);
+
+            $('#cal-period').text(
+                (ws.getMonth() + 1) + '/' + ws.getDate() + ' ~ ' +
+                (we.getMonth() + 1) + '/' + we.getDate()
+            );
+
+            var h = '<div class="week-grid">';
+
+            // 요일 헤더
+            $.each(WEEK_HEADS, function (i, label) {
+                var cls = 'week-head';
+                if (i === 5) cls += ' sat';
+                if (i === 6) cls += ' sun';
+                h += '<div class="' + cls + '">' + label + '</div>';
+            });
+
+            for (var i = 0; i < 7; i++) {
+                var cellDate = new Date(ws);
+                cellDate.setDate(ws.getDate() + i);
+                cellDate.setHours(0, 0, 0, 0);
+                var dow = cellDate.getDay();
+                var dk = dkFromDate(cellDate);
+                var isToday = (dk === todayKey);
+                var isSelectable = SELECTABLE_DAYS.indexOf(dow) >= 0;
+                var isPast = cellDate < today && !isToday;
+                var isBeyond = cellDate > maxDate;
+
+                var cls = 'week-cell';
+                if (!isSelectable) cls += ' off';
+                if (isToday) cls += ' is-today';
+                if (isPast || isBeyond) cls += ' disabled';
+                if (isSelectable && !isPast && !isBeyond) cls += ' clickable';
+                if (selectedDay === dk) cls += ' selected';
+
+                var dateCls = 'cell-date';
+                if (isToday) dateCls += ' today-mark';
+
+                var dateLabel = (cellDate.getMonth() + 1) + '/' + cellDate.getDate();
+                h += '<div class="' + cls + '" data-date="' + dk + '">';
+                h += '<div class="' + dateCls + '">';
+                h += '<span class="date-num">' + cellDate.getDate() + '</span>';
+                h += '<span class="date-sub">' + dateLabel + ' ' + DOW_KO[dow] + '</span>';
+                h += '</div>';
+
+                if (isSelectable) {
+                    var agg = getDayAggregate(dk);
+                    var pct = agg.totalSlots > 0 ? Math.round(agg.availSlots / agg.totalSlots * 100) : 0;
+                    var barCls = pct >= 60 ? 'high' : (pct >= 20 ? 'mid' : 'low');
+
+                    // 잔여율 바
+                    h += '<div class="avail-bar-wrap"><div class="avail-bar-fill ' + barCls + '" style="width:' + pct + '%;"></div></div>';
+
+                    // 요약 뱃지
+                    h += '<div class="summary-badges">';
+                    if (agg.avail > 0) h += '<div class="sum-badge"><span class="sb-dot dot-avail"></span><span class="sb-label">여유</span><span class="sb-count c-avail">' + agg.avail + '명</span></div>';
+                    if (agg.few > 0)   h += '<div class="sum-badge"><span class="sb-dot dot-few"></span><span class="sb-label">보통</span><span class="sb-count c-few">' + agg.few + '명</span></div>';
+                    if (agg.full > 0)  h += '<div class="sum-badge"><span class="sb-dot dot-full"></span><span class="sb-label">마감</span><span class="sb-count c-full">' + agg.full + '명</span></div>';
+                    h += '</div>';
+                } else {
+                    h += '<div class="week-off-label">예약불가</div>';
+                }
+
+                h += '</div>';
+            }
+
+            h += '</div>';
+            $('#cal-container').html(h);
+
+            // 선택 상태 유지
+            if (selectedDay) {
+                var sd = new Date(selectedDay);
+                if (sd >= ws && sd <= we) renderDayDetail(selectedDay);
+                else { selectedDay = null; $('#day-detail').empty(); }
+            }
+        }
+
+        /* ── PC: DAY DETAIL (시간축 테이블) ── */
+        function renderDayDetail(dk) {
+            selectedDay = dk;
+            var d = new Date(dk);
+            var dow = d.getDay();
+            var label = (d.getMonth() + 1) + '월 ' + d.getDate() + '일 (' + DOW_KO[dow] + ')';
+
+            $('.week-cell').removeClass('selected');
+            $('.week-cell[data-date="' + dk + '"]').addClass('selected');
+
+            if (SELECTABLE_DAYS.indexOf(dow) < 0) {
+                $('#day-detail').html('<div class="day-panel"><div class="day-empty">예약 불가 날짜입니다.</div></div>');
+                return;
+            }
+
+            // 시간축  MD 크로스 테이블
+            var h = '<div class="day-panel">';
+            h += '<div class="day-panel-header"><span class="day-panel-title">📋 ' + label + ' 슬롯 현황</span>';
+            h += '<button class="day-panel-close" id="close-day">&times;</button></div>';
+
+            h += '<div class="slot-table-wrap"><table class="slot-table"><thead><tr>';
+            h += '<th class="th-time">시간</th>';
+            $.each(allMds, function (i, md) {
+                var c = getMdColor(md);
+                h += '<th class="th-md"><div class="th-md-inner"><span class="th-md-dot" style="background:' + c + ';"></span><span class="th-md-name">' + md.Md_Name + '</span><span class="th-md-cat">' + (md.Category_Name || '').split(',')[0].split('/')[0] + '</span></div></th>';
+            });
+            h += '</tr></thead><tbody>';
+
+            $.each(TIME_SLOTS, function (ti, time) {
+                h += '<tr><td class="td-time">' + time + '</td>';
+                $.each(allMds, function (mi, md) {
+                    var booked = getConfirmedCount(dk, md.Md_No, time);
+                    var avail = CAPACITY_PER_SLOT - booked;
+                    if (avail >= 1) {
+                        h += '<td><span class="slot-badge s-avail">○</span></td>';
+                    } else {
+                        h += '<td><span class="slot-badge s-full">✕</span></td>';
+                    }
+                });
+                h += '</tr>';
+            });
+
+            h += '</tbody></table></div>';
+            h += '<div class="day-panel-footer"><a href="index.html" class="btn-reserve">이 날짜로 예약 신청하기</a></div>';
+            h += '</div>';
+
+            $('#day-detail').html(h);
+            $('html, body').animate({ scrollTop: $('#day-detail').offset().top - 80 }, 300);
+        }
+
+        /* ───────────────────────────────────────
+           MOBILE: 간결한 카드 리스트
+           ─────────────────────────────────────── */
+        function renderMobile() {
+            var ws = new Date(weekStart);
+            var todayKey = dkFromDate(today);
+            var maxDate = new Date(today); maxDate.setDate(maxDate.getDate() + MAX_BOOK_DAYS);
+
+            var h = '';
+            for (var i = 0; i < 7; i++) {
+                var cellDate = new Date(ws);
+                cellDate.setDate(ws.getDate() + i);
+                cellDate.setHours(0, 0, 0, 0);
+                var dow = cellDate.getDay();
+                var dk = dkFromDate(cellDate);
+                var isSelectable = SELECTABLE_DAYS.indexOf(dow) >= 0;
+                if (!isSelectable) continue; // 월~목만
+
+                var isToday = (dk === todayKey);
+                var isPast = cellDate < today && !isToday;
+                var isBeyond = cellDate > maxDate;
+
+                var cls = 'mob-card';
+                if (isPast || isBeyond) cls += ' disabled';
+                if (isToday) cls += ' is-today';
+
+                var dateStr = (cellDate.getMonth() + 1) + '/' + cellDate.getDate() + ' (' + DOW_KO[dow] + ')';
+                var agg = getDayAggregate(dk);
+                var pct = agg.totalSlots > 0 ? Math.round(agg.availSlots / agg.totalSlots * 100) : 0;
+                var barCls = pct >= 60 ? 'high' : (pct >= 20 ? 'mid' : 'low');
+
+                h += '<div class="' + cls + '" data-date="' + dk + '">';
+                h += '<div class="mob-card-top">';
+                h += '<span class="mob-card-date">' + dateStr + (isToday ? '<span class="mob-today">오늘</span>' : '') + '</span>';
+                h += '<div class="mob-card-badges">';
+                if (agg.avail > 0) h += '<span class="mob-stat-badge avail">' + agg.avail + '</span>';
+                if (agg.few > 0)   h += '<span class="mob-stat-badge few">' + agg.few + '</span>';
+                if (agg.full > 0)  h += '<span class="mob-stat-badge full">' + agg.full + '</span>';
+                h += '<span class="mob-card-arrow">▼</span>';
+                h += '</div></div>';
+
+                // 잔여 바
+                h += '<div class="mob-card-bar"><div class="mob-card-bar-fill ' + barCls + '" style="width:' + pct + '%;"></div></div>';
+
+                // 확장 영역 (MD 간소 리스트)
+                h += '<div class="mob-card-expand">';
+                var summary = getDaySummary(dk);
+                $.each(summary, function (si, s) {
+                    h += '<div class="mob-md-row">';
+                    h += '<span class="mob-md-dot" style="background:' + s.color + ';"></span>';
+                    h += '<span class="mob-md-name">' + s.mdName + '</span>';
+                    h += '<span class="mob-md-cat">' + s.cat + '</span>';
+
+                    // 슬롯 미니 그리드
+                    h += '<span class="mob-md-slots">';
+                    $.each(TIME_SLOTS, function (ti, t) {
+                        var booked = getConfirmedCount(dk, s.mdNo, t);
+                        var avail = CAPACITY_PER_SLOT - booked;
+                        h += '<span class="mob-slot ' + (avail >= 1 ? 's-avail' : 's-full') + '" title="' + t + '">' +
+                            (avail >= 1 ? '○' : '✕') + '</span>';
+                    });
+                    h += '</span></div>';
+                });
+                h += '<div class="mob-card-footer"><a href="index.html" class="mob-btn-reserve">예약 신청하기</a></div>';
+                h += '</div>';
+
+                h += '</div>';
+            }
+
+            $('#mob-container').html(h);
+        }
+
+        /* ── EVENTS ── */
+        function bindEvents() {
+            // PC 셀 클릭
+            $(document).on('click', '.week-cell.clickable', function () {
+                var dk = $(this).data('date');
+                if (dk) renderDayDetail(dk);
+            });
+
+            // PC 닫기
+            $(document).on('click', '#close-day', function () {
+                selectedDay = null;
+                $('#day-detail').empty();
+                $('.week-cell').removeClass('selected');
+            });
+
+            // 모바일 카드 토글
+            $(document).on('click', '.mob-card:not(.disabled)', function (e) {
+                if ($(e.target).is('a')) return;
+                $(this).toggleClass('open');
+            });
+
+            // 이전/다음 주
+            $('#btn-prev').on('click', function () {
+                weekStart.setDate(weekStart.getDate() - 7);
+                selectedDay = null; $('#day-detail').empty();
+                render();
+            });
+            $('#btn-next').on('click', function () {
+                weekStart.setDate(weekStart.getDate() + 7);
+                selectedDay = null; $('#day-detail').empty();
+                render();
+            });
+
+            // 이번 주
+            $('#btn-today').on('click', function () {
+                weekStart = getDefaultWeekStart();
+                selectedDay = null; $('#day-detail').empty();
+                render();
+            });
+        }
+
+        $(function () { init(); });
+
+    })(jQuery);
+    </script>
+</body>
+
+</html>
