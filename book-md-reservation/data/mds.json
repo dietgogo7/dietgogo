@@ -97,5 +97,50 @@
     "Email": "sjoh@yes24.com",
     "Phone_No": "010-1234-1010",
     "Regist_Datetime": "2026-02-10T00:00:00"
+  },
+  {
+    "Md_No": "12",
+    "Md_Name": "안현재",
+    "Team_Name": "도서1팀",
+    "Category_Name": "건강/취미/예술/자연과학",
+    "Email": "present@yes24.com",
+    "Phone_No": "010-1234-1112",
+    "Regist_Datetime": "2026-02-10T00:00:00"
+  },
+  {
+    "Md_No": "13",
+    "Md_Name": "오다은",
+    "Team_Name": "도서1팀",
+    "Category_Name": "경제경영/자기계발",
+    "Email": "daeun@yes24.com",
+    "Phone_No": "010-1234-1212",
+    "Regist_Datetime": "2026-02-10T00:00:00"
+  },
+  {
+    "Md_No": "14",
+    "Md_Name": "권문경",
+    "Team_Name": "도서1팀",
+    "Category_Name": "만화/라이트노벨/잡지",
+    "Email": "papermoon@yes24.com",
+    "Phone_No": "010-1234-1313",
+    "Regist_Datetime": "2026-02-10T00:00:00"
+  },
+  {
+    "Md_No": "15",
+    "Md_Name": "원소영",
+    "Team_Name": "도서2팀",
+    "Category_Name": "수험서자격증/외국어",
+    "Email": "onesso0522@yes24.com",
+    "Phone_No": "010-1234-1414",
+    "Regist_Datetime": "2026-02-10T00:00:00"
+  },
+  {
+    "Md_No": "16",
+    "Md_Name": "배승연",
+    "Team_Name": "도서2팀",
+    "Category_Name": "대학교재/IT모바일/청소년",
+    "Email": "bsy0627@yes24.com",
+    "Phone_No": "010-1234-1515",
+    "Regist_Datetime": "2026-02-10T00:00:00"
   }
 ]
