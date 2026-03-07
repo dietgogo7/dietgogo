@@ -6,13 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>도서 MD 미팅 예약</title>
     <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" id="theme-style" href="">
 </head>
 
 <body>
     <div id="app">
         <!-- 최상단 중앙 로고 -->
-        <div class="top-logo">
-            <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.svg" alt="yes24.com 로고" class="yes24-logo">
+        <div class="top-logo" style="position: relative; padding: 10px 0;">
+            <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.svg" alt="yes24.com 로고" class="yes24-logo"
+                style="margin: 0 auto;">
+            <button id="theme-toggle"
+                style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; color: inherit; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;"
+                title="다크모드 토글">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5">
+                    </path>
+                    <path d="M9 18h6"></path>
+                    <path d="M10 22h4"></path>
+                </svg>
+            </button>
         </div>
 
         <header class="main-header">
@@ -27,7 +41,9 @@
             </div>
             <div class="header-meta">
                 <small>예약 내역은 휴대폰번호로 확인 가능 합니다.</small>
-                <a href="#" class="my-bookings-link" onclick="openMyBookingsPopup()">예약 내역 조회</a>
+                <div style="display: flex; gap: 8px;">
+                    <a href="#" class="my-bookings-link" onclick="openMyBookingsPopup()">예약 내역 조회</a>
+                </div>
             </div>
         </header>
         <main>
@@ -376,6 +392,16 @@
                 '#slots-area-1 .list-wrapper',
                 '#time-selector-container-2 .list-wrapper'
             ], slots);
+
+            // 다크모드 토글 버튼 이벤트
+            $('#theme-toggle').on('click', function () {
+                var themeStyle = $('#theme-style');
+                if (themeStyle.attr('href') === 'css/dark-mode.css') {
+                    themeStyle.attr('href', '');
+                } else {
+                    themeStyle.attr('href', 'css/dark-mode.css');
+                }
+            });
 
         });
     </script>
