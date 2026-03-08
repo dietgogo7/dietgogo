@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YES24 Open API 포털</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Pretendard Variable"', 'Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+                    },
+                    colors: {
+                        github: {
+                            bg: '#f6f8fa',
+                            border: '#d0d7de',
+                            text: '#24292f',
+                            muted: '#57606a',
+                            primary: '#0969da',
+                            success: '#2da44e',
+                            danger: '#cf222e',
+                            purple: '#8250df',
+                            warning: '#bf8700',
+                            canvas: '#ffffff'
+                        },
+                        yes24: {
+                            blue: '#0058a3',
+                            light: '#e6f0fa'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f3f4f6;
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* Code Block Styling */
+        pre {
+            background-color: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-size: 85%;
+        }
+
+        /* Navigation active state */
+        .nav-link.active {
+            border-bottom: 2px solid #0969da;
+            color: #24292f;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body class="text-github-text antialiased font-sans flex flex-col min-h-screen">
+
+    <!-- Top Navigation -->
+    <header class="bg-white border-b border-github-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="navigate('main')">
+                        <img src="https://image.yes24.com/sysimage/renew/gnb/favicon_n.ico"
+                            style="width:30px;margin-right:10px">
+                        <span class="font-bold text-xl tracking-tight text-gray-900">YES24 <span
+                                class="font-light">Developers</span></span>
+                    </div>
+                    <!-- Desktop Nav -->
+                    <nav class="hidden sm:ml-8 sm:flex sm:space-x-8">
+                        <a href="#" onclick="navigate('main')"
+                            class="nav-link active border-transparent text-github-muted hover:text-github-text inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                            data-target="main">홈</a>
+                        <a href="#" onclick="navigate('guide')"
+                            class="nav-link border-transparent text-github-muted hover:text-github-text inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                            data-target="guide">가이드</a>
+                        <a href="#" onclick="navigate('reference')"
+                            class="nav-link border-transparent text-github-muted hover:text-github-text inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                            data-target="reference">API 레퍼런스</a>
+                        <a href="#" onclick="navigate('faq')"
+                            class="nav-link border-transparent text-github-muted hover:text-github-text inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                            data-target="faq">FAQ</a>
+                    </nav>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="navigate('apply')"
+                        class="bg-github-primary hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold shadow-sm transition-colors">
+                        API 키 발급
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ========================================== -->
+        <!-- PAGE 1. MAIN (/)                           -->
+        <!-- ========================================== -->
+        <div id="page-main" class="page-section block">
+            <!-- Hero Section -->
+            <div
+                class="bg-gradient-to-r from-yes24-blue to-blue-800 rounded-2xl p-10 md:p-16 text-white shadow-lg mb-12 relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">국내 최대 도서 데이터를<br>당신의 서비스에 연결하세요.</h1>
+                    <p class="text-lg text-blue-100 mb-8 leading-relaxed">
+                        YES24 Open API를 통해 1,000만 건 이상의 도서 메타데이터, 실시간 베스트셀러, 신간 정보를 빠르고 안정적으로 제공받을 수 있습니다.
+                    </p>
+                    <div class="flex gap-4">
+                        <button onclick="navigate('guide')"
+                            class="bg-white text-yes24-blue px-6 py-3 rounded-lg font-bold shadow hover:bg-gray-50 transition">시작하기</button>
+                        <button onclick="navigate('reference')"
+                            class="bg-blue-700 border border-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition">문서
+                            보기</button>
+                    </div>
+                </div>
+                <i class="fas fa-book-reader absolute -right-10 -bottom-10 text-[200px] text-white opacity-10"></i>
+            </div>
+
+            <!-- Features -->
+            <h2 class="text-2xl font-bold mb-6 text-gray-900">제공 API 기능</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-white p-6 rounded-xl border border-github-border shadow-sm hover:shadow-md transition">
+                    <div
+                        class="w-12 h-12 bg-blue-50 text-yes24-blue rounded-lg flex items-center justify-center text-xl mb-4">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">도서 검색</h3>
+                    <p class="text-sm text-github-muted leading-relaxed">키워드, 저자, 출판사명으로 정확하고 빠른 검색 결과를 제공합니다. 정확도순/판매량순
+                        정렬을 지원합니다.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-github-border shadow-sm hover:shadow-md transition">
+                    <div
+                        class="w-12 h-12 bg-green-50 text-github-success rounded-lg flex items-center justify-center text-xl mb-4">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">베스트셀러 & 신간</h3>
+                    <p class="text-sm text-github-muted leading-relaxed">종합, 분야별 실시간 베스트셀러 및 최신 출간 도서 목록을 카테고리별로 세밀하게
+                        조회할 수 있습니다.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-github-border shadow-sm hover:shadow-md transition">
+                    <div
+                        class="w-12 h-12 bg-purple-50 text-github-purple rounded-lg flex items-center justify-center text-xl mb-4">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">상품 상세 정보</h3>
+                    <p class="text-sm text-github-muted leading-relaxed">책소개, 목차, 저자소개, ISBN, 가격, 출간일 등 서비스 구축에 필요한 풍부한
+                        메타데이터를 제공합니다.</p>
+                </div>
+            </div>
+
+            <div class="bg-github-bg border border-github-border rounded-xl p-8 text-center">
+                <h3 class="text-xl font-bold mb-2">지금 바로 개발을 시작하세요</h3>
+                <p class="text-github-muted mb-6 text-sm">간단한 이메일 인증만으로 일 5,000회 무료 호출 키를 발급받을 수 있습니다.</p>
+                <button onclick="navigate('apply')"
+                    class="bg-gray-900 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-800 transition"><i
+                        class="fas fa-key mr-2"></i>무료 API Key 발급받기</button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PAGE 2. GUIDE (/guide)                     -->
+        <!-- ========================================== -->
+        <div id="page-guide" class="page-section hidden">
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Sidebar -->
+                <div class="w-full md:w-64 shrink-0">
+                    <div class="sticky top-24">
+                        <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wider text-xs">Getting Started</h3>
+                        <ul class="space-y-2 text-sm text-github-muted border-l border-gray-200 pl-3">
+                            <li><a href="#g-intro" class="hover:text-yes24-blue transition">기본 안내</a></li>
+                            <li><a href="#g-auth" class="hover:text-yes24-blue transition">인증 (Authentication)</a></li>
+                            <li><a href="#g-req" class="hover:text-yes24-blue transition">요청 및 응답 포맷</a></li>
+                            <li><a href="#g-error" class="hover:text-yes24-blue transition">에러 코드 가이드</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Content -->
+                <div
+                    class="flex-grow bg-white border border-github-border rounded-xl p-8 shadow-sm prose prose-blue max-w-none">
+                    <h1 class="text-3xl font-bold border-b border-github-border pb-4 mb-6">개발 가이드</h1>
+
+                    <h2 id="g-intro" class="text-xl font-bold mt-8 mb-4">기본 안내</h2>
+                    <p class="text-sm text-gray-700 mb-4">YES24 Open API는 HTTP GET 방식을 사용하는 RESTful API입니다. 모든 요청의 Base
+                        URL은 다음과 같습니다.</p>
+                    <div
+                        class="bg-github-bg p-3 rounded-md border border-gray-200 mb-6 font-mono text-sm text-yes24-blue">
+                        https://openapi.yes24.com/api/v1
+                    </div>
+
+                    <h2 id="g-auth" class="text-xl font-bold mt-8 mb-4">인증 (Authentication)</h2>
+                    <p class="text-sm text-gray-700 mb-4">API를 호출하기 위해서는 <code
+                            class="bg-gray-100 px-1 rounded">apiKey</code>가 필수입니다. 쿼리스트링(QueryString)에 포함하여 요청합니다.</p>
+                    <pre><code class="language-bash">curl -X GET "https://openapi.yes24.com/api/v1/search?apiKey=YOUR_API_KEY&keyword=달러구트" \
+  -H "Accept: application/json"</code></pre>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4 text-sm text-yellow-800">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>기본 발급 키는 <strong>1일 5,000회</strong> 호출로 제한됩니다.
+                        초과 시 상업적 제휴 문의를 부탁드립니다.
+                    </div>
+
+                    <h2 id="g-req" class="text-xl font-bold mt-8 mb-4">요청 및 응답 포맷</h2>
+                    <p class="text-sm text-gray-700 mb-2">응답 포맷은 <code class="bg-gray-100 px-1 rounded">output</code>
+                        파라미터를 통해 <code class="bg-gray-100 px-1 rounded text-green-600">json</code> 또는 <code
+                            class="bg-gray-100 px-1 rounded text-purple-600">xml</code>로 지정할 수 있으며, 기본값은 JSON입니다.</p>
+                    <pre><code class="language-json">{
+  "version": "20250101",
+  "totalResults": 125,
+  "startIndex": 1,
+  "itemsPerPage": 10,
+  "item": [
+    { ...도서 정보... }
+  ]
+}</code></pre>
+
+                    <h2 id="g-error" class="text-xl font-bold mt-8 mb-4">에러 코드 가이드</h2>
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead class="bg-github-bg text-github-muted border-b border-github-border">
+                            <tr>
+                                <th class="p-3">HTTP Status</th>
+                                <th class="p-3">Error Code</th>
+                                <th class="p-3">설명</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr>
+                                <td class="p-3 font-mono text-github-success">200</td>
+                                <td class="p-3">-</td>
+                                <td class="p-3">정상 처리</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-mono text-github-danger">400</td>
+                                <td class="p-3">MissingParameter</td>
+                                <td class="p-3">필수 파라미터(예: keyword) 누락</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-mono text-github-danger">401</td>
+                                <td class="p-3">InvalidApiKey</td>
+                                <td class="p-3">유효하지 않거나 만료된 API Key</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-mono text-github-warning">429</td>
+                                <td class="p-3">RateLimitExceeded</td>
+                                <td class="p-3">일일 호출 허용량(5,000회) 초과</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-mono text-github-danger">500</td>
+                                <td class="p-3">InternalServerError</td>
+                                <td class="p-3">서버 내부 오류 (YES24 측 문제)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PAGE 3. REFERENCE (/reference)             -->
+        <!-- ========================================== -->
+        <div id="page-reference" class="page-section hidden">
+            <!-- Swagger-like UI -->
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">API Reference</h1>
+                <div class="bg-gray-100 px-3 py-1 rounded border border-gray-200 text-sm font-mono text-gray-600">v1.0.0
+                    (OAS3)</div>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Endpoint: Search -->
+                <div class="border border-blue-200 rounded-lg overflow-hidden">
+                    <div class="bg-blue-50 px-4 py-3 flex items-center cursor-pointer hover:bg-blue-100 transition"
+                        onclick="toggleEndpoint('ep-search')">
+                        <span
+                            class="bg-blue-600 text-white font-bold px-3 py-1 rounded text-sm mr-4 w-16 text-center">GET</span>
+                        <span class="font-mono text-gray-800 font-semibold">/api/v1/search</span>
+                        <span class="ml-4 text-sm text-gray-600">상품 검색 API</span>
+                        <i class="fas fa-chevron-down ml-auto text-gray-400"></i>
+                    </div>
+                    <div id="ep-search" class="p-5 border-t border-blue-100 bg-white">
+                        <p class="text-sm text-gray-700 mb-4">키워드를 기반으로 도서를 검색합니다.</p>
+                        <h4 class="font-bold text-sm text-gray-800 mb-2">Parameters</h4>
+                        <table class="w-full text-sm text-left mb-6 border-collapse">
+                            <tr class="border-b border-gray-200">
+                                <th class="p-2 w-1/4">Name</th>
+                                <th class="p-2">Description</th>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="p-2"><span class="font-mono text-red-600 font-bold">apiKey</span><br><span
+                                        class="text-xs text-gray-400">* required</span></td>
+                                <td class="p-2">발급받은 인증키 (String)</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="p-2"><span class="font-mono text-red-600 font-bold">keyword</span><br><span
+                                        class="text-xs text-gray-400">* required</span></td>
+                                <td class="p-2">검색어 (UTF-8 인코딩)</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="p-2"><span class="font-mono text-gray-700">sort</span></td>
+                                <td class="p-2">정렬 방식 (accuracy: 정확도순(기본), sales: 판매량순, recent: 신간순)</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <td class="p-2"><span class="font-mono text-gray-700">maxResults</span></td>
+                                <td class="p-2">한 페이지에 출력될 결과 수 (기본: 10, 최대: 50)</td>
+                            </tr>
+                        </table>
+
+                        <h4 class="font-bold text-sm text-gray-800 mb-2">Responses</h4>
+                        <div
+                            class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-xs overflow-x-auto custom-scrollbar">
+                            <pre class="!bg-transparent !p-0 !border-none !m-0"><code>{
+  "version": "20250101",
+  "totalResults": 1,
+  "item": [
+    {
+      "itemId": 90365124,
+      "title": "달러구트 꿈 백화점",
+      "author": "이미예 저",
+      "publisher": "팩토리나인",
+      "pubDate": "2020-07-08",
+      "priceStandard": 13800,
+      "cover": "https://image.yes24.com/goods/90365124/L",
+      "categoryId": "001001046"
+    }
+  ]
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Endpoint: Bestseller -->
+                <div class="border border-green-200 rounded-lg overflow-hidden">
+                    <div class="bg-green-50 px-4 py-3 flex items-center cursor-pointer hover:bg-green-100 transition"
+                        onclick="toggleEndpoint('ep-best')">
+                        <span
+                            class="bg-blue-600 text-white font-bold px-3 py-1 rounded text-sm mr-4 w-16 text-center">GET</span>
+                        <span class="font-mono text-gray-800 font-semibold">/api/v1/list/bestseller</span>
+                        <span class="ml-4 text-sm text-gray-600">베스트셀러 목록 API</span>
+                        <i class="fas fa-chevron-down ml-auto text-gray-400"></i>
+                    </div>
+                    <div id="ep-best" class="p-5 border-t border-green-100 bg-white hidden">
+                        <p class="text-sm text-gray-700 mb-4">현재 실시간 베스트셀러 목록을 반환합니다.</p>
+                        <!-- (생략: 파라미터 테이블 등 동일 구조) -->
+                        <div class="text-sm text-gray-500 italic">상세 내용은 검색 API와 동일한 포맷을 제공합니다.</div>
+                    </div>
+                </div>
+
+                <!-- Endpoint: Detail -->
+                <div class="border border-purple-200 rounded-lg overflow-hidden">
+                    <div class="bg-purple-50 px-4 py-3 flex items-center cursor-pointer hover:bg-purple-100 transition"
+                        onclick="toggleEndpoint('ep-detail')">
+                        <span
+                            class="bg-blue-600 text-white font-bold px-3 py-1 rounded text-sm mr-4 w-16 text-center">GET</span>
+                        <span class="font-mono text-gray-800 font-semibold">/api/v1/product/{itemId}</span>
+                        <span class="ml-4 text-sm text-gray-600">상품 상세 API</span>
+                        <i class="fas fa-chevron-down ml-auto text-gray-400"></i>
+                    </div>
+                    <div id="ep-detail" class="p-5 border-t border-purple-100 bg-white hidden">
+                        <p class="text-sm text-gray-700 mb-4">상품 고유번호(itemId)로 상세 책소개 및 목차를 조회합니다.</p>
+                        <div class="text-sm text-gray-500 italic">상세 내용은 검색 API 응답 + description, toc 필드가 추가됩니다.</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PAGE 4. APPLY (/apply)                     -->
+        <!-- ========================================== -->
+        <div id="page-apply" class="page-section hidden max-w-2xl mx-auto">
+            <div class="bg-white border border-github-border rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-github-bg border-b border-github-border p-6">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <i class="fas fa-key text-github-warning"></i> API Key 발급 신청
+                    </h2>
+                    <p class="text-sm text-github-muted mt-2">간단한 정보 입력 후 즉시 사용 가능한 API 인증 키를 발급해 드립니다.</p>
+                </div>
+                <div class="p-6 md:p-8">
+                    <form onsubmit="submitForm(event)">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">개발자/조직명 <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+                                    placeholder="예: 홍길동 또는 (주)회사명" required>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">이메일 주소 <span
+                                        class="text-red-500">*</span></label>
+                                <input type="email"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+                                    placeholder="key를 수신할 이메일" required>
+                                <p class="text-xs text-gray-500 mt-1">이메일 주소 기준으로 키가 관리됩니다.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">사용 목적 <span
+                                        class="text-red-500">*</span></label>
+                                <select
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+                                    required>
+                                    <option value="">선택해주세요</option>
+                                    <option value="study">개인 프로젝트 / 학습용 (비상업적)</option>
+                                    <option value="b2b">B2B 제휴 (기업/상업용 서비스 연동)</option>
+                                    <option value="publisher">출판사 내부 관리용</option>
+                                    <option value="etc">기타</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">서비스 URL (선택)</label>
+                                <input type="url"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+                                    placeholder="https://">
+                            </div>
+
+                            <div class="border-t border-gray-200 pt-4">
+                                <label class="flex items-start">
+                                    <input type="checkbox"
+                                        class="mt-1 mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                        required>
+                                    <span class="text-sm text-gray-600">
+                                        [필수] YES24 Open API 이용약관에 동의합니다.<br>
+                                        <a href="#" class="text-blue-600 hover:underline text-xs">약관 전문 보기</a>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <button type="submit"
+                                class="w-full bg-yes24-blue hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors flex justify-center items-center">
+                                <i class="fas fa-paper-plane mr-2"></i> 발급 신청하기
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PAGE 5. FAQ (/faq)                         -->
+        <!-- ========================================== -->
+        <div id="page-faq" class="page-section hidden max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold mb-2">자주 묻는 질문 (FAQ)</h1>
+            <p class="text-github-muted mb-8">API 이용에 관해 가장 많이 들어오는 질문들을 모았습니다.</p>
+
+            <div class="space-y-4">
+                <!-- FAQ Item -->
+                <div class="border border-github-border rounded-xl bg-white overflow-hidden">
+                    <button
+                        class="w-full text-left px-6 py-4 font-bold text-gray-800 hover:bg-gray-50 focus:outline-none flex justify-between items-center"
+                        onclick="toggleFaq('faq-1')">
+                        <span>Q. 하루 API 호출 한도는 얼마인가요?</span>
+                        <i class="fas fa-plus text-gray-400 text-sm" id="icon-faq-1"></i>
+                    </button>
+                    <div id="faq-1" class="px-6 pb-4 pt-2 text-sm text-gray-600 border-t border-gray-100 hidden">
+                        기본적으로 발급되는 API Key는 <strong>1일 최대 5,000회</strong>까지 호출이 가능합니다.
+                        한도는 매일 자정(00:00 KST)에 초기화됩니다. 호출 한도를 증설해야 하는 기업 고객은 별도의 B2B 제휴 신청을 통해 한도를 상향할 수 있습니다.
+                    </div>
+                </div>
+
+                <!-- FAQ Item -->
+                <div class="border border-github-border rounded-xl bg-white overflow-hidden">
+                    <button
+                        class="w-full text-left px-6 py-4 font-bold text-gray-800 hover:bg-gray-50 focus:outline-none flex justify-between items-center"
+                        onclick="toggleFaq('faq-2')">
+                        <span>Q. 상업적 목적으로도 사용 가능한가요?</span>
+                        <i class="fas fa-plus text-gray-400 text-sm" id="icon-faq-2"></i>
+                    </button>
+                    <div id="faq-2" class="px-6 pb-4 pt-2 text-sm text-gray-600 border-t border-gray-100 hidden">
+                        네, 개인 및 비상업적 용도는 약관 동의 후 즉시 무료로 사용 가능합니다.<br>
+                        다만, YES24의 데이터를 기반으로 한 직접적인 영리 창출 서비스(수익형 앱, 쇼핑몰 연동 등)의 경우 API 사용 목적 검토 후 사용이 승인됩니다. 자세한 내용은
+                        고객센터로 문의 바랍니다.
+                    </div>
+                </div>
+
+                <!-- FAQ Item -->
+                <div class="border border-github-border rounded-xl bg-white overflow-hidden">
+                    <button
+                        class="w-full text-left px-6 py-4 font-bold text-gray-800 hover:bg-gray-50 focus:outline-none flex justify-between items-center"
+                        onclick="toggleFaq('faq-3')">
+                        <span>Q. 도서 이미지는 제공되나요?</span>
+                        <i class="fas fa-plus text-gray-400 text-sm" id="icon-faq-3"></i>
+                    </button>
+                    <div id="faq-3" class="px-6 pb-4 pt-2 text-sm text-gray-600 border-t border-gray-100 hidden">
+                        네, 응답 JSON/XML 내에 <code class="bg-gray-100 px-1 rounded">cover</code> 필드를 통해 도서 표지 이미지 URL
+                        (https://image.yes24.com/...)을 제공합니다.
+                        해당 URL을 서비스 내 `<img>` 태그에 직접 연결하여 사용하실 수 있습니다.
+                    </div>
+                </div>
+
+                <!-- FAQ Item -->
+                <div class="border border-github-border rounded-xl bg-white overflow-hidden">
+                    <button
+                        class="w-full text-left px-6 py-4 font-bold text-gray-800 hover:bg-gray-50 focus:outline-none flex justify-between items-center"
+                        onclick="toggleFaq('faq-4')">
+                        <span>Q. 응답 필드 중 일부 데이터가 비어(null) 있습니다.</span>
+                        <i class="fas fa-plus text-gray-400 text-sm" id="icon-faq-4"></i>
+                    </button>
+                    <div id="faq-4" class="px-6 pb-4 pt-2 text-sm text-gray-600 border-t border-gray-100 hidden">
+                        출판사에서 제공하지 않은 데이터(예: 목차, 역자 정보 등)나, e-book 전용 필드 등 상품의 성격에 따라
+                        일부 메타데이터 필드는 값이 없거나 null로 반환될 수 있습니다. 프론트엔드 연동 시 방어 코드(Optional Chaining 등) 작성을 권장합니다.
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center text-sm text-github-muted">
+                원하는 답변을 찾지 못하셨나요? <a href="#" class="text-yes24-blue hover:underline font-semibold">개발자 지원팀에 문의하기</a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-github-border mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="md:flex md:items-center md:justify-between">
+                <div class="flex justify-center md:justify-start space-x-6 md:order-2">
+                    <a href="#" class="text-gray-400 hover:text-gray-500 text-sm">이용약관</a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500 text-sm">개인정보처리방침</a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500 text-sm">운영정책</a>
+                </div>
+                <div class="mt-8 md:mt-0 md:order-1">
+                    <p class="text-center md:text-left text-sm text-gray-400">
+                        &copy; 2026 YES24 Corp. All rights reserved.<br>
+                        <span class="text-xs mt-1 block">YES24 Frontend Team - OpenAPI Documentation</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for SPA Routing & UI Interactions -->
+    <script>
+        // Simple SPA Routing Logic
+        function navigate(pageId) {
+            // Hide all sections
+            document.querySelectorAll('.page-section').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+
+            // Show target section
+            const targetSection = document.getElementById('page-' + pageId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                targetSection.classList.add('block');
+            }
+
+            // Update Nav Styles
+            document.querySelectorAll('.nav-link').forEach(el => {
+                if (el.dataset.target === pageId) {
+                    el.classList.add('active');
+                    el.classList.remove('text-github-muted', 'border-transparent');
+                } else {
+                    el.classList.remove('active');
+                    el.classList.add('text-github-muted', 'border-transparent');
+                }
+            });
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Toggle Swagger Endpoints
+        function toggleEndpoint(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // Toggle FAQ Items
+        function toggleFaq(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                icon.classList.remove('fa-plus');
+                icon.classList.add('fa-minus');
+            } else {
+                el.classList.add('hidden');
+                icon.classList.remove('fa-minus');
+                icon.classList.add('fa-plus');
+            }
+        }
+
+        // Handle Apply Form Submit
+        function submitForm(e) {
+            e.preventDefault();
+            // In a real environment, this would call an API.
+            alert("API Key 발급 신청이 완료되었습니다. 기재하신 이메일로 키가 발송됩니다.");
+            navigate('main');
+        }
+    </script>
+</body>
+
+</html>

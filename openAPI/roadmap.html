@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YES24 Open API 서비스 구축 플랜</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Pretendard Variable"', 'Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        github: {
+                            bg: '#f6f8fa',
+                            border: '#d0d7de',
+                            text: '#24292f',
+                            muted: '#57606a',
+                            primary: '#0969da',
+                            success: '#2da44e',
+                            danger: '#cf222e',
+                            purple: '#8250df',
+                            warning: '#bf8700'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f3f4f6;
+        }
+
+        .bar-chart-container:hover .bar {
+            opacity: 0.8;
+        }
+
+        .bar:hover {
+            opacity: 1 !important;
+            transform: scaleY(1.02);
+            transform-origin: bottom;
+        }
+
+        /* Custom Scrollbar for tables & pre */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+    </style>
+</head>
+
+<body class="text-github-text antialiased font-sans p-4 md:p-8">
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+
+        <!-- Header -->
+        <header class="bg-github-bg border-b border-github-border p-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold flex items-center gap-3 mb-4">
+                        YES24 Open API <span class="font-light text-github-muted">서비스 구축 플랜</span>
+                    </h1>
+                    <div class="space-y-1 text-sm text-github-text">
+                        <p><span class="font-semibold w-24 inline-block text-github-muted">레퍼런스</span> <span
+                                class="font-medium">알라딘 Open API 구조 차용</span></p>
+                        <p><span class="font-semibold w-24 inline-block text-github-muted">개발방식</span> <span
+                                class="text-github-primary font-semibold">100% AI 바이브코딩 (GitHub Copilot)</span></p>
+                    </div>
+                </div>
+                <div
+                    class="text-left md:text-right bg-white px-5 py-3 rounded-lg border border-github-border shadow-sm">
+                    <div class="text-sm font-semibold text-github-muted mb-1 uppercase tracking-wider">Target Framework
+                    </div>
+                    <div class="text-2xl font-bold text-github-purple">.NET 10 + Web API</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-8 space-y-12">
+
+            <!-- Key Metrics / Overview -->
+            <section>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Metric 1 -->
+                    <div
+                        class="p-6 rounded-xl border border-github-border bg-white shadow-sm flex flex-col items-center text-center transition hover:shadow-md">
+                        <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-3">
+                            <i class="fas fa-bullseye text-github-primary text-xl"></i>
+                        </div>
+                        <span class="text-lg font-bold text-github-text">AI 기반 구현</span>
+                        <span class="text-xs font-semibold text-github-muted uppercase tracking-wide mt-1">프로젝트
+                            목표</span>
+                    </div>
+                    <!-- Metric 2 -->
+                    <div
+                        class="p-6 rounded-xl border border-github-border bg-white shadow-sm flex flex-col items-center text-center transition hover:shadow-md">
+                        <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mb-3">
+                            <i class="fas fa-users text-github-success text-xl"></i>
+                        </div>
+                        <span class="text-lg font-bold text-github-text">B2B / B2C 개방</span>
+                        <span class="text-xs font-semibold text-github-muted uppercase tracking-wide mt-1">대학생, 출판사, 소규모
+                            책방, 개발자</span>
+                    </div>
+                    <!-- Metric 3 -->
+                    <div
+                        class="p-6 rounded-xl border border-github-border bg-white shadow-sm flex flex-col items-center text-center transition hover:shadow-md">
+                        <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center mb-3">
+                            <i class="fas fa-server text-github-purple text-xl"></i>
+                        </div>
+                        <span class="text-lg font-bold text-github-text">GET 방식 REST API</span>
+                        <span class="text-xs font-semibold text-github-muted uppercase tracking-wide mt-1">통신 방식</span>
+                    </div>
+                    <!-- Metric 4 -->
+                    <div
+                        class="p-6 rounded-xl border border-github-border bg-white shadow-sm flex flex-col items-center text-center transition hover:shadow-md">
+                        <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-3">
+                            <i class="fas fa-key text-github-danger text-xl"></i>
+                        </div>
+                        <span class="text-lg font-bold text-github-text">API Key 인증</span>
+                        <span class="text-xs font-semibold text-github-muted uppercase tracking-wide mt-1">보안 방식</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 1. Architecture -->
+            <section>
+                <h2 class="text-xl font-bold border-b border-github-border pb-2 mb-4 flex items-center gap-2">
+                    <span
+                        class="w-6 h-6 rounded bg-github-primary text-white text-sm flex items-center justify-center">1</span>
+                    Phase 1 — 아키텍처 설계 (AI 프롬프트 설계)
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Context Box -->
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-6 text-sm leading-relaxed text-gray-700">
+                        <h3 class="font-bold text-github-primary mb-3"><i class="fas fa-box-open mr-2"></i>AI를 위한 컨텍스트
+                            패키지 준비</h3>
+                        <p class="mb-3 text-xs text-github-muted">바이브코딩의 핵심은 AI에게 명확한 컨텍스트를 제공하는 것입니다. 다음 준비물을 사전에
+                            정의합니다.</p>
+                        <ul class="space-y-2">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-github-primary mt-1"></i>
+                                <span>기존 DB 테이블 스키마와 SP 재 활용(상품/전시/집계-베스트,신상품)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-github-primary mt-1"></i>
+                                <span>알라딘 API 응답 구조 (참고 레퍼런스)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-github-primary mt-1"></i>
+                                <span>API 응답 필드 화이트리스트 (외부 노출 가능 컬럼 정의)</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Tree Box -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-3"><i class="fas fa-sitemap mr-2"></i>신규 솔루션 구조 (AI
+                            Scaffolding)</h3>
+                        <div class="bg-gray-800 rounded-xl p-5 overflow-x-auto custom-scrollbar">
+                            <pre
+                                class="text-green-400 font-mono text-xs leading-6">YES24.OpenAPI.sln
+├── <span class="text-blue-300">YES24.OpenAPI.Web</span>          <span class="text-gray-400">← API 엔드포인트 (.NET 10 Web API)</span>
+├── <span class="text-blue-300">YES24.OpenAPI.Core</span>         <span class="text-gray-400">← 비즈니스 로직, 모델</span>
+├── <span class="text-blue-300">YES24.OpenAPI.Infrastructure</span> <span class="text-gray-400">← DB 접근 (기존 MSSQL 연결)</span>
+└── <span class="text-blue-300">YES24.OpenAPI.Portal</span>       <span class="text-gray-400">← 소개 페이지 + 문서 (Razor Pages)</span></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 2. API Endpoints -->
+            <section>
+                <h2 class="text-xl font-bold border-b border-github-border pb-2 mb-2 flex items-center gap-2">
+                    <span
+                        class="w-6 h-6 rounded bg-github-primary text-white text-sm flex items-center justify-center">2</span>
+                    Phase 2 — API 엔드포인트 설계
+                </h2>
+                <div class="mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200 inline-block">
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mr-3">Base URL</span>
+                    <code
+                        class="text-sm font-mono text-github-purple bg-white px-2 py-1 border border-gray-200 rounded">https://openapi.yes24.com/api/v1/</code>
+                </div>
+
+                <div class="border border-github-border rounded-xl overflow-hidden custom-scrollbar mb-6">
+                    <table class="w-full text-sm text-left whitespace-nowrap">
+                        <thead
+                            class="bg-github-bg text-github-muted font-semibold border-b border-github-border uppercase tracking-wider text-xs">
+                            <tr>
+                                <th class="px-6 py-4">API 명</th>
+                                <th class="px-6 py-4">Method / URL</th>
+                                <th class="px-6 py-4 w-full">설명</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 bg-white">
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-3 font-semibold text-gray-800">상품 검색</td>
+                                <td class="px-6 py-3"><span
+                                        class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-mono mr-2">GET</span><code
+                                        class="text-xs text-gray-600">/search</code></td>
+                                <td class="px-6 py-3 text-gray-600">키워드 기반 도서 검색</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-3 font-semibold text-gray-800">상품 상세</td>
+                                <td class="px-6 py-3"><span
+                                        class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-mono mr-2">GET</span><code
+                                        class="text-xs text-gray-600">/product/{itemId}</code></td>
+                                <td class="px-6 py-3 text-gray-600">단일 상품 상세 정보</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-3 font-semibold text-gray-800">베스트셀러</td>
+                                <td class="px-6 py-3"><span
+                                        class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-mono mr-2">GET</span><code
+                                        class="text-xs text-gray-600">/list/bestseller</code></td>
+                                <td class="px-6 py-3 text-gray-600">분야별 베스트셀러 목록</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-3 font-semibold text-gray-800">신간 리스트</td>
+                                <td class="px-6 py-3"><span
+                                        class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-mono mr-2">GET</span><code
+                                        class="text-xs text-gray-600">/list/newrelease</code></td>
+                                <td class="px-6 py-3 text-gray-600">신간 도서 리스트</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-3 font-semibold text-gray-800">추천 리스트</td>
+                                <td class="px-6 py-3"><span
+                                        class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-mono mr-2">GET</span><code
+                                        class="text-xs text-gray-600">/list/recommend</code></td>
+                                <td class="px-6 py-3 text-gray-600">MD 추천 도서 리스트</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Common Parameters -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-5">
+                    <h4 class="text-sm font-bold text-yellow-800 mb-3"><i class="fas fa-list mr-2"></i>공통 파라미터
+                        (QueryString)</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                        <div class="bg-white p-2 rounded border border-yellow-100 shadow-sm"><code
+                                class="font-bold text-red-600">apiKey</code> (필수) 인증키</div>
+                        <div class="bg-white p-2 rounded border border-yellow-100 shadow-sm"><code
+                                class="font-bold">output</code> json </div>
+                        <div class="bg-white p-2 rounded border border-yellow-100 shadow-sm"><code
+                                class="font-bold">maxResults</code> 최대 결과수 (10~50)</div>
+                        <div class="bg-white p-2 rounded border border-yellow-100 shadow-sm"><code
+                                class="font-bold">start</code> 페이지 오프셋</div>
+                        <div class="bg-white p-2 rounded border border-yellow-100 shadow-sm"><code
+                                class="font-bold">categoryId</code> YES24 카테고리 ID</div>
+                        <div class="bg-white p-2 rounded border border-yellow-100 shadow-sm"><code
+                                class="font-bold">version</code> API 버전 (예: 20250101)</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phase 3 & 4 Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Phase 3. Auth System -->
+                <section>
+                    <h2 class="text-xl font-bold border-b border-github-border pb-2 mb-4 flex items-center gap-2">
+                        <span
+                            class="w-6 h-6 rounded bg-github-primary text-white text-sm flex items-center justify-center">3</span>
+                        Phase 3 — 인증 시스템
+                    </h2>
+                    <div class="bg-white border border-github-border rounded-xl p-6 space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="mt-0.5 bg-gray-100 p-2 rounded-full"><i
+                                    class="fas fa-id-card text-gray-600 w-4 text-center"></i></div>
+                            <div><strong class="text-sm text-gray-800 block">발급 방식</strong><span
+                                    class="text-xs text-gray-600">웹 포털에서 이메일 + 용도 입력 시 자동 발급</span></div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="mt-0.5 bg-gray-100 p-2 rounded-full"><i
+                                    class="fas fa-database text-gray-600 w-4 text-center"></i></div>
+                            <div>
+                                <strong class="text-sm text-gray-800 block">저장 방식</strong>
+                                <span class="text-xs text-gray-600">기존 DB에 <code
+                                        class="bg-gray-100 px-1 rounded">ApiKey</code> 테이블 추가 (최소화: key, email,
+                                    createdAt)<br>
+                                    <span class="text-red-500 font-medium">* 초기엔 하드코딩 화이트리스트 방식으로 우회 가능</span></span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="mt-0.5 bg-gray-100 p-2 rounded-full"><i
+                                    class="fas fa-shield-alt text-gray-600 w-4 text-center"></i></div>
+                            <div><strong class="text-sm text-gray-800 block">인증 방식</strong><span
+                                    class="text-xs text-gray-600">Request Header 또는 QueryString (<code
+                                        class="bg-gray-100 px-1 rounded">?apiKey=xxx</code>)</span></div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="mt-0.5 bg-gray-100 p-2 rounded-full"><i
+                                    class="fas fa-tachometer-alt text-gray-600 w-4 text-center"></i></div>
+                            <div><strong class="text-sm text-gray-800 block">제한 정책</strong><span
+                                    class="text-xs text-gray-600">1일 5,000건 (알라딘과 동일하게 설정하여 Rate Limiting 적용)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Phase 4. Vibe Coding Strategy -->
+                <section>
+                    <h2 class="text-xl font-bold border-b border-github-border pb-2 mb-4 flex items-center gap-2">
+                        <span
+                            class="w-6 h-6 rounded bg-github-primary text-white text-sm flex items-center justify-center">4</span>
+                        Phase 4 — 바이브코딩 실행 전략
+                    </h2>
+                    <div class="space-y-3">
+                        <div
+                            class="border border-gray-200 rounded-lg p-3 hover:border-github-primary transition-colors flex gap-3">
+                            <div class="font-bold text-github-primary w-14 shrink-0 text-sm">작업 A</div>
+                            <div class="text-sm text-gray-700"><strong>프로젝트 Scaffolding:</strong> AI에게 솔루션 구조 및 컨트롤러 뼈대
+                                생성 요청</div>
+                        </div>
+                        <div
+                            class="border border-gray-200 rounded-lg p-3 hover:border-github-primary transition-colors flex gap-3">
+                            <div class="font-bold text-github-primary w-14 shrink-0 text-sm">작업 B</div>
+                            <div class="text-sm text-gray-700"><strong>DB 연결 및 쿼리:</strong> 기존 MSSQL 테이블 스키마 제공 후
+                                Repository 클래스 생성 요청</div>
+                        </div>
+                        <div
+                            class="border border-gray-200 rounded-lg p-3 hover:border-github-primary transition-colors flex gap-3">
+                            <div class="font-bold text-github-primary w-14 shrink-0 text-sm">작업 C</div>
+                            <div class="text-sm text-gray-700"><strong>응답 모델 정의:</strong> 알라딘 구조 참조하여 YES24 스타일 JSON 모델
+                                자동 설계</div>
+                        </div>
+                        <div
+                            class="border border-gray-200 rounded-lg p-3 hover:border-github-primary transition-colors flex gap-3">
+                            <div class="font-bold text-github-primary w-14 shrink-0 text-sm">작업 D</div>
+                            <div class="text-sm text-gray-700"><strong>미들웨어:</strong> ASP.NET Core 미들웨어로 ApiKey 검증 및
+                                Rate Limit 로직 구현</div>
+                        </div>
+                        <div
+                            class="border border-gray-200 rounded-lg p-3 hover:border-github-primary transition-colors flex gap-3">
+                            <div class="font-bold text-github-primary w-14 shrink-0 text-sm">작업 E</div>
+                            <div class="text-sm text-gray-700"><strong>포털 및 문서화:</strong> 브랜드 컬러 기반 HTML 생성</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Phase 5 & Schedule Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+
+                <!-- Phase 5. Portal Page -->
+                <section>
+                    <h2 class="text-xl font-bold border-b border-github-border pb-2 mb-4 flex items-center gap-2">
+                        <span
+                            class="w-6 h-6 rounded bg-github-primary text-white text-sm flex items-center justify-center">5</span>
+                        API 포털 페이지 구성
+                    </h2>
+                    <div class="border border-github-border rounded-xl overflow-hidden custom-scrollbar">
+                        <table class="w-full text-sm text-left whitespace-nowrap">
+                            <thead class="bg-github-bg text-github-muted text-xs uppercase">
+                                <tr>
+                                    <th class="px-4 py-3 border-b border-github-border w-1/4">경로 (페이지)</th>
+                                    <th class="px-4 py-3 border-b border-github-border">주요 내용</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 bg-white">
+                                <tr>
+                                    <td class="px-4 py-3 font-mono text-github-primary bg-gray-50">/ (Main)</td>
+                                    <td class="px-4 py-3 text-gray-600">API 소개, 주요 기능 3가지 카드, CTA(키 발급)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-mono text-github-primary bg-gray-50">/guide</td>
+                                    <td class="px-4 py-3 text-gray-600">시작하기, 인증 방식, 에러코드 가이드</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-mono text-github-primary bg-gray-50">/reference</td>
+                                    <td class="px-4 py-3 text-gray-600">각 API 파라미터/응답 상세 </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-mono text-github-primary bg-gray-50">/apply</td>
+                                    <td class="px-4 py-3 text-gray-600">API 키 발급 신청 폼 (이메일, 사용목적)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-mono text-github-primary bg-gray-50">/faq</td>
+                                    <td class="px-4 py-3 text-gray-600">자주 묻는 질문 모음</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Schedule -->
+                <section>
+                    <h2 class="text-xl font-bold border-b border-github-border pb-2 mb-4 flex items-center gap-2">
+                        <span
+                            class="w-6 h-6 rounded bg-github-success text-white text-sm flex items-center justify-center"><i
+                                class="fas fa-calendar-alt text-xs"></i></span>
+                        구현 순서 (마일스톤)
+                    </h2>
+                    <div class="relative border-l-2 border-gray-200 ml-3 space-y-6 pb-2">
+                        <!-- Week 1 -->
+                        <div class="relative pl-6">
+                            <span
+                                class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-github-primary ring-4 ring-white"></span>
+                            <h3 class="font-bold text-gray-800 text-sm mb-1">Week 1: 기반 설정</h3>
+                            <p class="text-xs text-gray-600">DB 스키마 분석 및 노출 필드 화이트리스트 확정<br>.NET 10 솔루션 Scaffolding (AI
+                                1차 생성)</p>
+                        </div>
+                        <!-- Week 2 -->
+                        <div class="relative pl-6">
+                            <span
+                                class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-github-primary ring-4 ring-white opacity-60"></span>
+                            <h3 class="font-bold text-gray-800 text-sm mb-1">Week 2: 핵심 API 개발</h3>
+                            <p class="text-xs text-gray-600">검색 API + 상품 상세 API 바이브코딩 구현<br>API Key 검증 미들웨어 구축</p>
+                        </div>
+                        <!-- Week 3 -->
+                        <div class="relative pl-6">
+                            <span
+                                class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-gray-300 ring-4 ring-white"></span>
+                            <h3 class="font-bold text-gray-800 text-sm mb-1">Week 3: 부가 API 및 고도화</h3>
+                            <p class="text-xs text-gray-600">베스트셀러 / 신간 리스트 API 구현<br>Rate Limiting(호출 제한) 미들웨어 추가</p>
+                        </div>
+                        <!-- Week 4 -->
+                        <div class="relative pl-6">
+                            <span
+                                class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-gray-300 ring-4 ring-white"></span>
+                            <h3 class="font-bold text-gray-800 text-sm mb-1">Week 4: 포털 및 마무리</h3>
+                            <p class="text-xs text-gray-600">API 포털 페이지 프론트엔드 제작 (AI로 HTML 생성)<br>Swagger 문서 자동화 연동 및 키
+                                발급 프로세스 정비</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-50 border-t border-github-border p-6 text-center">
+            <p class="text-xs text-gray-500">
+                YES24 Frontend Team Planning Document • Generated by AI Assistant (2026-03-08)
+            </p>
+        </footer>
+    </main>
+
+</body>
+
+</html>
