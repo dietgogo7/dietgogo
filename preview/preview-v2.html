@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미리보기 | 프로젝트 헤일메리 - 예스24</title>
+    <meta name="description" content="프로젝트 헤일메리 도서 미리보기 - YES24 인터랙티브 뷰어">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ===== CSS Variables & Reset ===== */
+        :root {
+            --yes-primary: #0080ff;
+            --yes-red: #e50014;
+            --yes-bg: #f5f6f8;
+            --yes-white: #ffffff;
+            --yes-dark: #222222;
+            --yes-gray: #666666;
+            --yes-border: #e5e5e5;
+            --yes-highlight: rgba(0, 128, 255, 0.15);
+            --highlight-pen: rgba(255, 210, 0, 0.45);
+            --sidebar-w: 320px;
+            --toolbar-h: 50px;
+            --thumbbar-h: 88px;
+            --ambient-color: 0, 128, 255;
+            --page-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            --transition-fast: 0.25s ease;
+            --transition-mid: 0.4s ease;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+            background: var(--yes-bg);
+            color: var(--yes-dark);
+            overflow: hidden;
+            height: 100vh;
+            transition: background var(--transition-mid), color var(--transition-mid);
+        }
+
+        /* ===== 집중 모드 ===== */
+        body.focus-mode {
+            --yes-bg: #111216;
+            --yes-white: #1c1d22;
+            --yes-dark: #e8e8e8;
+            --yes-gray: #aaa;
+            --yes-border: #2a2b30;
+        }
+
+        body.focus-mode .sidebar {
+            background: #18191e;
+            border-color: #2a2b30;
+        }
+
+        body.focus-mode .viewer-toolbar {
+            background: #18191e;
+        }
+
+        body.focus-mode .ai-card {
+            background: linear-gradient(135deg, #1e2a3a, #1a1f2e);
+        }
+
+        body.focus-mode .ai-tag {
+            background: rgba(0, 128, 255, 0.2);
+            border-color: rgba(0, 128, 255, 0.4);
+        }
+
+        body.focus-mode .thumb-bar {
+            background: #18191e;
+            border-color: #2a2b30;
+        }
+
+        body.focus-mode .page-item {
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ===== 레이아웃 ===== */
+        .preview-wrap {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* ===== 사이드바 ===== */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--yes-white);
+            border-right: 1px solid var(--yes-border);
+            display: flex;
+            flex-direction: column;
+            transition: background var(--transition-mid), border var(--transition-mid);
+            z-index: 20;
+            overflow-y: auto;
+        }
+
+        .sidebar-head {
+            padding: 20px;
+            padding-top: 10px;
+            border-bottom: 1px solid var(--yes-border);
+        }
+
+        .sidebar-logo {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-logo img {
+            height: 32px;
+            width: auto;
+        }
+
+        .sidebar-head h1 {
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-head .book-meta {
+            font-size: 13px;
+            color: var(--yes-gray);
+        }
+
+        /* AI 인사이트 카드 */
+        .ai-card {
+            margin: 16px;
+            padding: 20px 16px 16px;
+            background: linear-gradient(135deg, #eaf4ff, #f0f7ff);
+            border-radius: 14px;
+            position: relative;
+            transition: background var(--transition-mid);
+        }
+
+        .ai-card-icon {
+            position: absolute;
+            top: -18px;
+            right: 14px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .ai-card-icon img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ai-card-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--yes-primary);
+            margin-bottom: 10px;
+        }
+
+        .ai-card-label::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--yes-primary);
+            border-radius: 50%;
+            animation: aiPulse 2s infinite;
+        }
+
+        @keyframes aiPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(0.7);
+            }
+        }
+
+        .ai-card-text {
+            font-size: 14px;
+            line-height: 1.65;
+            color: var(--yes-dark);
+            word-break: keep-all;
+        }
+
+        .ai-tags {
+            margin-top: 12px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .ai-tag {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--yes-primary);
+            color: var(--yes-primary);
+            background: rgba(0, 128, 255, 0.06);
+            transition: background var(--transition-fast);
+        }
+
+        /* 주요 문장 */
+        .key-sentences {
+            padding: 0 16px;
+            margin-top: 4px;
+        }
+
+        .key-sentences-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key-sentences-title::before {
+            content: '📌';
+        }
+
+        .sentence-item {
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            border-left: 3px solid var(--yes-primary);
+            background: rgba(0, 128, 255, 0.04);
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .sentence-item:hover {
+            background: rgba(0, 128, 255, 0.1);
+        }
+
+        .sentence-page {
+            display: block;
+            font-size: 11px;
+            color: var(--yes-gray);
+            margin-top: 3px;
+        }
+
+        /* 목차 퀵메뉴 */
+        .toc-section {
+            padding: 16px;
+            margin-top: auto;
+        }
+
+        .toc-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-list li {
+            font-size: 13px;
+            padding: 7px 0;
+            border-bottom: 1px dashed var(--yes-border);
+            cursor: pointer;
+            color: var(--yes-gray);
+            transition: color var(--transition-fast);
+        }
+
+        .toc-list li:hover {
+            color: var(--yes-primary);
+        }
+
+        /* ===== 뷰어 영역 ===== */
+        .viewer-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 상단 툴바 */
+        .viewer-toolbar {
+            height: var(--toolbar-h);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            background: var(--yes-white);
+            border-bottom: 1px solid var(--yes-border);
+            z-index: 15;
+            transition: background var(--transition-mid), border var(--transition-mid);
+        }
+
+        .page-indicator {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--yes-gray);
+        }
+
+        .page-indicator strong {
+            color: var(--yes-primary);
+        }
+
+        .toolbar-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            background: transparent;
+            border: 1px solid var(--yes-border);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--yes-dark);
+            font-family: inherit;
+            transition: all var(--transition-fast);
+        }
+
+        .tool-btn:hover {
+            border-color: var(--yes-primary);
+            color: var(--yes-primary);
+        }
+
+        .tool-btn.active {
+            background: var(--yes-primary);
+            color: #fff;
+            border-color: var(--yes-primary);
+        }
+
+        /* 소셜 프루프 토스트 */
+        .social-toast {
+            position: absolute;
+            top: 64px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: rgba(0, 0, 0, 0.82);
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 24px;
+            font-size: 13px;
+            z-index: 40;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s, transform 0.4s, visibility 0.4s;
+            white-space: nowrap;
+        }
+
+        .social-toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 페이지 스크롤 영역 */
+        .pages-area {
+            flex: 1;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+
+        /* Ambient Light 배경 오버레이 */
+        .ambient-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        body.focus-mode .ambient-glow {
+            opacity: 0.15;
+        }
+
+        /* 페이지 스프레드 (가로 2단) */
+        .page-spread {
+            display: flex;
+            width: 100%;
+            max-width: 1040px;
+            justify-content: center;
+            margin-bottom: 40px;
+            scroll-snap-align: center;
+            gap: 2px;
+            position: relative;
+        }
+
+        .page-item {
+            flex: 1;
+            position: relative;
+            background: #fff;
+            max-width: 520px;
+            box-shadow: var(--page-shadow);
+            transition: box-shadow var(--transition-mid);
+            overflow: hidden;
+        }
+
+        /* 종이 질감 효과 */
+        .page-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%, rgba(0, 0, 0, 0.02) 100%);
+            pointer-events: none;
+        }
+
+        /* 책등 그림자 (가운데 접히는 느낌) */
+        .page-spread .page-item:first-child {
+            border-radius: 4px 0 0 4px;
+            box-shadow: var(--page-shadow), inset -8px 0 12px -6px rgba(0, 0, 0, 0.06);
+        }
+
+        .page-spread .page-item:last-child {
+            border-radius: 0 4px 4px 0;
+            box-shadow: var(--page-shadow), inset 8px 0 12px -6px rgba(0, 0, 0, 0.06);
+        }
+
+        .page-item img {
+            width: 100%;
+            display: block;
+        }
+
+
+        @keyframes hlDraw {
+            to {
+                transform: scaleX(1);
+            }
+        }
+
+        /* ===== 플로팅 액션 버튼 ===== */
+        .float-actions {
+            position: fixed;
+            bottom: 110px;
+            right: 28px;
+            display: flex;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        .act-btn {
+            padding: 14px 22px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .act-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+        }
+
+        .act-btn-cart {
+            background: #fff;
+            color: var(--yes-primary);
+            border: 1.5px solid var(--yes-primary);
+        }
+
+        .act-btn-buy {
+            background: var(--yes-primary);
+            color: #fff;
+        }
+
+        /* ===== 썸네일 네비게이션 ===== */
+        .thumb-bar {
+            height: var(--thumbbar-h);
+            border-top: 1px solid var(--yes-border);
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            padding: 0 16px;
+            background: var(--yes-white);
+            gap: 10px;
+            z-index: 15;
+            transition: background var(--transition-mid), border var(--transition-mid);
+        }
+
+        .thumb-bar::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .thumb-bar::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 2px;
+        }
+
+        .thumb-item {
+            width: 42px;
+            height: 60px;
+            flex-shrink: 0;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumb-item.active {
+            border-color: var(--yes-primary);
+            opacity: 1;
+            box-shadow: 0 0 8px rgba(0, 128, 255, 0.3);
+        }
+
+        .thumb-item:hover {
+            opacity: 0.85;
+        }
+
+        .thumb-num {
+            position: absolute;
+            bottom: 1px;
+            right: 2px;
+            font-size: 9px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0 3px;
+            border-radius: 2px;
+        }
+
+        /* ===== 반응형: Portrait / 세로 모니터 ===== */
+        @media screen and (max-width: 960px),
+        screen and (max-aspect-ratio: 3/4) {
+            .preview-wrap {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 240px;
+                border-right: none;
+                border-bottom: 1px solid var(--yes-border);
+                flex-direction: row;
+                flex-wrap: wrap;
+                overflow-y: auto;
+            }
+
+            .sidebar-head {
+                display: none;
+            }
+
+            .ai-card {
+                margin: 10px;
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .key-sentences {
+                display: none;
+            }
+
+            .toc-section {
+                display: none;
+            }
+
+            .page-spread {
+                flex-direction: column;
+                align-items: center;
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+
+            .page-item {
+                max-width: 100%;
+                width: 100%;
+                border-radius: 4px !important;
+                box-shadow: var(--page-shadow) !important;
+            }
+
+            .float-actions {
+                bottom: 96px;
+                right: 12px;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .act-btn {
+                font-size: 13px;
+                padding: 10px 16px;
+            }
+        }
+
+        /* ===== 페이지 넘김 애니메이션 ===== */
+        @keyframes pageFlipIn {
+            0% {
+                transform: perspective(1200px) rotateY(-12deg) scale(0.96);
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: perspective(1200px) rotateY(0deg) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .page-spread.flip-animate {
+            animation: pageFlipIn 0.5s ease-out;
+        }
+
+        /* 로딩 스켈레톤 */
+        .skeleton {
+            background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Ambient Light 효과 -->
+    <div class="ambient-glow" id="ambientGlow"></div>
+
+    <div class="preview-wrap">
+        <!-- ===== 좌측 사이드바 ===== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-head">
+                <a href="https://www.yes24.com" class="sidebar-logo" target="_blank">
+                    <img src="logoN4.svg" alt="YES24">
+                </a>
+                <h1>프로젝트 헤일메리</h1>
+                <div class="book-meta">앤디 위어 저 / 강동혁 역 · 알에이치코리아</div>
+            </div>
+
+            <!-- AI 인사이트 -->
+            <div class="ai-card">
+                <div class="ai-card-icon">
+                    <img src="https://image.yes24.com/sysimage/mv3/com/ico_ai02.svg" alt="YES24 AI">
+                </div>
+                <div class="ai-card-label">AI 핵심 요약</div>
+                <div class="ai-card-text">
+                    태양의 이상 현상 해결을 위해 홀로 우주에 남은 과학자의 사투. 외계 생명체와의 협력으로 인류 생존의 열쇠를 찾아가는 SF 걸작.
+                </div>
+                <div class="ai-tags">
+                    <span class="ai-tag">#SF소설</span>
+                    <span class="ai-tag">#우주탐험</span>
+                    <span class="ai-tag">#외계생명체</span>
+                    <span class="ai-tag">#과학</span>
+                </div>
+            </div>
+
+            <!-- 주요 문장 -->
+            <div class="key-sentences">
+                <div class="key-sentences-title">주요 문장</div>
+                <div class="sentence-item" data-page="2">
+                    "나는 어디에 있지? 기억이 나질 않는다."
+                    <span class="sentence-page">p.2</span>
+                </div>
+                <div class="sentence-item" data-page="5">
+                    "중력이 있다. 그건 확실하다."
+                    <span class="sentence-page">p.5</span>
+                </div>
+                <div class="sentence-item" data-page="8">
+                    "태양이 죽어가고 있다."
+                    <span class="sentence-page">p.8</span>
+                </div>
+            </div>
+
+            <!-- 목차 퀵메뉴 -->
+            <div class="toc-section">
+                <div class="toc-title">📖 목차</div>
+                <ul class="toc-list">
+                    <li data-page="0">1장. 깨어남</li>
+                    <li data-page="4">2장. 기억의 조각</li>
+                    <li data-page="8">3장. 헤일메리 호</li>
+                    <li data-page="12">4장. 외계 생명체</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- ===== 뷰어 영역 ===== -->
+        <main class="viewer-area">
+            <!-- 소셜 프루프 -->
+            <div class="social-toast" id="socialToast"></div>
+
+            <!-- 툴바 -->
+            <div class="viewer-toolbar">
+                <div class="page-indicator" id="pageIndicator">
+                    <strong>1</strong> / 28
+                </div>
+                <div class="toolbar-btns">
+                    <button type="button" class="tool-btn" id="btnFocus">🌙 집중 모드</button>
+                </div>
+            </div>
+
+            <!-- 스크롤 페이지 영역 -->
+            <div class="pages-area" id="pagesArea">
+                <!-- JS로 동적 생성 -->
+            </div>
+
+            <!-- 플로팅 버튼 -->
+            <div class="float-actions">
+                <button class="act-btn act-btn-cart" id="btnCart">🛒 장바구니</button>
+                <button class="act-btn act-btn-buy" id="btnBuy">구매하기</button>
+            </div>
+
+            <!-- 썸네일 바 -->
+            <nav class="thumb-bar" id="thumbBar">
+                <!-- JS로 동적 생성 -->
+            </nav>
+        </main>
+    </div>
+
+    <script>
+        /* ============================================
+           YES24 도서 미리보기 프로토타입 V2
+           jQuery + ES5 기반
+           ============================================ */
+        $(document).ready(function () {
+            // ===== 설정 =====
+            var BOOK_TITLE = '프로젝트 헤일메리';
+
+            // 실제 YES24 미리보기 이미지 URL 목록
+            var PAGE_IMAGES = [
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_w1bs30jd5ho4o32m.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_gxnhlffmlfyltqmm.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_g2n9jxch7k19nxgv.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_vnpb3dk0f2iqzkcg.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_3u1olhki10pauko6.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_f3vojb21qna0or81.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_sj1l6q9f34ny2dcr.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_z9d2biw8vkou445f.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_czaxun1yc11hqan2.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_zsf4c0r6hruixyv3.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_2zded1v084l3xqdu.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_t2hqy4yftqhog620.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_f3yyrqr0wfc8t674.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_22m4hzpa3z96hnj4.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_m49flea4wvigk1cz.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_snrq204oubydox9s.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_4jdz94vlf4ekscgo.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_7b09bwsla2zuxph7.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_hj310cauumh70y77.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_u0coxpwg8cpoku9u.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_wnbyfnkxw9g5zb68.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_y7hed6si4xwnyo75.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_lf5sw48zy5suz4g2.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_6cpl1kof5sszh8ik.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_5ydhsf237a82vs91.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_bn5cqilm339oeafa.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_42ar8d2v83r1nc2n.jpg',
+                'https://image.yes24.com/YES24ViewerDatas/Z1014_LT/A10138/B101376/101375755_L/f_4clsppuk752flx0r.jpg'
+            ];
+
+            var TOTAL_PAGES = PAGE_IMAGES.length; // 28페이지
+
+            // 실제 이미지 URL 반환 함수
+            function getPageImageUrl(pageNum) {
+                if (pageNum >= 0 && pageNum < PAGE_IMAGES.length) {
+                    return PAGE_IMAGES[pageNum];
+                }
+                // 범위 밖이면 마지막 이미지 반환
+                return PAGE_IMAGES[PAGE_IMAGES.length - 1];
+            }
+
+            // 하이라이트 데이터 (AI가 강조하는 문장 위치 - 페이지별)
+            var highlightData = {
+                1: [{ x: '8%', y: '35%', w: '70%', h: '2.5%' }, { x: '8%', y: '38%', w: '50%', h: '2.5%' }],
+                4: [{ x: '10%', y: '50%', w: '65%', h: '2.5%' }],
+                7: [{ x: '8%', y: '25%', w: '75%', h: '2.5%' }, { x: '8%', y: '28%', w: '60%', h: '2.5%' }],
+                11: [{ x: '10%', y: '60%', w: '55%', h: '2.5%' }]
+            };
+
+            var $pagesArea = $('#pagesArea');
+            var $thumbBar = $('#thumbBar');
+            var isLandscape = true;
+            var highlightVisible = true;
+
+            // ===== 1. 레이아웃 감지 =====
+            function checkOrientation() {
+                var w = $(window).width();
+                var h = $(window).height();
+                var ratio = w / h;
+                isLandscape = (w > 960 && ratio > 0.75);
+            }
+            checkOrientation();
+
+            // ===== 2. 페이지 렌더링 =====
+            function buildPages() {
+                $pagesArea.empty();
+                $thumbBar.empty();
+
+                if (isLandscape) {
+                    // 가로모드: 2단 펼침면
+                    for (var i = 0; i < TOTAL_PAGES; i += 2) {
+                        var spreadIdx = Math.floor(i / 2);
+                        var $spread = $('<div class="page-spread" data-spread="' + spreadIdx + '"></div>');
+
+                        // 왼쪽 페이지
+                        $spread.append(buildPageItem(i));
+                        // 오른쪽 페이지 (마지막 홀수 페이지 처리)
+                        if (i + 1 < TOTAL_PAGES) {
+                            $spread.append(buildPageItem(i + 1));
+                        }
+
+                        $pagesArea.append($spread);
+
+                        // 썸네일
+                        var thumbLabel = (i + 1) + (i + 1 < TOTAL_PAGES ? '-' + (i + 2) : '');
+                        var $thumb = $('<div class="thumb-item" data-spread="' + spreadIdx + '">' +
+                            '<img src="' + getPageImageUrl(i) + '" alt="' + thumbLabel + '">' +
+                            '<span class="thumb-num">' + thumbLabel + '</span>' +
+                            '</div>');
+                        $thumbBar.append($thumb);
+                    }
+                } else {
+                    // 세로모드: 1단 단일 페이지
+                    for (var j = 0; j < TOTAL_PAGES; j++) {
+                        var $spread2 = $('<div class="page-spread" data-spread="' + j + '"></div>');
+                        $spread2.append(buildPageItem(j));
+                        $pagesArea.append($spread2);
+
+                        var $thumb2 = $('<div class="thumb-item" data-spread="' + j + '">' +
+                            '<img src="' + getPageImageUrl(j) + '" alt="p' + (j + 1) + '">' +
+                            '<span class="thumb-num">' + (j + 1) + '</span>' +
+                            '</div>');
+                        $thumbBar.append($thumb2);
+                    }
+                }
+
+                // 첫 번째 썸네일 활성화
+                $thumbBar.find('.thumb-item').first().addClass('active');
+
+                // Intersection Observer 등록
+                setupObserver();
+            }
+
+            function buildPageItem(pageIdx) {
+                var $item = $('<div class="page-item" data-page="' + pageIdx + '"></div>');
+                var imgSrc = getPageImageUrl(pageIdx);
+
+                // 지연 로딩: 첫 4페이지만 즉시 로드
+                if (pageIdx < 4) {
+                    $item.append('<img src="' + imgSrc + '" alt="Page ' + (pageIdx + 1) + '">');
+                } else {
+                    $item.append('<img data-src="' + imgSrc + '" alt="Page ' + (pageIdx + 1) + '" class="skeleton" style="aspect-ratio:520/740; width:100%;">');
+                }
+
+                return $item;
+            }
+
+            // ===== 3. Intersection Observer =====
+            function setupObserver() {
+                if (!('IntersectionObserver' in window)) return;
+
+                var observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        var $el = $(entry.target);
+                        if (entry.isIntersecting) {
+                            $el.addClass('is-visible');
+                            // 페이지 넘김 애니메이션
+                            if (!$el.data('animated')) {
+                                $el.addClass('flip-animate');
+                                $el.data('animated', true);
+                                setTimeout(function () { $el.removeClass('flip-animate'); }, 600);
+                            }
+
+                            // 지연 로딩된 이미지 처리
+                            $el.find('img[data-src]').each(function () {
+                                var $img = $(this);
+                                $img.attr('src', $img.data('src')).removeAttr('data-src').removeClass('skeleton');
+                            });
+
+                            // 페이지 표시기 갱신
+                            var spreadIdx = $el.data('spread');
+                            var pageNum;
+                            if (isLandscape) {
+                                pageNum = spreadIdx * 2 + 1;
+                            } else {
+                                pageNum = spreadIdx + 1;
+                            }
+                            $('#pageIndicator').html('<strong>' + pageNum + '</strong> / ' + TOTAL_PAGES);
+
+                            // 썸네일 활성화
+                            $('.thumb-item').removeClass('active');
+                            $('.thumb-item[data-spread="' + spreadIdx + '"]').addClass('active');
+                        }
+                    });
+                }, {
+                    root: document.getElementById('pagesArea'),
+                    rootMargin: '0px',
+                    threshold: 0.4
+                });
+
+                $('.page-spread').each(function () {
+                    observer.observe(this);
+                });
+            }
+
+            // ===== 4. 썸네일 클릭 =====
+            $thumbBar.on('click', '.thumb-item', function () {
+                var targetSpread = $(this).data('spread');
+                var $targetEl = $('.page-spread[data-spread="' + targetSpread + '"]');
+                if ($targetEl.length > 0) {
+                    var container = $pagesArea[0];
+                    var offsetTop = $targetEl[0].offsetTop - container.offsetTop;
+                    $pagesArea.animate({ scrollTop: offsetTop }, 350);
+                }
+            });
+
+            // ===== 5. 집중 모드 =====
+            $('#btnFocus').on('click', function () {
+                $('body').toggleClass('focus-mode');
+                if ($('body').hasClass('focus-mode')) {
+                    $(this).text('☀️ 일반 모드').addClass('active');
+                    // Ambient Light 배경 적용
+                    $('#ambientGlow').css({
+                        background: 'radial-gradient(ellipse at center, rgba(var(--ambient-color), 0.08) 0%, transparent 70%)'
+                    });
+                } else {
+                    $(this).text('🌙 집중 모드').removeClass('active');
+                }
+            });
+
+
+
+            // ===== 7. 소셜 프루프 =====
+            var socialMessages = [
+                '현재 <strong>127명</strong>이 이 책을 함께 미리보고 있습니다',
+                '방금 전 <strong>서초구</strong>에서 <strong>1권</strong> 구매됨',
+                '이번 주 <strong>2,340명</strong>이 미리보기를 했습니다',
+                '<strong>MD 강력 추천</strong> 올해의 SF 소설'
+            ];
+            var $toast = $('#socialToast');
+
+            function showSocialProof() {
+                var msg = socialMessages[Math.floor(Math.random() * socialMessages.length)];
+                $toast.html('📢 ' + msg).addClass('show');
+                setTimeout(function () { $toast.removeClass('show'); }, 3500);
+            }
+            setTimeout(showSocialProof, 2500);
+            setInterval(showSocialProof, 12000);
+
+            // ===== 8. 주요 문장 클릭 → 해당 페이지 이동 =====
+            $('.sentence-item').on('click', function () {
+                var page = parseInt($(this).data('page'), 10);
+                var targetSpread;
+                if (isLandscape) {
+                    targetSpread = Math.floor(page / 2);
+                } else {
+                    targetSpread = page;
+                }
+                var $target = $('.page-spread[data-spread="' + targetSpread + '"]');
+                if ($target.length > 0) {
+                    var container = $pagesArea[0];
+                    var offsetTop = $target[0].offsetTop - container.offsetTop;
+                    $pagesArea.animate({ scrollTop: offsetTop }, 350);
+                }
+            });
+
+            // ===== 9. 목차 클릭 → 해당 페이지 이동 =====
+            $('.toc-list li').on('click', function () {
+                var page = parseInt($(this).data('page'), 10);
+                var targetSpread = isLandscape ? Math.floor(page / 2) : page;
+                var $target = $('.page-spread[data-spread="' + targetSpread + '"]');
+                if ($target.length > 0) {
+                    var container = $pagesArea[0];
+                    var offsetTop = $target[0].offsetTop - container.offsetTop;
+                    $pagesArea.animate({ scrollTop: offsetTop }, 350);
+                }
+            });
+
+            // ===== 10. CTA 버튼 =====
+            $('#btnCart').on('click', function () {
+                alert('장바구니에 담겼습니다.');
+            });
+            $('#btnBuy').on('click', function () {
+                if (confirm('구매 페이지로 이동하시겠습니까?')) {
+                    // window.location.href = 'https://www.yes24.com/product/goods/101375755';
+                    alert('구매 페이지로 이동합니다.');
+                }
+            });
+
+            // ===== 11. 리사이즈 핸들러 =====
+            var resizeTimer;
+            $(window).on('resize', function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function () {
+                    var prevLandscape = isLandscape;
+                    checkOrientation();
+                    if (prevLandscape !== isLandscape) {
+                        buildPages();
+                    }
+                }, 250);
+            });
+
+            // 초기 빌드
+            buildPages();
+        });
+    </script>
+</body>
+
+</html>
