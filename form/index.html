@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YES Form - 설문조사</title>
+    <!-- book-md-reservation (index.html) 의 app.css 참조 -->
+    <link rel="stylesheet" href="../book-md-reservation/css/app.css">
+    <!-- jQuery ES5 규격 반영 선언 -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <style>
+        /* 추가적인 폼 전용 스타일 (app.css 변수 및 톤앤매너 확장) */
+        .q-item {
+            margin-bottom: 24px;
+        }
+
+        .q-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+            display: flex;
+        }
+
+        .q-required {
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        .opt-label {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #fff;
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .opt-label input[type="radio"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            /* app.css 변수 활용 */
+        }
+
+        .opt-label:hover {
+            border-color: #bae6fd;
+            background-color: #f0f7ff;
+        }
+
+        .opt-input-text,
+        .opt-input-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #334155;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+
+        .opt-input-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .opt-input-text:focus,
+        .opt-input-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+        }
+
+        .submit-btn-wrap {
+            margin-top: 32px;
+            padding-bottom: 32px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 최상단 중앙 로고 -->
+        <div class="top-logo" style="position: relative; padding: 10px 0;">
+            <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.svg" alt="yes24.com 로고" class="yes24-logo"
+                style="margin: 0 auto; display: block;">
+        </div>
+
+        <header class="main-header" style="text-align:center;">
+            <div class="header-copy">
+                <!-- 마스코드 없이 텍스트 중앙 정렬 -->
+                <small class="eyebrow" style="justify-content:center;">YOUR · EVERY · STORY</small>
+                <h1 style="font-size: 24px; margin-top: 4px;">YES24 서비스 불편사항 접수</h1>
+            </div>
+            <div class="header-meta" style="justify-content:center; text-align:center;">
+                <small>고객님의 소중한 의견을 들려주세요. (소요 안내: 약 3분)</small>
+            </div>
+        </header>
+
+        <main>
+            <!-- 안내사항 섹션 -->
+            <section class="card" style="margin-bottom: 20px;">
+                <div class="card-header">
+                    <h2>참여 안내사항</h2>
+                </div>
+                <div class="info-body">
+                    <div class="info-item">
+                        <strong>참여 대상</strong>
+                        <p>YES24 회원 및 비회원 누구나 참여 가능</p>
+                    </div>
+                    <div class="info-item">
+                        <strong>참여 보상</strong>
+                        <p>설문 정상 완료 시 <span>YES포인트 1,000점 자동 지급</span></p>
+                    </div>
+                    <div class="info-item">
+                        <strong>안심 보장</strong>
+                        <p>입력하신 개인정보는 통계 목적으로만 활용되며 안전하게 보호됩니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 동적으로 렌더링될 설문 폼 역영 -->
+            <section class="card" id="formWrapper">
+                <div class="card-header">
+                    <h2>설문 작성</h2>
+                    <small>본 설문은 총 10문항으로 구성되어 있습니다.</small>
+                </div>
+
+                <form id="yesForm">
+                    <div id="questionContainer" style="padding: 24px 20px 0;">
+                        <!-- JS 렌더링 영역 -->
+                    </div>
+
+                    <div class="submit-btn-wrap" style="padding: 0 20px 20px;">
+                        <button type="button" id="btnSubmitForm" class="btn-primary"
+                            style="width:100%; padding:15px; font-size:16px;">설문 제출완료</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <div class="footer-inner">
+                <img src="https://image.yes24.com/sysimage/renew/gnb/favicon_n.ico" alt="YES24" class="footer-logo">
+                <p class="footer-copy">Copyright &copy; YES24 Corp. All Rights Reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 프론트에서 렌더링할 샘플 설문 문항 (10개 고정)
+        var surveyData = [
+            { "Order": 1, "QuestionType": "radio", "Title": "귀하의 연령대는 어떻게 되십니까?", "IsRequired": true, "Options": ["10대", "20대", "30대", "40대", "50대 이상"] },
+            { "Order": 2, "QuestionType": "radio", "Title": "YES24를 이용하신 지 얼마나 되셨습니까?", "IsRequired": true, "Options": ["1년 미만", "1년~3년", "3년~5년", "5년 이상"] },
+            { "Order": 3, "QuestionType": "radio", "Title": "가장 자주 구매하시는 도서 카테고리는 무엇입니까?", "IsRequired": true, "Options": ["소설/시/희곡", "에세이", "경제경영", "자기계발", "인문/역사", "기타"] },
+            { "Order": 4, "QuestionType": "radio", "Title": "YES24 모바일 시스템 이용은 쾌적하신가요?", "IsRequired": true, "Options": ["매우 만족", "만족", "보통", "불만족", "매우 불만족"] },
+            { "Order": 5, "QuestionType": "radio", "Title": "최근 1개월 내 YES24에서 진행한 이벤트에 참여한 적이 있나요?", "IsRequired": true, "Options": ["예, 참여했습니다", "아니오, 없습니다", "잘 기억나지 않습니다"] },
+            { "Order": 6, "QuestionType": "radio", "Title": "포인트 및 쿠폰 혜택의 실효성을 어떻게 체감하시나요?", "IsRequired": false, "Options": ["매우 유용함", "조금 유용함", "보통", "별로 유용하지 않음", "전혀 유용하지 않음"] },
+            { "Order": 7, "QuestionType": "radio", "Title": "1:1고객센터나 불편사항을 별도로 접수해 본 적이 있으신가요?", "IsRequired": true, "Options": ["예", "아니오"] },
+            { "Order": 8, "QuestionType": "text", "Title": "결제 시 가장 선호하는 수단은 무엇입니까?", "IsRequired": false },
+            { "Order": 9, "QuestionType": "text", "Title": "YES24에서 배송받은 경험 중 가장 긍정적이었던 점이 있다면 적어주세요.", "IsRequired": false },
+            { "Order": 10, "QuestionType": "textarea", "Title": "YES24 서비스 개선을 위해 바라는 점을 자유롭게 남겨주세요.", "IsRequired": true }
+        ];
+
+        $(document).ready(function () {
+            renderForm(surveyData);
+            loadDraft(); // 작성 내용 복구
+
+            // 임시저장
+            $('#yesForm').on('input change', function () {
+                saveDraft();
+            });
+
+            // 제출
+            $('#btnSubmitForm').on('click', function () {
+                validateAndSubmit();
+            });
+        });
+
+        // 렌더링 함수
+        function renderForm(dataList) {
+            var $container = $('#questionContainer');
+            $container.empty();
+
+            $.each(dataList, function (index, item) {
+                var htmlStr = '<div class="q-item" data-id="' + item.Order + '">';
+
+                // Title
+                htmlStr += '<div class="q-title">';
+                htmlStr += item.Order + '. ' + item.Title;
+                if (item.IsRequired) {
+                    htmlStr += '<span class="q-required">*</span>';
+                }
+                htmlStr += '</div>';
+
+                // Controls
+                if (item.QuestionType === 'radio') {
+                    $.each(item.Options, function (oIdx, optText) {
+                        htmlStr += '<label class="opt-label">';
+                        htmlStr += '   <input type="radio" name="ans_' + item.Order + '" value="' + optText + '">';
+                        htmlStr += '   <span>' + optText + '</span>';
+                        htmlStr += '</label>';
+                    });
+                } else if (item.QuestionType === 'text') {
+                    htmlStr += '<input type="text" name="ans_' + item.Order + '" class="opt-input-text" placeholder="단답형 답변 형식으로 적어주세요">';
+                } else if (item.QuestionType === 'textarea') {
+                    htmlStr += '<textarea name="ans_' + item.Order + '" class="opt-input-textarea" placeholder="장문의 의견을 자유롭게 서술해주세요"></textarea>';
+                }
+
+                htmlStr += '</div>';
+                $container.append(htmlStr);
+            });
+        }
+
+        // 로컬 스토리지 임시저장 (설문 이탈 방지)
+        function saveDraft() {
+            var answerData = {};
+            $('#yesForm').serializeArray().forEach(function (item) {
+                answerData[item.name] = item.value;
+            });
+            localStorage.setItem('yesFormDraft', JSON.stringify(answerData));
+        }
+
+        // 로컬 스토리지 데이터 복구 로직
+        function loadDraft() {
+            var savedText = localStorage.getItem('yesFormDraft');
+            if (savedText) {
+                try {
+                    var data = JSON.parse(savedText);
+                    $.each(data, function (name, val) {
+                        var $elem = $('[name="' + name + '"]');
+                        if ($elem.attr('type') === 'radio') {
+                            $elem.filter('[value="' + val + '"]').prop('checked', true);
+                        } else {
+                            $elem.val(val);
+                        }
+                    });
+                } catch (e) {
+                    console.error('Draft Parse Error', e);
+                }
+            }
+        }
+
+        // 유효성 검증
+        function validateAndSubmit() {
+            var isValid = true;
+
+            $.each(surveyData, function (idx, item) {
+                if (item.IsRequired) {
+                    var inputName = 'ans_' + item.Order;
+                    var $targetObj = $('[name="' + inputName + '"]');
+
+                    if (item.QuestionType === 'radio') {
+                        if (!$targetObj.is(':checked')) {
+                            isValid = false;
+                            alert(item.Order + '번 문항은 필수 응답입니다.');
+                            return false; // loop break
+                        }
+                    } else {
+                        if ($.trim($targetObj.val()) === '') {
+                            isValid = false;
+                            alert(item.Order + '번 문항은 필수 응답입니다.');
+                            $targetObj.focus();
+                            return false; // loop break
+                        }
+                    }
+                }
+            });
+
+            if (isValid) {
+                if (confirm('설문을 최종 제출하시겠습니까?')) {
+                    // MVC 백엔드 연동을 위한 전송 스텁
+                    alert('성공적으로 고객 의견이 제출되었습니다!\n(포인트를 지급하며 임시저장 본은 삭제됩니다.)');
+                    localStorage.removeItem('yesFormDraft');
+                    $('#yesForm')[0].reset();
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

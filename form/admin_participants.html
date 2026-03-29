@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YES Form - 참여자 관리</title>
+    <!-- adminV2 톤앤매너 동일 적용 -->
+    <link rel="stylesheet" href="../book-md-reservation/adminV2/css/adminv2.css">
+    <!-- jQuery ES5 규격 반영 선언 -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <style>
+        .filter-section {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-5);
+            padding: var(--space-4);
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+        }
+        .filter-section select,
+        .filter-section input {
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 공통 Sidebar 영역 (jQuery 동적 로드) -->
+        <div id="sidebar-container"></div>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            <!-- Header Section -->
+            <header class="content-header">
+                <div>
+                    <span class="header-badge">Participants</span>
+                    <h2>참여자 관리</h2>
+                    <p>설문에 응답한 내역의 무결성을 검토하고 보상(포인트 등) 지급 상태를 관리합니다.</p>
+                </div>
+            </header>
+
+            <section class="section-panel">
+                <div class="card-title">데이터 필터링</div>
+                
+                <!-- 필터링 폼 영역 -->
+                <div class="filter-section">
+                    <label class="form-label" style="margin-bottom:0;">대상 설문</label>
+                    <select class="admin-input">
+                        <option value="">전체 (운영중인 모든 설문)</option>
+                        <option value="1">2026 YES24 상반기 고객 만족도 조사</option>
+                        <option value="2">신규 도서 미리보기 개편 설문</option>
+                    </select>
+
+                    <label class="form-label" style="margin-bottom:0; margin-left: var(--space-3);">검색 대상 (ID/IP)</label>
+                    <input type="text" class="admin-input" placeholder="회원ID 또는 IP 주소 입력">
+                    
+                    <button class="btn-primary" style="margin-left: auto;">조건 검색</button>
+                    <button class="btn-secondary">초기화</button>
+                </div>
+
+                <!-- 참여자 테이블 내역 -->
+                <div class="table-container">
+                    <table class="admin-table" id="participants-table">
+                        <thead>
+                            <tr>
+                                <th>응답 번호</th>
+                                <th>설문 제목</th>
+                                <th>회원 ID</th>
+                                <th>IP 주소</th>
+                                <th>참여 일시</th>
+                                <th>리워드 지급 상태</th>
+                                <th>상세보기</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sample Data Row -->
+                            <tr>
+                                <td>#RES_10019</td>
+                                <td>신규 도서 미리보기 개편 설문</td>
+                                <td>yes24_user12</td>
+                                <td>192.168.0.12</td>
+                                <td>2026-03-29 15:42:11</td>
+                                <td><span class="status-badge status-approved">지급완료</span></td>
+                                <td><button class="btn-secondary btn-xs" onclick="alert('Raw Data 뷰어 팝업 띄움')">JSON 로그</button></td>
+                            </tr>
+                            <tr>
+                                <td>#RES_10018</td>
+                                <td>2026 YES24 상반기 고객 만족도 조사</td>
+                                <td>booklover99</td>
+                                <td>121.134.xx.xx</td>
+                                <td>2026-03-29 14:10:45</td>
+                                <td><span class="status-badge status-pending">지급대기</span></td>
+                                <td><button class="btn-secondary btn-xs" onclick="alert('Raw Data 뷰어 팝업 띄움')">JSON 로그</button></td>
+                            </tr>
+                            <tr>
+                                <td>#RES_10017</td>
+                                <td>2026 YES24 상반기 고객 만족도 조사</td>
+                                <td>비회원 참여</td>
+                                <td>220.73.xx.xx</td>
+                                <td>2026-03-29 11:05:30</td>
+                                <td><span class="status-badge status-cancelled">지급대상아님</span></td>
+                                <td><button class="btn-secondary btn-xs" onclick="alert('Raw Data 뷰어 팝업 띄움')">JSON 로그</button></td>
+                            </tr>
+                            <tr>
+                                <td>#RES_10016</td>
+                                <td>신규 도서 미리보기 개편 설문</td>
+                                <td>reader_king</td>
+                                <td>118.235.xx.xx</td>
+                                <td>2026-03-28 22:14:09</td>
+                                <td><span class="status-badge status-approved">지급완료</span></td>
+                                <td><button class="btn-secondary btn-xs" onclick="alert('Raw Data 뷰어 팝업 띄움')">JSON 로그</button></td>
+                            </tr>
+                            <tr>
+                                <td>#RES_10015</td>
+                                <td>2026 YES24 상반기 고객 만족도 조사</td>
+                                <td>testuser01</td>
+                                <td>192.168.1.1</td>
+                                <td>2026-03-28 16:30:00</td>
+                                <td><span class="status-badge status-cancelled">중복참여 (거절)</span></td>
+                                <td><button class="btn-secondary btn-xs" onclick="alert('Raw Data 뷰어 팝업 띄움')">JSON 로그</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 페이지네이션 샘플 -->
+                <div class="pagination" style="margin-top: var(--space-5);">
+                    <button>&laquo;</button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>&raquo;</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // 공통 사이드바 비동기 로드 및 active 상태 적용
+            $('#sidebar-container').load('admin_sidebar.html', function() {
+                $('.nav-item').removeClass('active');
+                $('.nav-item[href="admin_participants.html"]').addClass('active');
+            });
+        });
+    </script>
+</body>
+</html>
