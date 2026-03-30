@@ -66,6 +66,11 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border-color: #dbeafe;
         }
+
+        .max-w-7xl {
+            max-width: 70rem !important;
+        }
+
     </style>
 </head>
 <body class="text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900">
@@ -81,7 +86,7 @@
                 AX추진TF 구성
             </h2>
             <p class="text-xl text-slate-600 leading-relaxed">
-                AX팀이 제안하는 바이브 코딩 기반의 서비스 개선 및 신규 구축 아이디어 포트폴리오입니다.
+                빠르게 만들고, 반복을 줄이고, 사내 지식을 AI 서비스로 구현
             </p>
         </div>
 
@@ -232,7 +237,7 @@
             </div>
             <div class="bg-white rounded-2xl p-2 sm:p-4 shadow-sm border border-slate-200 overflow-hidden group">
                 <div class="relative rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[200px] p-4">
-                    <img src="https://dietgogo7.github.io/dietgogo/wanted/ax.png" 
+                    <img src="/ax/ax.png" style="width:60%;"
                          alt="AX팀 로드맵 이미지" 
                          class="max-w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
                          onerror="this.src='https://placehold.co/1200x400/e2e8f0/475569?text=Image+Load+Failed'">
@@ -311,11 +316,11 @@
                         이벤트 댓글 게시판 등에 즉시 등록 가능하도록 연동 환경을 제공하며, 사내 <strong class="text-slate-800">옴니솔 메신저</strong> 추가 적용도 긍정적으로 검토합니다.
                     </p>
                     <div class="mb-6 rounded-lg overflow-hidden border border-slate-100 h-24 bg-slate-50 flex items-center justify-center">
-                        <img src="https://dietgogo7.github.io/dietgogo/preview/Emoji.png" alt="이모지 미리보기" class="h-full w-full object-cover opacity-80 mix-blend-multiply" onerror="this.style.display='none'">
+                        <img src="/preview/Emoji.png" alt="이모지 미리보기" class="h-full w-full object-cover opacity-80 mix-blend-multiply" onerror="this.style.display='none'">
                     </div>
-                    <a href="https://dietgogo7.github.io/dietgogo/preview/Emoji.png" target="_blank" class="w-full inline-flex justify-center items-center gap-2 bg-pink-50 hover:bg-pink-100 text-pink-700 py-2.5 px-4 rounded-xl transition-colors font-medium text-base border border-pink-200">
-                        결과물 이미지 보기 <i class="ph-bold ph-image"></i>
-                    </a>
+                     <button onclick="openEmojiModal()" class="w-full inline-flex justify-center items-center gap-2 bg-pink-50 hover:bg-pink-100 text-pink-700 py-2.5 px-4 rounded-xl transition-colors font-medium text-base border border-pink-200">
+                        샘플 이미지 보기 <i class="ph-bold ph-image"></i>
+                    </button>
                 </article>
 
                 <!-- Idea 4 -->
@@ -335,11 +340,11 @@
                     <div class="grid grid-cols-2 gap-3 mt-auto">
                         <a href="https://dietgogo7.github.io/dietgogo/form/index.html" target="_blank" class="w-full flex flex-col justify-center items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 px-2 rounded-xl transition-colors text-base font-medium border border-emerald-200">
                             <i class="ph-bold ph-monitor text-lg"></i>
-                            프론트 폼 확인
+                            프로토타입: 프론트
                         </a>
                         <a href="https://dietgogo7.github.io/dietgogo/form/admin.html" target="_blank" class="w-full flex flex-col justify-center items-center gap-1 bg-slate-800 hover:bg-slate-900 text-white py-3 px-2 rounded-xl transition-colors text-base font-medium shadow-sm">
                             <i class="ph-bold ph-lock-key text-lg"></i>
-                            관리자 폼 확인
+                            프로토타입: 관리자
                         </a>
                     </div>
                 </article>
@@ -359,9 +364,7 @@
                         <strong class="text-orange-600 bg-orange-50 px-1 rounded">순수 바이브 코딩 방식</strong>을 도입하여 개발 리소스를 획기적으로 줄이고 매우 빠르게 구축 가능할 것으로 판단됩니다.<br><br>
                         향후 신규 자회사 사이트 구축 니즈 발생 시, 바이브 코딩을 우선 적용 가능한 최적의 후보군으로 검토할 수 있습니다.
                     </p>
-                    <div class="mt-auto flex items-center gap-2 text-base text-slate-400 bg-slate-50 p-3 rounded-lg border border-slate-100 w-fit">
-                        <i class="ph-fill ph-check-circle text-brand-500"></i> 기획 및 적용 타당성 검토 완료 (별도 프로토타입 없음)
-                    </div>
+                  
                 </article>
 
             </div>
@@ -376,5 +379,46 @@
         </div>
     </footer>
 
+      <!-- Emoji Preview Modal -->
+    <div id="emojiModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h5 class="font-bold text-slate-800">이모지 생성 결과물</h5>
+                <button onclick="closeEmojiModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 bg-slate-50 flex justify-center">
+                <img src="https://dietgogo7.github.io/dietgogo/preview/Emoji.png" alt="이모지 확장 이미지" class="max-w-full h-auto rounded-lg shadow-sm">
+            </div>
+            <div class="p-4 text-center border-t bg-white text-sm text-slate-500">
+                AI를 통해 생성된 예스24 캐릭터 활용 이모지 예시입니다.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEmojiModal() {
+            const modal = document.getElementById('emojiModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEmojiModal() {
+            const modal = document.getElementById('emojiModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        // 배경 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('emojiModal');
+            if (event.target == modal) {
+                closeEmojiModal();
+            }
+        }
+    </script>
 </body>
 </html>
