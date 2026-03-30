@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YES24 이벤트 빌더 (jQuery 버전)</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- jQuery 최신버전 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- 프론트엔드 최적화 CSS (기존 React 버전과 동일) -->
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeInUp {
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes imageLoad {
+            from {
+                opacity: 0;
+                filter: blur(5px);
+            }
+
+            to {
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        .animate-imageLoad {
+            animation: imageLoad 0.5s ease-out;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .animate-marquee {
+            animation: marquee 25s linear infinite;
+        }
+
+        @keyframes verticalMarquee {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-50%);
+            }
+        }
+
+        .animate-vertical-marquee {
+            animation: verticalMarquee 15s linear infinite;
+        }
+
+        .writing-vertical {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+    </style>
+</head>
+
+<body class="h-screen bg-gray-100 flex flex-col font-sans overflow-hidden">
+
+    <!-- 글로벌 헤더 -->
+    <header class="bg-[#0058a3] text-white h-14 flex items-center justify-between px-6 shadow-md shrink-0 z-10">
+        <div class="flex items-center gap-3">
+            <div class="font-black text-xl tracking-tighter">YES24</div>
+            <div class="h-4 w-px bg-blue-400 mx-2"></div>
+            <h1 class="font-bold text-blue-50 text-sm tracking-tight">프로모션 빌더 (jQuery)</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="btn-save"
+                class="bg-white text-[#0058a3] hover:bg-gray-50 px-5 py-2 rounded-lg text-sm font-black flex items-center gap-2 shadow-[0_2px_10px_rgba(0,0,0,0.1)] transition-transform active:scale-95">
+                <i data-lucide="save" class="w-4 h-4"></i> 저장 및 배포
+            </button>
+        </div>
+    </header>
+
+    <!-- 메인 레이아웃 -->
+    <main class="flex-1 flex overflow-hidden p-4 gap-4 sm:p-6 sm:gap-6 min-h-0">
+        <!-- 좌측 패널 (컨트롤) -->
+        <section class="w-1/2 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-200 p-6 overflow-hidden min-h-0"
+            id="left-panel">
+            <!-- 동적 렌더링 영역 -->
+        </section>
+
+        <!-- 우측 패널 (미리보기) -->
+        <section class="w-1/2 flex flex-col h-full min-h-0" id="right-panel">
+            <!-- 동적 렌더링 영역 -->
+        </section>
+    </main>
+
+    <!-- jQuery + ES6 로직 -->
+    <script>
+        $(document).ready(function () {
+            // --- [데이터 정의] ---
+            const AVAILABLE_MODULES = [
+                { id: 'MAIN_BANNER', title: '메인 배너', icon: 'image', desc: '이벤트 최상단 핵심 비주얼 영역' },
+                { id: 'COUPON_ZONE', title: '쿠폰 팩 (다운로드)', icon: 'ticket', desc: '할인 쿠폰 다운로드 영역' },
+                { id: 'VIDEO_BANNER', title: '동영상 배너', icon: 'play-circle', desc: '유튜브 등 프로모션 영상 삽입' },
+                { id: 'PRODUCT_ROLLING_1', title: '도서 롤링 (스와이프)', icon: 'list-video', desc: '모바일 친화적 가로 스와이프 슬라이드' },
+                { id: 'PRODUCT_ROLLING_2', title: '도서 롤링 (그리드)', icon: 'layout-template', desc: '순차 페이드인(Fade-in) 애니메이션 뷰' },
+                { id: 'PRODUCT_ROLLING_3', title: '도서 롤링 (오토티커)', icon: 'refresh-cw', desc: '끊김없이 자동으로 흐르는 마키(Marquee) 뷰' },
+                { id: 'PRODUCT_ROLLING_4', title: '도서 롤링 (수직 랭킹)', icon: 'trending-up', desc: '베스트셀러 스타일의 수직 자동 스크롤' },
+                { id: 'PRODUCT_ROLLING_5', title: '도서 롤링 (히어로)', icon: 'presentation', desc: '1개씩 포커스되는 자동 페이드 슬라이드' },
+                { id: 'PRODUCT_ROLLING_6', title: '도서 롤링 (아코디언)', icon: 'columns', desc: '마우스 오버 시 확장되는 인터랙티브 갤러리' },
+                { id: 'BENTO_CURATION', title: '벤토 그리드 추천', icon: 'layout-dashboard', desc: '최신 트렌드: 비대칭 벤토(Bento) 레이아웃 갤러리' },
+                { id: 'AI_TREND_PICK', title: 'AI 맞춤 도서 픽', icon: 'sparkles', desc: '오로라 애니메이션과 글래스모피즘 AI 큐레이션' },
+                { id: 'GIFT_INFO', title: '사은품 안내', icon: 'gift', desc: '구매 금액대별 사은품 정보 노출' },
+                { id: 'COMMENT_BOARD', title: '기대평 게시판', icon: 'message-square', desc: '회원 참여형 텍스트/사진 댓글 영역' }
+            ];
+
+            const MOCK_BOOKS = [
+                { title: "트렌드 코리아 2026", author: "김난도 외", price: "18,000", cover: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=200" },
+                { title: "초거대 AI 시대", author: "IT연구소", price: "22,000", cover: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=200" },
+                { title: "마흔에 읽는 쇼펜하우어", author: "강용수", price: "15,300", cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=200" },
+                { title: "도시와 그 불확실한 벽", author: "무라카미 하루키", price: "17,500", cover: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=200" },
+                { title: "퓨처 셀프", author: "벤저민 하디", price: "16,000", cover: "https://images.unsplash.com/photo-1589998059171-988d887df646?auto=format&fit=crop&q=80&w=200" }
+            ];
+
+            const SAMPLE_DATA = {
+                MAIN_BANNER: { imageUrl: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1200&q=80', link: '/Event/12345', altText: 'YES24 2026 봄맞이 특별 기획전', bgColor: '#f8fafc' },
+                COUPON_ZONE: { couponName: '이달의 특별 혜택', amount: '전 분야 10% 할인 쿠폰', bgColor: '#eff6ff' },
+                VIDEO_BANNER: { videoId: 'dQw4w9WgXcQ', title: '이벤트 홍보 영상', bgColor: '#0f172a' },
+                PRODUCT_ROLLING_1: { categoryName: 'MD 강력 추천 신간', productIds: '12345, 67890', bgColor: '#ffffff' },
+                PRODUCT_ROLLING_2: { categoryName: '오늘의 베스트셀러', productIds: '222, 333', bgColor: '#fafafa' },
+                PRODUCT_ROLLING_3: { categoryName: '실시간 급상승 도서', productIds: '999, 888', bgColor: '#111827' },
+                PRODUCT_ROLLING_4: { categoryName: '종합 주간 랭킹', productIds: '111, 222', bgColor: '#ffffff' },
+                PRODUCT_ROLLING_5: { categoryName: '에디터스 픽', productIds: '1010, 2020', bgColor: '#ffffff' },
+                PRODUCT_ROLLING_6: { categoryName: '주목할 만한 갤러리', productIds: '3030, 4040', bgColor: '#f1f5f9' },
+                BENTO_CURATION: { categoryName: 'MD 강력 추천 벤토 패키지', productIds: '101, 202', bgColor: '#f8fafc' },
+                AI_TREND_PICK: { categoryName: 'YES24 AI 맞춤 추천', aiKeyword: '#데이터로_보는 #2026_트렌드', bgColor: '#0f172a' },
+                GIFT_INFO: { giftName: '크레마 모티프 프리미엄 파우치', minAmount: '50000', condition: '이벤트 대상 도서 1권 이상 포함 결제 시' },
+                COMMENT_BOARD: { boardTitle: '이 책을 가장 기대하는 이유는?', notice: '※ 작성해주신 분들 중 추첨을 통해 YES포인트 1,000원을 드립니다.\n※ 욕설 및 비방글은 통보 없이 삭제될 수 있습니다.' }
+            };
+
+            // --- [전역 상태 (State) 관리] ---
+            let state = {
+                step: 1,
+                previewMode: 'mobile',
+                selectedModules: [],
+                activeModuleId: null,
+                draggedIndex: null,
+                sliderIntervals: [] // 애니메이션 타이머 관리
+            };
+
+            // 모듈별 기본 데이터 반환
+            const getDefaultDataForModule = (type) => {
+                if (type === 'MAIN_BANNER') return { imageUrl: '', link: '', altText: '', bgColor: '#f8fafc' };
+                if (type === 'COUPON_ZONE') return { couponName: '', amount: '', bgColor: '#eff6ff' };
+                if (type === 'VIDEO_BANNER') return { videoId: '', title: '', bgColor: '#0f172a' };
+                if (type.includes('PRODUCT_ROLLING')) return { categoryName: '추천 도서', productIds: '', bgColor: '#ffffff' };
+                if (type === 'BENTO_CURATION') return { categoryName: '벤토 추천 패키지', productIds: '', bgColor: '#f8fafc' };
+                if (type === 'AI_TREND_PICK') return { categoryName: 'AI 추천 키워드 도서', aiKeyword: '#추천키워드', bgColor: '#0f172a' };
+                if (type === 'GIFT_INFO') return { giftName: '', minAmount: '', condition: '' };
+                if (type === 'COMMENT_BOARD') return { boardTitle: '기대평을 남겨주세요', notice: '' };
+                return {};
+            };
+
+            // --- [렌더링 로직] ---
+            // 좌측 폼 패널 렌더링
+            function renderLeftPanel() {
+                let html = '';
+                if (state.step === 1) {
+                    html = `
+            <div class="space-y-4 animate-fadeIn h-full flex flex-col">
+              <div class="mb-2 shrink-0">
+                <h2 class="text-xl font-bold text-gray-800 tracking-tight">1. 모듈 선택</h2>
+                <p class="text-sm text-gray-500 mt-1">이벤트 페이지에 필요한 컴포넌트를 담아주세요.</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3 overflow-y-auto pr-2 pb-4 flex-1 custom-scrollbar">
+                ${AVAILABLE_MODULES.map(mod => {
+                        const isSelected = state.selectedModules.some(m => m.type === mod.id);
+                        return `
+                    <div class="module-card relative p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 flex flex-col items-center text-center gap-1.5 
+                      ${isSelected ? 'border-[#0058a3] bg-blue-50 shadow-sm' : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'}"
+                      data-id="${mod.id}">
+                      <i data-lucide="check-circle-2" class="absolute top-2 right-2 text-[#0058a3] w-4 h-4 transition-opacity duration-200 ${isSelected ? 'opacity-100' : 'opacity-0'}"></i>
+                      <i data-lucide="${mod.icon}" class="w-7 h-7 ${isSelected ? 'text-[#0058a3]' : 'text-gray-400'}"></i>
+                      <div>
+                        <h3 class="font-bold text-gray-800 text-[13px] tracking-tight">${mod.title}</h3>
+                        <p class="text-[10px] text-gray-500 mt-0.5 leading-tight">${mod.desc}</p>
+                      </div>
+                    </div>
+                  `;
+                    }).join('')}
+              </div>
+              <div class="pt-4 border-t border-gray-100 flex justify-end shrink-0">
+                <button id="btn-next-step" class="bg-[#0058a3] hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-bold flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md" ${state.selectedModules.length === 0 ? 'disabled' : ''}>
+                  상세 데이터 입력 <i data-lucide="chevron-right" class="ml-1 w-5 h-5"></i>
+                </button>
+              </div>
+            </div>
+          `;
+                } else if (state.step === 2) {
+                    const activeModule = state.selectedModules.find(m => m.instanceId === state.activeModuleId);
+                    html = `
+            <div class="flex flex-col h-full animate-fadeIn">
+              <div class="mb-4 flex items-center justify-between shrink-0">
+                <div>
+                  <h2 class="text-xl font-bold text-gray-800 tracking-tight">2. 상세 편집</h2>
+                  <p class="text-sm text-gray-500 mt-1">드래그하여 순서를 변경하고 내용을 채워주세요.</p>
+                </div>
+                <button id="btn-prev-step" class="text-sm text-[#0058a3] hover:underline font-bold transition-colors">&larr; 모듈 다시 선택하기</button>
+              </div>
+
+              <div class="flex gap-4 h-full min-h-0">
+                <!-- 드래그 앤 드롭 정렬 리스트 -->
+                <div class="w-[35%] flex flex-col gap-2 overflow-y-auto pr-1 pb-4 custom-scrollbar">
+                  ${state.selectedModules.map((mod, idx) => `
+                    <div draggable="true" data-index="${idx}" data-instance="${mod.instanceId}"
+                      class="drag-item group flex items-center p-3 rounded-xl border cursor-pointer transition-all shadow-sm
+                      ${state.activeModuleId === mod.instanceId ? 'border-[#0058a3] bg-blue-50 ring-1 ring-[#0058a3]' : 'border-gray-200 bg-white hover:border-blue-300'}">
+                      <i data-lucide="grip-vertical" class="w-4 h-4 text-gray-400 mr-2 cursor-grab active:cursor-grabbing shrink-0"></i>
+                      <span class="flex-1 text-[13px] font-bold text-gray-700 truncate">${mod.title}</span>
+                      <button class="btn-remove-module opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all" data-instance="${mod.instanceId}">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  `).join('')}
+                </div>
+
+                <!-- 개별 데이터 입력 폼 -->
+                <div class="w-[65%] bg-white border border-gray-200 rounded-2xl p-5 shadow-sm overflow-y-auto pb-10 custom-scrollbar relative">
+                  ${activeModule ? renderEditForm(activeModule) : `
+                    <div class="h-full flex flex-col items-center justify-center text-gray-400">
+                      <i data-lucide="layout-template" class="w-12 h-12 mb-3 opacity-20 text-gray-500"></i>
+                      <p class="text-sm font-medium">편집할 모듈을 선택해주세요.</p>
+                    </div>
+                  `}
+                </div>
+              </div>
+            </div>
+          `;
+                }
+                $('#left-panel').html(html);
+                lucide.createIcons(); // 아이콘 재렌더링
+            }
+
+            function renderEditForm(activeModule) {
+                let formFields = '';
+                const d = activeModule.data;
+                const iid = activeModule.instanceId;
+
+                // 공통 컬러 피커
+                formFields += `
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold text-gray-700">섹션 배경 색상</label>
+            <div class="flex items-center gap-2">
+              <input type="color" class="input-field w-9 h-9 p-0 border-0 rounded-lg cursor-pointer bg-transparent" data-instance="${iid}" data-key="bgColor" value="${d.bgColor}">
+              <input type="text" class="input-field flex-1 p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono uppercase focus:ring-2 focus:ring-[#0058a3]/20 focus:border-[#0058a3] outline-none" data-instance="${iid}" data-key="bgColor" value="${d.bgColor}">
+            </div>
+          </div>
+        `;
+
+                if (activeModule.type === 'MAIN_BANNER') {
+                    formFields += `
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">이미지 URL</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="imageUrl" value="${d.imageUrl}"></div>
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">이동 링크 URL</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="link" value="${d.link}"></div>
+          `;
+                } else if (activeModule.type === 'COUPON_ZONE') {
+                    formFields += `
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">쿠폰 명</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="couponName" value="${d.couponName}"></div>
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">할인 금액/율 노출 텍스트</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="amount" value="${d.amount}"></div>
+          `;
+                } else if (activeModule.type === 'VIDEO_BANNER') {
+                    formFields += `
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">유튜브 Video ID</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="videoId" value="${d.videoId}"></div>
+          `;
+                } else if (activeModule.type.includes('PRODUCT')) {
+                    formFields += `
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">섹션 타이틀</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="categoryName" value="${d.categoryName}"></div>
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">전시 상품 번호 (GoodsNo)</label>
+            <textarea class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm h-24 custom-scrollbar resize-none" data-instance="${iid}" data-key="productIds">${d.productIds}</textarea></div>
+          `;
+                } else if (activeModule.type === 'BENTO_CURATION') {
+                    formFields += `
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">섹션 타이틀 (예: 강력 추천 벤토)</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="categoryName" value="${d.categoryName}"></div>
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">상품 번호 (GoodsNo)</label>
+            <textarea class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm h-24 custom-scrollbar resize-none" data-instance="${iid}" data-key="productIds">${d.productIds}</textarea></div>
+          `;
+                } else if (activeModule.type === 'AI_TREND_PICK') {
+                    formFields += `
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">섹션 타이틀</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="categoryName" value="${d.categoryName}"></div>
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">AI 키워드 해시태그 (띄어쓰기로 여러 개)</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="aiKeyword" value="${d.aiKeyword}"></div>
+          `;
+                } else if (activeModule.type === 'GIFT_INFO') {
+                    formFields += `
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">사은품 명</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="giftName" value="${d.giftName}"></div>
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">최소 구매 금액 (원)</label>
+            <input type="number" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="minAmount" value="${d.minAmount}"></div>
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">추가 지급 조건</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="condition" value="${d.condition}"></div>
+          `;
+                } else if (activeModule.type === 'COMMENT_BOARD') {
+                    formFields += `
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">게시판 타이틀</label>
+            <input type="text" class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm" data-instance="${iid}" data-key="boardTitle" value="${d.boardTitle}"></div>
+            <div class="space-y-1.5"><label class="text-xs font-bold text-gray-700">유의사항</label>
+            <textarea class="input-field w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm h-24 custom-scrollbar resize-none" data-instance="${iid}" data-key="notice">${d.notice}</textarea></div>
+          `;
+                }
+
+                return `
+          <div class="space-y-6">
+            <div class="pb-3 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2 tracking-tight">
+                <span class="bg-[#0058a3] text-white px-2 py-0.5 rounded text-[10px] tracking-wider font-black">편집중</span>
+                ${activeModule.title}
+              </h3>
+              <button class="btn-fill-sample flex items-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors border border-indigo-100">
+                <i data-lucide="wand-2" class="w-3.5 h-3.5"></i> 전체 모듈 샘플 채우기
+              </button>
+            </div>
+            ${formFields}
+          </div>
+        `;
+            }
+
+            // 우측 실시간 미리보기 렌더링
+            function renderPreviewPanel() {
+                // 기존 인터벌 초기화 (메모리 누수 방지)
+                state.sliderIntervals.forEach(clearInterval);
+                state.sliderIntervals = [];
+
+                let modulesHtml = '';
+                if (state.selectedModules.length === 0) {
+                    modulesHtml = `
+            <div class="h-64 flex flex-col items-center justify-center text-gray-400 p-8 text-center bg-gray-50">
+              <i data-lucide="layout-template" class="w-12 h-12 mb-4 opacity-20"></i>
+              <p class="text-sm font-medium text-gray-500">좌측에서 모듈을 추가하여 화면을 구성하세요.</p>
+            </div>
+          `;
+                } else {
+                    modulesHtml = state.selectedModules.map((mod, idx) => {
+                        const d = mod.data;
+                        const isActive = state.activeModuleId === mod.instanceId;
+                        let content = '';
+
+                        if (mod.type === 'MAIN_BANNER') {
+                            content = `
+                <article class="w-full aspect-[4/3] sm:aspect-[21/9] flex items-center justify-center overflow-hidden relative bg-gray-100">
+                  ${d.imageUrl ? `<img src="${d.imageUrl}" class="w-full h-full object-cover animate-imageLoad" />` : `<div class="text-gray-400 flex flex-col items-center"><i data-lucide="image" class="w-12 h-12 mb-2 opacity-40"></i><span class="text-sm font-bold opacity-60">이미지 URL을 입력해주세요</span></div>`}
+                </article>
+              `;
+                        } else if (mod.type === 'COUPON_ZONE') {
+                            content = `
+                <article class="py-12 px-6 flex justify-center">
+                  <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border-2 border-dashed border-[#0058a3]/40 p-1.5 w-full max-w-lg relative overflow-hidden">
+                    <div class="bg-gradient-to-br from-blue-50 to-white py-8 px-6 rounded-xl flex items-center justify-between">
+                      <div class="flex-1 pr-4">
+                        <h4 class="text-gray-500 text-xs sm:text-sm font-bold mb-1.5 tracking-tight">${d.couponName || '쿠폰명을 입력해주세요'}</h4>
+                        <div class="text-[#0058a3] font-black text-2xl sm:text-3xl tracking-tighter leading-none">${d.amount || '0원'}</div>
+                      </div>
+                      <button class="bg-[#0058a3] text-white text-[13px] font-bold px-6 py-3.5 rounded-full shadow-[0_4px_14px_0_rgba(0,88,163,0.39)] shrink-0">쿠폰 받기</button>
+                    </div>
+                    <div class="absolute top-1/2 -left-4 w-8 h-8 bg-[color:var(--section-bg)] rounded-full -translate-y-1/2 shadow-inner" style="--section-bg: ${d.bgColor || '#ffffff'}"></div>
+                    <div class="absolute top-1/2 -right-4 w-8 h-8 bg-[color:var(--section-bg)] rounded-full -translate-y-1/2 shadow-inner" style="--section-bg: ${d.bgColor || '#ffffff'}"></div>
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'VIDEO_BANNER') {
+                            content = `
+                <article class="py-12 px-5 sm:px-8">
+                  <div class="w-full aspect-video bg-gray-900 rounded-2xl overflow-hidden relative shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                    ${d.videoId ? `<img src="https://img.youtube.com/vi/${d.videoId}/maxresdefault.jpg" class="w-full h-full object-cover opacity-70" />` : `<div class="w-full h-full flex items-center justify-center text-gray-500 font-bold text-sm">유튜브 ID를 입력하세요</div>`}
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none"><i data-lucide="play-circle" class="w-16 h-16 text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]"></i></div>
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'PRODUCT_ROLLING_1') {
+                            content = `
+                <article class="py-12 px-0 overflow-hidden">
+                  <h3 class="text-xl sm:text-2xl font-black text-gray-900 mb-6 px-6 tracking-tight flex items-center justify-between">${d.categoryName} <span class="text-[#0058a3] text-xs font-bold">더보기 &gt;</span></h3>
+                  <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 px-6 pb-8 hide-scrollbar">
+                    ${MOCK_BOOKS.map((b, i) => `
+                      <div class="snap-start shrink-0 w-[140px] group cursor-pointer">
+                        <div class="w-full aspect-[2/3] rounded-lg mb-3.5 shadow-md overflow-hidden relative">
+                           <img src="${b.cover}" class="w-full h-full object-cover" />
+                           <div class="absolute top-0 left-0 bg-black/80 text-white w-8 h-8 flex items-center justify-center font-black rounded-br-lg text-sm">${i + 1}</div>
+                        </div>
+                        <h4 class="text-[15px] font-bold text-gray-900 truncate">${b.title}</h4>
+                        <p class="text-[15px] font-black text-[#e50015] mt-1.5 tracking-tighter">${b.price}<span class="text-[11px] font-normal text-gray-600 ml-0.5">원</span></p>
+                      </div>
+                    `).join('')}
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'PRODUCT_ROLLING_2') {
+                            content = `
+                <article class="py-12 px-6">
+                  <h3 class="text-xl sm:text-2xl font-black text-gray-900 mb-8 text-center tracking-tight">${d.categoryName}</h3>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8">
+                    ${MOCK_BOOKS.slice(0, 4).map((b, i) => `
+                      <div class="animate-fadeInUp flex flex-col group cursor-pointer" style="animation-delay: ${i * 150}ms; animation-fill-mode: both;">
+                        <div class="w-full aspect-[2/3] rounded-lg shadow-sm border border-gray-200 mb-4 overflow-hidden"><img src="${b.cover}" class="w-full h-full object-cover" /></div>
+                        <h4 class="text-[15px] font-bold text-gray-900 line-clamp-2">${b.title}</h4>
+                        <p class="text-[15px] font-black text-[#e50015] mt-1.5 tracking-tighter">${b.price}<span class="text-xs font-normal text-gray-600 ml-0.5">원</span></p>
+                      </div>
+                    `).join('')}
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'PRODUCT_ROLLING_3') {
+                            const bg = d.bgColor !== '#ffffff' ? d.bgColor : '#111827';
+                            content = `
+                <article class="py-12 px-0 overflow-hidden text-white" style="background-color: ${bg}">
+                  <h3 class="text-lg font-bold mb-6 px-6 flex items-center gap-2.5 tracking-tight text-white/90">
+                    <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span></span>
+                    ${d.categoryName}
+                  </h3>
+                  <div class="relative flex overflow-x-hidden">
+                    <div class="flex animate-marquee whitespace-nowrap gap-5 w-max items-center py-2">
+                      ${[...MOCK_BOOKS, ...MOCK_BOOKS].map(b => `
+                        <div class="flex items-center gap-4 bg-white/10 rounded-full pr-6 p-1.5 w-[260px] backdrop-blur-md shadow-lg">
+                          <div class="w-14 h-14 rounded-full overflow-hidden shrink-0"><img src="${b.cover}" class="w-full h-full object-cover" /></div>
+                          <div class="overflow-hidden flex-1">
+                            <h4 class="text-[14px] font-bold truncate text-white">${b.title}</h4>
+                            <p class="text-[12px] text-gray-300 font-medium mt-0.5"><span class="text-red-300 font-black">${b.price}</span>원</p>
+                          </div>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'PRODUCT_ROLLING_4') {
+                            content = `
+                <article class="py-12 px-6">
+                  <h3 class="text-xl sm:text-2xl font-black text-gray-900 mb-6 flex items-center gap-2 tracking-tight">
+                    <i data-lucide="trending-up" class="text-[#e50015] w-6 h-6"></i> ${d.categoryName}
+                  </h3>
+                  <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.06)] h-[300px] overflow-hidden relative px-6 border border-gray-100">
+                    <div class="flex flex-col gap-6 animate-vertical-marquee">
+                      ${[...MOCK_BOOKS, ...MOCK_BOOKS].map((b, i) => `
+                        <div class="flex items-center gap-5 pt-2 cursor-pointer">
+                          <span class="text-2xl font-black italic w-6 text-center shrink-0 ${i % 5 < 3 ? 'text-[#e50015]' : 'text-gray-400'}">${(i % 5) + 1}</span>
+                          <div class="w-14 h-20 rounded shadow-md shrink-0 overflow-hidden"><img src="${b.cover}" class="w-full h-full object-cover"/></div>
+                          <div class="flex-1 overflow-hidden">
+                            <h4 class="text-[15px] font-bold text-gray-900 truncate">${b.title}</h4>
+                            <p class="text-[14px] font-black text-[#e50015] mt-1">${b.price}<span class="text-[10px] font-normal text-gray-500">원</span></p>
+                          </div>
+                        </div>
+                      `).join('')}
+                    </div>
+                    <div class="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+                    <div class="absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'PRODUCT_ROLLING_5') {
+                            // 히어로 슬라이더 렌더링 (HTML)
+                            content = `
+                <article class="py-12 px-5 sm:px-8 hero-slider-container" data-id="${mod.instanceId}" style="background-color: ${d.bgColor}">
+                  <div class="relative w-full aspect-square sm:aspect-[16/9] overflow-hidden rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                    ${MOCK_BOOKS.map((b, i) => `
+                      <div class="hero-slide absolute inset-0 transition-opacity duration-1000 ease-in-out ${i === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}">
+                        <img src="${b.cover}" class="absolute inset-0 w-full h-full object-cover scale-105" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                        <div class="absolute inset-0 p-6 sm:p-8 flex flex-col justify-end">
+                          <div class="relative z-20 translate-y-2">
+                            <span class="bg-[#0058a3] text-white text-[11px] font-black px-3 py-1.5 rounded-sm mb-3 inline-block shadow-md">에디터스 픽</span>
+                            <h4 class="text-2xl sm:text-3xl font-black text-white leading-tight drop-shadow-lg tracking-tight">${b.title}</h4>
+                            <div class="flex items-center gap-3 mt-4">
+                              <p class="text-white font-black text-xl drop-shadow-md">${b.price}<span class="text-sm font-medium opacity-80 ml-1">원</span></p>
+                              <button class="bg-white/20 text-white text-xs font-bold px-4 py-2 rounded-full backdrop-blur-md">자세히보기</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    `).join('')}
+                    <div class="absolute top-5 right-5 z-20 flex gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full shadow-inner">
+                      ${MOCK_BOOKS.map((_, i) => `<div class="hero-dot h-1.5 rounded-full transition-all duration-300 ${i === 0 ? 'bg-white w-4' : 'bg-white/40 w-1.5'}"></div>`).join('')}
+                    </div>
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'PRODUCT_ROLLING_6') {
+                            content = `
+                <article class="py-12 px-5 overflow-hidden">
+                  <h3 class="text-xl sm:text-2xl font-black text-gray-900 mb-8 text-center tracking-tight">${d.categoryName}</h3>
+                  <div class="flex w-full h-[360px] gap-2.5">
+                    ${MOCK_BOOKS.slice(0, 4).map((b, i) => `
+                      <div class="group relative flex-1 hover:flex-[3] sm:hover:flex-[4] transition-[flex] duration-500 ease-in-out cursor-pointer overflow-hidden rounded-2xl border border-black/10 shadow-md flex flex-col justify-end">
+                        <img src="${b.cover}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10 opacity-60 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div class="relative p-5 translate-y-8 group-hover:translate-y-0 transition-transform duration-500 opacity-0 group-hover:opacity-100 flex flex-col justify-end h-full">
+                          <h4 class="text-white font-black text-xl leading-tight line-clamp-2 drop-shadow-md tracking-tight">${b.title}</h4>
+                          <p class="text-white font-black text-lg mt-3 bg-[#e50015] w-fit px-2.5 py-1 rounded-md shadow-sm">${b.price}원</p>
+                        </div>
+                        <div class="absolute inset-0 py-8 flex justify-center group-hover:opacity-0 transition-opacity duration-300 hidden sm:flex">
+                          <span class="writing-vertical text-white font-black text-xl tracking-[0.3em] drop-shadow-md truncate">${b.title}</span>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'BENTO_CURATION') {
+                            content = `
+                <article class="py-12 px-5 sm:px-6">
+                  <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">${d.categoryName || '벤토 큐레이션'}</h3>
+                    <i data-lucide="layout-dashboard" class="w-6 h-6 text-gray-400"></i>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3 sm:gap-4 auto-rows-[160px] sm:auto-rows-[190px]">
+                    <!-- 큰 타일 -->
+                    <div class="col-span-2 row-span-2 rounded-[2rem] bg-gray-100 overflow-hidden relative group cursor-pointer shadow-sm border border-gray-200/60">
+                       <img src="${MOCK_BOOKS[0].cover}" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" />
+                       <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                       <div class="absolute bottom-6 left-6 right-6 z-10">
+                          <span class="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-[11px] font-bold mb-2.5 inline-block shadow-sm">Editor's Focus</span>
+                          <h4 class="text-white font-black text-2xl sm:text-3xl drop-shadow-md tracking-tight leading-tight">${MOCK_BOOKS[0].title}</h4>
+                          <p class="text-white/80 font-bold text-sm mt-1">${MOCK_BOOKS[0].author}</p>
+                       </div>
+                    </div>
+                    <!-- 작은 타일 1 -->
+                    <div class="col-span-1 row-span-1 rounded-[2rem] bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden group cursor-pointer shadow-sm border border-blue-100 p-5">
+                       <div class="flex flex-col h-full justify-between relative z-10 w-[75%]">
+                          <h4 class="text-[13px] sm:text-[14px] font-bold text-blue-900 leading-tight">${MOCK_BOOKS[1].title}</h4>
+                          <p class="text-[15px] sm:text-[16px] font-black text-[#0058a3] drop-shadow-sm mt-2">${MOCK_BOOKS[1].price}<span class="text-[10px] font-normal">원</span></p>
+                       </div>
+                       <div class="absolute -right-5 -bottom-5 sm:-right-6 sm:-bottom-8 w-24 sm:w-32 group-hover:scale-110 transition-transform duration-500 rounded-md overflow-hidden shadow-[-6px_-6px_20px_rgba(0,88,163,0.15)] origin-bottom-right rotate-[-10deg]">
+                          <img src="${MOCK_BOOKS[1].cover}" class="w-full h-full object-cover" />
+                       </div>
+                    </div>
+                    <!-- 작은 타일 2 -->
+                    <div class="col-span-1 row-span-1 rounded-[2rem] bg-gradient-to-br from-orange-50 to-pink-50 relative overflow-hidden group cursor-pointer shadow-sm border border-orange-100 p-5">
+                       <div class="absolute -top-6 -right-6 w-32 h-32 bg-orange-200/50 rounded-full blur-2xl"></div>
+                       <div class="flex flex-col h-full justify-between relative z-10 w-[70%]">
+                          <div class="text-[10px] bg-orange-200/80 text-orange-800 px-2 py-0.5 rounded shadow-sm font-bold w-fit mb-2">실시간셀러</div>
+                          <h4 class="text-[13px] sm:text-[14px] font-bold text-orange-950 leading-tight line-clamp-2">${MOCK_BOOKS[4].title}</h4>
+                       </div>
+                       <div class="absolute -right-4 -bottom-6 w-20 sm:w-28 group-hover:scale-110 transition-transform duration-500 shadow-[-6px_-6px_20px_rgba(234,88,12,0.15)] origin-top-left rotate-[10deg] rounded-md overflow-hidden opacity-90">
+                          <img src="${MOCK_BOOKS[4].cover}" class="w-full h-full object-cover" />
+                       </div>
+                    </div>
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'AI_TREND_PICK') {
+                            content = `
+                <article class="py-14 px-5 sm:px-6 overflow-hidden relative" style="background-color: ${d.bgColor}">
+                  <!-- Aurora Background Effect -->
+                  <div class="absolute top-0 left-0 w-64 h-64 bg-purple-500/20 rounded-full blur-[80px] mix-blend-screen animate-pulse pointer-events-none"></div>
+                  <div class="absolute bottom-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] mix-blend-screen animate-pulse pointer-events-none" style="animation-delay: 2s;"></div>
+                  
+                  <div class="relative z-10 mb-8 flex flex-col items-center">
+                    <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 mb-4 shadow-sm">
+                      <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
+                      <span class="text-white text-[12px] font-bold tracking-widest">${d.categoryName || 'AI 추천'}</span>
+                    </div>
+                    <h3 class="text-white text-2xl sm:text-3xl font-black text-center leading-tight tracking-tight drop-shadow-md">당신의 취향을 분석한<br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-indigo-300 to-purple-300">스마트 큐레이션</span></h3>
+                  </div>
+
+                  <div class="relative z-10 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2rem] p-5 sm:p-6 shadow-[0_8px_32px_rgba(0,0,0,0.3)] group hover:bg-white/15 transition-all duration-300 cursor-pointer">
+                    <div class="flex gap-4 sm:gap-6">
+                       <div class="w-24 sm:w-28 shrink-0 rounded-xl overflow-hidden shadow-2xl border border-white/10 group-hover:scale-105 transition-transform duration-300">
+                          <img src="${MOCK_BOOKS[2].cover}" class="w-full h-full object-cover" />
+                       </div>
+                       <div class="flex-1 text-white flex flex-col justify-center">
+                          <div class="flex flex-wrap gap-1.5 mb-2.5">
+                            ${(d.aiKeyword || '#AI추천').split(' ').filter(v=>v).map(kw => `<span class="bg-indigo-500/30 border border-indigo-400/30 px-2.5 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold">${kw}</span>`).join('')}
+                          </div>
+                          <h4 class="font-black text-[17px] sm:text-xl mb-1 leading-tight text-white/95">${MOCK_BOOKS[2].title}</h4>
+                          <p class="text-[12px] sm:text-sm text-gray-300 font-medium mb-3">${MOCK_BOOKS[2].author}</p>
+                          <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden mb-1.5">
+                             <div class="h-full bg-gradient-to-r from-blue-400 to-purple-400 w-[85%] rounded-full shadow-[0_0_10px_rgba(167,139,250,0.8)]"></div>
+                          </div>
+                          <p class="text-right text-[10px] sm:text-xs text-gray-400 font-bold">취향 매칭률 <span class="text-indigo-300">85%</span></p>
+                       </div>
+                    </div>
+                    <button class="w-full mt-5 bg-white/90 text-gray-900 border-none py-3.5 rounded-xl font-black text-[14px] shadow-[0_0_20px_rgba(255,255,255,0.15)] group-hover:bg-white transition-colors flex justify-center items-center gap-2">
+                      <i data-lucide="book-open" class="w-4 h-4"></i> 지금 바로 읽어보기
+                    </button>
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'GIFT_INFO') {
+                            content = `
+                <article class="py-8 px-6">
+                  <div class="bg-gradient-to-br from-orange-50 to-amber-50/50 p-6 rounded-2xl shadow-sm border border-orange-200/60 flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center text-orange-500 shrink-0 border border-orange-100">
+                      <i data-lucide="gift" class="w-8 h-8"></i>
+                    </div>
+                    <div class="flex-1">
+                      <span class="bg-orange-500 text-white text-[11px] font-black px-2.5 py-1 rounded mb-2 inline-block">사은품 혜택</span>
+                      <h4 class="font-black text-gray-900 text-lg leading-tight">${d.giftName || '사은품 정보를 입력하세요'}</h4>
+                      ${d.minAmount ? `<p class="text-[15px] font-bold text-orange-700 mt-1.5">${Number(d.minAmount).toLocaleString()}원 이상 구매 시</p>` : ''}
+                      ${d.condition ? `<p class="text-[12px] text-gray-500 mt-1 font-medium bg-white/60 inline-block px-2 py-0.5 rounded-sm">* ${d.condition}</p>` : ''}
+                    </div>
+                  </div>
+                </article>
+              `;
+                        } else if (mod.type === 'COMMENT_BOARD') {
+                            content = `
+                <article class="py-12 px-6 bg-white border-t-[12px] border-gray-100/50">
+                  <h3 class="text-xl sm:text-2xl font-black text-gray-900 mb-4 tracking-tight">${d.boardTitle}</h3>
+                  ${d.notice ? `<div class="bg-gray-50 p-4 rounded-xl text-[13px] text-gray-600 mb-6 leading-relaxed border border-gray-200/60 whitespace-pre-wrap font-medium">${d.notice}</div>` : ''}
+                  <div class="border border-gray-300 rounded-xl p-4 shadow-sm bg-white">
+                    <textarea class="w-full text-sm outline-none resize-none bg-transparent h-20 placeholder-gray-400 font-medium" placeholder="로그인 후 기대평을 남겨주세요..."></textarea>
+                    <div class="flex justify-between items-center mt-3 border-t border-gray-100 pt-3">
+                      <span class="text-[11px] text-gray-400 font-medium">0 / 500자</span>
+                      <button class="bg-gray-800 text-white text-[13px] font-bold px-6 py-2.5 rounded-lg hover:bg-[#0058a3] transition-colors shadow-sm">등록하기</button>
+                    </div>
+                  </div>
+                </article>
+              `;
+                        }
+
+                        return `
+              <section class="w-full relative group transition-colors duration-300" style="background-color: ${d.bgColor || '#ffffff'}">
+                <div class="absolute inset-0 border-[3px] pointer-events-none transition-all duration-200 z-30 ${isActive ? 'border-[#0058a3] bg-blue-500/5' : 'border-transparent group-hover:border-[#0058a3]/20 group-hover:bg-blue-500/5'}"></div>
+                ${content}
+              </section>
+            `;
+                    }).join('');
+                }
+
+                const isMobile = state.previewMode === 'mobile';
+                const html = `
+          <div class="flex flex-col h-full bg-slate-900 rounded-2xl border border-gray-800 overflow-hidden shadow-2xl relative">
+            <!-- 뷰어 상단 툴바 (글래스모피즘 코스믹 스타일) -->
+            <div class="bg-white/5 backdrop-blur-xl border-b border-white/5 px-5 py-3 flex items-center justify-between shrink-0 z-20">
+              <div class="flex items-center gap-3">
+                <div class="flex gap-1.5"><span class="w-3 h-3 rounded-full bg-red-400"></span><span class="w-3 h-3 rounded-full bg-yellow-400"></span><span class="w-3 h-3 rounded-full bg-green-400"></span></div>
+                <span class="text-sm font-bold text-white tracking-tight ml-2">Preview Mode</span>
+              </div>
+              <div class="flex items-center bg-black/40 rounded-xl p-1 shadow-inner border border-white/5">
+                <button id="btn-view-mobile" class="p-1.5 rounded-lg transition-all ${isMobile ? 'bg-white/20 text-white shadow-sm' : 'text-gray-400 hover:text-white'}"><i data-lucide="smartphone" class="w-4 h-4"></i></button>
+                <button id="btn-view-pc" class="p-1.5 rounded-lg transition-all ${!isMobile ? 'bg-white/20 text-white shadow-sm' : 'text-gray-400 hover:text-white'}"><i data-lucide="monitor" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+
+            <!-- 뷰어 캔버스 영역 -->
+            <div class="flex-1 overflow-y-auto flex justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 custom-scrollbar p-6 sm:p-8">
+              <div class="bg-white shadow-[0_30px_60px_rgba(0,0,0,0.5)] transition-all duration-500 relative overflow-hidden h-fit ${isMobile ? 'w-[390px] rounded-[3rem] border-[14px] border-black min-h-[800px] ring-4 ring-white/10' : 'w-full max-w-5xl rounded-2xl min-h-full border border-gray-200'}">
+                ${isMobile ? `
+                  <div class="absolute top-0 inset-x-0 flex justify-center z-50 pointer-events-none">
+                    <div class="h-6 w-32 bg-black rounded-b-2xl relative">
+                      <div class="absolute top-1.5 right-6 w-2 h-2 rounded-full bg-[#0a271d] border border-gray-800"></div>
+                      <div class="absolute top-1.5 left-1/2 -translate-x-1/2 w-12 h-1.5 rounded-full bg-gray-900 border border-gray-800"></div>
+                    </div>
+                  </div>
+                ` : ''}
+                <div class="w-full h-full font-sans text-gray-900 bg-gray-50 flex flex-col ${isMobile ? 'pt-7' : ''}">
+                  <!-- 실제 프론트엔드 GNB (YES24 m.yes24.com 스타일 완벽 재현) -->
+                  <header class="sticky top-0 bg-white border-b border-gray-200 z-40">
+                    <div class="px-4 h-14 flex items-center justify-between">
+                      <div class="flex items-center gap-1.5 cursor-pointer">
+                        <span class="font-black text-[#0058a3] text-[22px] tracking-tighter">YES24</span>
+                      </div>
+                      <div class="flex items-center gap-4 text-gray-800">
+                        <i data-lucide="search" class="w-[20px] h-[20px] hover:text-[#0058a3] cursor-pointer"></i>
+                        <i data-lucide="user" class="w-[20px] h-[20px] hover:text-[#0058a3] cursor-pointer"></i>
+                        <i data-lucide="shopping-cart" class="w-[20px] h-[20px] hover:text-[#0058a3] cursor-pointer"></i>
+                      </div>
+                    </div>
+                    <div class="flex px-4 text-[15px] font-bold text-gray-400 overflow-x-auto hide-scrollbar whitespace-nowrap gap-5">
+                      <span class="py-2.5 hover:text-gray-900 cursor-pointer transition-colors">홈</span>
+                      <span class="py-2.5 hover:text-gray-900 cursor-pointer transition-colors">베스트</span>
+                      <span class="py-2.5 hover:text-gray-900 cursor-pointer transition-colors">신상품</span>
+                      <span class="text-[#0058a3] border-b-[3px] border-[#0058a3] py-2.5 hover:text-gray-800 cursor-pointer">이벤트</span>
+                      <span class="py-2.5 hover:text-gray-900 cursor-pointer transition-colors">사은품</span>
+                      <span class="py-2.5 hover:text-gray-900 cursor-pointer transition-colors">기획전</span>
+                    </div>
+                  </header>
+
+                  <!-- 실제 컨텐츠 영역 -->
+                  <div class="flex flex-col w-full flex-1 pb-2">
+                    ${modulesHtml}
+                  </div>
+                  
+                  <!-- 하단 푸터 영역 -->
+                  <footer class="bg-gray-900 text-gray-400 py-10 px-6 text-xs border-t border-gray-800 mt-auto">
+                     <div class="font-black text-white text-base mb-4 tracking-tighter">YES24</div>
+                     <p class="mb-1.5 text-gray-500">대표: 최세라 | 사업자등록번호: 229-81-37000</p>
+                     <p class="mb-4 text-gray-500">통신판매업신고: 제 2005-02682호</p>
+                     <p class="text-gray-600 font-medium">COPYRIGHT(C) YES24 ALL RIGHTS RESERVED.</p>
+                  </footer>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+                $('#right-panel').html(html);
+                lucide.createIcons();
+                initHeroSliders();
+            }
+
+            // 히어로 슬라이더 애니메이션 초기화 (Vanilla JS 기반)
+            function initHeroSliders() {
+                $('.hero-slider-container').each(function () {
+                    const $container = $(this);
+                    const slides = $container.find('.hero-slide');
+                    const dots = $container.find('.hero-dot');
+                    if (slides.length <= 1) return;
+
+                    let current = 0;
+                    const interval = setInterval(() => {
+                        $(slides[current]).removeClass('opacity-100 z-10').addClass('opacity-0 z-0');
+                        $(dots[current]).removeClass('bg-white w-4').addClass('bg-white/40 w-1.5');
+
+                        current = (current + 1) % slides.length;
+
+                        $(slides[current]).removeClass('opacity-0 z-0').addClass('opacity-100 z-10');
+                        $(dots[current]).removeClass('bg-white/40 w-1.5').addClass('bg-white w-4');
+                    }, 3500);
+                    state.sliderIntervals.push(interval);
+                });
+            }
+
+            function renderAll() {
+                renderLeftPanel();
+                renderPreviewPanel();
+            }
+
+            // --- [이벤트 바인딩 (jQuery Event Delegation)] ---
+
+            // 1단계: 모듈 선택 토글
+            $(document).on('click', '.module-card', function () {
+                const id = $(this).data('id');
+                const template = AVAILABLE_MODULES.find(m => m.id === id);
+                const isSelected = state.selectedModules.some(m => m.type === id);
+
+                if (isSelected) {
+                    state.selectedModules = state.selectedModules.filter(m => m.type !== id);
+                    if (state.activeModuleId && state.activeModuleId.startsWith(id)) {
+                        state.activeModuleId = null;
+                    }
+                    // 좌측 DOM 부분 업데이트 (재렌더링/애니메이션 반복 방지)
+                    $(this).removeClass('border-[#0058a3] bg-blue-50 shadow-sm').addClass('border-gray-200 hover:border-blue-300 hover:bg-gray-50');
+                    $(this).find('i[data-lucide="check-circle-2"]').removeClass('opacity-100').addClass('opacity-0');
+                    $(this).find('i').not('[data-lucide="check-circle-2"]').removeClass('text-[#0058a3]').addClass('text-gray-400');
+                } else {
+                    const newInstanceId = `${id}_${Date.now()}`;
+                    state.selectedModules.push({
+                        instanceId: newInstanceId,
+                        type: id,
+                        title: template.title,
+                        data: getDefaultDataForModule(id)
+                    });
+                    // 좌측 DOM 부분 업데이트
+                    $(this).removeClass('border-gray-200 hover:border-blue-300 hover:bg-gray-50').addClass('border-[#0058a3] bg-blue-50 shadow-sm');
+                    $(this).find('i[data-lucide="check-circle-2"]').removeClass('opacity-0').addClass('opacity-100');
+                    $(this).find('i').not('[data-lucide="check-circle-2"]').removeClass('text-gray-400').addClass('text-[#0058a3]');
+                }
+                
+                // 다음 버튼 상태 업데이트
+                $('#btn-next-step').prop('disabled', state.selectedModules.length === 0);
+                
+                // 우측 미리보기만 재렌더링
+                renderPreviewPanel();
+            });
+
+            // 단계 이동
+            $(document).on('click', '#btn-next-step', function () {
+                state.step = 2;
+                if (state.selectedModules.length > 0) state.activeModuleId = state.selectedModules[0].instanceId;
+                renderAll();
+            });
+            $(document).on('click', '#btn-prev-step', function () {
+                state.step = 1;
+                renderAll();
+            });
+
+            // 활성 모듈 변경 (좌측 리스트 클릭)
+            $(document).on('click', '.drag-item', function () {
+                state.activeModuleId = $(this).data('instance');
+                renderAll();
+            });
+
+            // 모듈 삭제
+            $(document).on('click', '.btn-remove-module', function (e) {
+                e.stopPropagation();
+                const instanceId = $(this).data('instance');
+                state.selectedModules = state.selectedModules.filter(m => m.instanceId !== instanceId);
+                if (state.activeModuleId === instanceId) state.activeModuleId = null;
+                renderAll();
+            });
+
+            // 뷰 모드 전환 (모바일/PC)
+            $(document).on('click', '#btn-view-mobile', function () { state.previewMode = 'mobile'; renderPreviewPanel(); });
+            $(document).on('click', '#btn-view-pc', function () { state.previewMode = 'pc'; renderPreviewPanel(); });
+
+            // 데이터 양방향 바인딩 (입력 이벤트)
+            $(document).on('input', '.input-field', function () {
+                const instanceId = $(this).data('instance');
+                const key = $(this).data('key');
+                const val = $(this).val();
+
+                const mod = state.selectedModules.find(m => m.instanceId === instanceId);
+                if (mod) {
+                    mod.data[key] = val;
+                    // 좌측 폼은 포커스를 잃지 않기 위해 전체 렌더링 대신 우측 프리뷰만 업데이트
+                    renderPreviewPanel();
+                }
+            });
+
+            // 전체 모듈 샘플 데이터 한 번에 채우기
+            $(document).on('click', '.btn-fill-sample', function () {
+                let filled = false;
+                state.selectedModules.forEach(mod => {
+                    const sample = SAMPLE_DATA[mod.type];
+                    if (sample) {
+                        mod.data = { ...mod.data, ...sample };
+                        filled = true;
+                    }
+                });
+                
+                if (filled) {
+                    renderAll(); // 폼 값과 우측 프리뷰를 모두 업데이트하기 위해 전체 렌더링
+                }
+            });
+
+            // 저장 버튼
+            $('#btn-save').on('click', function () {
+                if (state.selectedModules.length === 0) return alert("선택된 모듈이 없습니다.");
+                const finalData = JSON.stringify(state.selectedModules, null, 2);
+                console.log("DB 저장 JSON:", finalData);
+                alert("이벤트 배포 완료! (F12 콘솔에서 JSON 스키마를 확인하세요)");
+            });
+
+            // --- [HTML5 Drag & Drop (jQuery 연동)] ---
+            $(document).on('dragstart', '.drag-item', function (e) {
+                state.draggedIndex = $(this).data('index');
+                e.originalEvent.dataTransfer.effectAllowed = 'move';
+                e.originalEvent.dataTransfer.setData('text/html', this);
+                $(this).css('opacity', '0.4');
+            });
+
+            $(document).on('dragend', '.drag-item', function (e) {
+                state.draggedIndex = null;
+                $(this).css('opacity', '1');
+            });
+
+            $(document).on('dragover', '.drag-item', function (e) {
+                e.preventDefault();
+                e.originalEvent.dataTransfer.dropEffect = 'move';
+            });
+
+            $(document).on('drop', '.drag-item', function (e) {
+                e.preventDefault();
+                const dropIndex = $(this).data('index');
+                if (state.draggedIndex === null || state.draggedIndex === dropIndex) return;
+
+                const newModules = [...state.selectedModules];
+                const draggedItem = newModules[state.draggedIndex];
+                newModules.splice(state.draggedIndex, 1);
+                newModules.splice(dropIndex, 0, draggedItem);
+
+                state.selectedModules = newModules;
+                state.draggedIndex = null;
+                renderAll();
+            });
+
+            // 초기 렌더링
+            renderAll();
+        });
+    </script>
+</body>
+
+</html>

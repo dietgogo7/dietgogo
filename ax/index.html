@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,15 +9,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Pretendard Font -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    
+    <!-- YES24 Font -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Pretendard', 'sans-serif'],
+                        sans: ['Yes24', 'sans-serif'],
                     },
                     colors: {
                         brand: {
@@ -34,26 +33,43 @@
     </script>
     <style>
         body {
-            font-family: 'Pretendard', sans-serif;
+            font-family: 'Yes24';
             background-color: #f8fafc;
         }
+
         .fade-in-up {
             animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
             transform: translateY(20px);
         }
+
         @keyframes fadeInUp {
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        .delay-100 { animation-delay: 100ms; }
-        .delay-200 { animation-delay: 200ms; }
-        .delay-300 { animation-delay: 300ms; }
-        .delay-400 { animation-delay: 400ms; }
-        .delay-500 { animation-delay: 500ms; }
-        
+
+        .delay-100 {
+            animation-delay: 100ms;
+        }
+
+        .delay-200 {
+            animation-delay: 200ms;
+        }
+
+        .delay-300 {
+            animation-delay: 300ms;
+        }
+
+        .delay-400 {
+            animation-delay: 400ms;
+        }
+
+        .delay-500 {
+            animation-delay: 500ms;
+        }
+
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -61,6 +77,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             transition: all 0.3s ease;
         }
+
         .glass-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -70,18 +87,18 @@
         .max-w-7xl {
             max-width: 70rem !important;
         }
-
     </style>
 </head>
+
 <body class="text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900">
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
+
         <!-- Title & Intro -->
         <div class="text-center max-w-3xl mx-auto mb-16 fade-in-up">
-            <span class="inline-block py-1 px-3 rounded-full bg-brand-50 text-brand-700 text-sm font-semibold mb-4 border border-brand-100">
-                Future of Development
-            </span>
+            <div class="flex justify-center mb-4">
+                <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.svg" style="width: 20%;">
+            </div>
             <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
                 AX추진TF 구성
             </h2>
@@ -96,7 +113,8 @@
                 <i class="ph-duotone ph-target text-2xl text-slate-700"></i>
                 <h3 class="text-2xl font-bold text-slate-800">AX 개요</h3>
             </div>
-            <div class="bg-gradient-to-br from-slate-900 to-brand-900 rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
+            <div
+                class="bg-gradient-to-br from-slate-900 to-brand-900 rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
                 <div class="absolute top-0 right-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
                     <i class="ph-fill ph-brain text-9xl"></i>
                 </div>
@@ -106,7 +124,8 @@
                             <i class="ph-bold ph-rocket-launch"></i> 조직 미션
                         </h4>
                         <p class="text-slate-200 leading-relaxed text-base md:text-lg">
-                            AI 전환(AI Transformation)을 기반으로 업무 효율을 높이고, 내부 데이터와 아이디어를 연결하여 파일럿 구축부터 LLM 기반 서비스화까지 추진하는 실행 조직입니다.
+                            AI 전환(AI Transformation)을 기반으로 업무 효율을 높이고, 내부 데이터와 아이디어를 연결하여 파일럿 구축부터 LLM 기반 서비스화까지 추진하는 실행
+                            조직입니다.
                         </p>
                     </div>
                     <div>
@@ -114,7 +133,8 @@
                             <i class="ph-bold ph-arrows-merge"></i> 변화 방향성
                         </h4>
                         <p class="text-slate-200 leading-relaxed text-base md:text-lg">
-                            회사의 업무 프로세스를 기존 사람 중심 구조에서 벗어나 <strong class="text-white font-semibold">AI 중심으로 재구성</strong>하며, 인간과 AI/Agent가 협업하는 방향으로 전환하기 위해 체계를 정립하고 AI 결과물에 대한 관리 표준을 구축합니다.
+                            회사의 업무 프로세스를 기존 사람 중심 구조에서 벗어나 <strong class="text-white font-semibold">AI 중심으로
+                                재구성</strong>하며, 인간과 AI/Agent가 협업하는 방향으로 전환하기 위해 체계를 정립하고 AI 결과물에 대한 관리 표준을 구축합니다.
                         </p>
                     </div>
                 </div>
@@ -136,7 +156,8 @@
                     <ul class="space-y-4">
                         <li class="flex items-start gap-2 text-base text-slate-600">
                             <i class="ph-bold ph-check text-brand-500 mt-0.5"></i>
-                            <span>아이디어 도출 및 문제 인식의 다양성 확보를 위해 <strong class="text-slate-800">직급과 연령대가 혼합된 구조</strong>로 조직 구성<br><span class="text-sm text-slate-400">(상위 직급자 중심의 조직은 경직도를 높임)</span></span>
+                            <span>아이디어 도출 및 문제 인식의 다양성 확보를 위해 <strong class="text-slate-800">직급과 연령대가 혼합된 구조</strong>로
+                                조직 구성<br><span class="text-sm text-slate-400">(상위 직급자 중심의 조직은 경직도를 높임)</span></span>
                         </li>
                         <li class="flex items-start gap-2 text-base text-slate-600">
                             <i class="ph-bold ph-check text-brand-500 mt-0.5"></i>
@@ -151,17 +172,21 @@
                     </h4>
                     <div class="relative pl-6 border-l-2 border-indigo-100 space-y-5">
                         <div class="relative">
-                            <div class="absolute -left-[31px] top-1 bg-indigo-500 text-white w-4 h-4 rounded-full border-4 border-white"></div>
-                            <h5 class="text-sm font-bold text-slate-800 mb-1">1단계: 초기 구성</h5>
-                            <p class="text-sm text-slate-600 leading-relaxed">
+                            <div
+                                class="absolute -left-[31px] top-1 bg-indigo-500 text-white w-4 h-4 rounded-full border-4 border-white">
+                            </div>
+                            <h5 class="text-base font-bold text-slate-800 mb-1">1단계: 초기 구성</h5>
+                            <p class="text-base text-slate-600 leading-relaxed">
                                 핵심 역할 수행이 가능한 <strong class="text-indigo-600">코어 멤버 중심</strong>으로 1차 구성.<br>
                                 코어 멤버는 아이디어 발굴, 문제 정의, 방향성 수립, 브레인스토밍 주도.
                             </p>
                         </div>
                         <div class="relative">
-                            <div class="absolute -left-[31px] top-1 bg-slate-300 w-4 h-4 rounded-full border-4 border-white"></div>
-                            <h5 class="text-sm font-bold text-slate-800 mb-1">2단계: 확장 및 재배치</h5>
-                            <p class="text-sm text-slate-600 leading-relaxed">
+                            <div
+                                class="absolute -left-[31px] top-1 bg-slate-300 w-4 h-4 rounded-full border-4 border-white">
+                            </div>
+                            <h5 class="text-base font-bold text-slate-800 mb-1">2단계: 확장 및 재배치</h5>
+                            <p class="text-base text-slate-600 leading-relaxed">
                                 프로젝트가 구체화되면, 특성에 따라 <strong class="text-slate-800">유동적으로 인력 확충 및 재배치</strong> 진행.
                             </p>
                         </div>
@@ -178,50 +203,58 @@
             </div>
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Role 1 -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 hover:border-blue-300 transition-colors">
-                    <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-3">
+                <div
+                    class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 hover:border-blue-300 transition-colors">
+                    <div
+                        class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-3">
                         <i class="ph-fill ph-storefront"></i>
                     </div>
-                    <h4 class="font-bold text-slate-900 mb-3 text-sm">사업부서 대표</h4>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc pl-4 marker:text-slate-300">
+                    <h4 class="font-bold text-slate-900 mb-3 text-base">사업부서 대표</h4>
+                    <ul class="text-base text-slate-600 space-y-2 list-disc pl-4 marker:text-slate-300">
                         <li>현업 관점에서 업무 비 효율 항목 및 개선 아이디어 도출</li>
                         <li>내부 조직의 요구사항 수집과 서비스 실효성 검증</li>
                     </ul>
                 </div>
                 <!-- Role 2 -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 hover:border-emerald-300 transition-colors">
-                    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-3">
+                <div
+                    class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 hover:border-emerald-300 transition-colors">
+                    <div
+                        class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-3">
                         <i class="ph-fill ph-code"></i>
                     </div>
-                    <h4 class="font-bold text-slate-900 mb-3 text-sm flex items-end gap-1">
-                        개발자 <span class="text-xs font-normal text-slate-500">(프론트/결제/백엔드)</span>
+                    <h4 class="font-bold text-slate-900 mb-3 text-base flex items-end gap-1">
+                        개발자 <span class="text-sm font-normal text-slate-500">(프론트/결제/백엔드)</span>
                     </h4>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc pl-4 marker:text-slate-300">
+                    <ul class="text-base text-slate-600 space-y-2 list-disc pl-4 marker:text-slate-300">
                         <li>아이디어를 실제 서비스로 구현</li>
                         <li>바이브코더 및 프로토타입을 사내 데이터와 연결시킬 인터페이스 구축</li>
                         <li>LLM 연동 서비스화 구조 설계</li>
                     </ul>
                 </div>
                 <!-- Role 3 -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 hover:border-pink-300 transition-colors">
-                    <div class="w-10 h-10 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center text-xl mb-3">
+                <div
+                    class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 hover:border-pink-300 transition-colors">
+                    <div
+                        class="w-10 h-10 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center text-xl mb-3">
                         <i class="ph-fill ph-palette"></i>
                     </div>
-                    <h4 class="font-bold text-slate-900 mb-3 text-sm">UI 디자이너</h4>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc pl-4 marker:text-slate-300">
+                    <h4 class="font-bold text-slate-900 mb-3 text-base">UI 디자이너</h4>
+                    <ul class="text-base text-slate-600 space-y-2 list-disc pl-4 marker:text-slate-300">
                         <li>프로토타입에 자사 브랜드의 톤앤매너 주입</li>
                         <li>서비스 완성도를 높이기 위한 시각적 설계 수행</li>
                     </ul>
                 </div>
                 <!-- Role 4 -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 hover:border-purple-300 transition-colors">
-                    <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xl mb-3">
+                <div
+                    class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 hover:border-purple-300 transition-colors">
+                    <div
+                        class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xl mb-3">
                         <i class="ph-fill ph-robot"></i>
                     </div>
-                    <h4 class="font-bold text-slate-900 mb-3 text-sm flex items-end gap-1">
-                        AI 전문가 <span class="text-xs font-normal text-slate-500">(DT 추진팀)</span>
+                    <h4 class="font-bold text-slate-900 mb-3 text-base flex items-end gap-1">
+                        AI 전문가 <span class="text-sm font-normal text-slate-500">(DT 추진팀)</span>
                     </h4>
-                    <ul class="text-sm text-slate-600 space-y-2 list-disc pl-4 marker:text-slate-300">
+                    <ul class="text-base text-slate-600 space-y-2 list-disc pl-4 marker:text-slate-300">
                         <li>AI 모델 도입 및 최신 기술 동향 자문</li>
                         <li>사내 데이터 연동 지원 및 최적화 가이드 제공</li>
                     </ul>
@@ -236,11 +269,11 @@
                 <h3 class="text-2xl font-bold text-slate-800">AX팀 로드맵</h3>
             </div>
             <div class="bg-white rounded-2xl p-2 sm:p-4 shadow-sm border border-slate-200 overflow-hidden group">
-                <div class="relative rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[200px] p-4">
-                    <img src="https://dietgogo7.github.io/dietgogo/ax/ax.png" style="width:60%;"
-                         alt="AX팀 로드맵 이미지" 
-                         class="max-w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
-                         onerror="this.src='https://placehold.co/1200x400/e2e8f0/475569?text=Image+Load+Failed'">
+                <div
+                    class="relative rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center min-h-[200px] p-4">
+                    <img src="https://dietgogo7.github.io/dietgogo/ax/ax.jpeg" style="width:60%;" alt="AX팀 로드맵 이미지"
+                        class="max-w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
+                        onerror="this.src='https://placehold.co/1200x400/e2e8f0/475569?text=Image+Load+Failed'">
                 </div>
             </div>
         </section>
@@ -252,13 +285,14 @@
                 <h3 class="text-2xl font-bold text-slate-800">바이브 코딩 활용 예시</h3>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-6">
+
                 <!-- Idea 1 -->
-                <article class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden">
+                <article class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden xl:col-span-2">
                     <div class="absolute top-0 right-0 w-24 h-24 bg-brand-50 rounded-bl-full -z-10 opacity-50"></div>
                     <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center text-2xl mb-4">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center text-2xl mb-4">
                             <i class="ph ph-plugs-connected"></i>
                         </div>
                         <span class="text-5xl font-black text-slate-100 pointer-events-none">01</span>
@@ -266,27 +300,31 @@
                     <h4 class="text-xl font-bold text-slate-900 mb-3">예스24 오픈 API 구축</h4>
                     <div class="space-y-3 mb-6 flex-grow">
                         <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-base">
-                            <strong class="text-brand-700 block mb-1"><i class="ph-fill ph-globe-hemisphere-west mr-1"></i>외부용</strong>
+                            <strong class="text-brand-700 block mb-1"><i
+                                    class="ph-fill ph-globe-hemisphere-west mr-1"></i>외부용</strong>
                             <p class="text-slate-600">유입 경로 확대, 애드온 링크 연계를 통한 개인 제휴사 확보, 백링크 확장 목적</p>
                         </div>
                         <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-base">
-                            <strong class="text-brand-700 block mb-1"><i class="ph-fill ph-buildings mr-1"></i>내부용</strong>
+                            <strong class="text-brand-700 block mb-1"><i
+                                    class="ph-fill ph-buildings mr-1"></i>내부용</strong>
                             <p class="text-slate-600">사내 바이브코더 및 AI Agent 와 사내 데이터를 연결하기 위한 목적</p>
                         </div>
                         <div class="flex items-center text-sm text-slate-500 bg-amber-50 text-amber-700 p-2 rounded-lg">
                             <i class="ph-fill ph-info mr-1.5"></i> 향후 MCP 서버 형태로의 확장 가능성도 고려
                         </div>
                     </div>
-                    <a href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank" class="w-full inline-flex justify-center items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white py-2.5 px-4 rounded-xl transition-colors font-medium text-base">
+                    <a href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank"
+                        class="w-full inline-flex justify-center items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white py-2.5 px-4 rounded-xl transition-colors font-medium text-base">
                         프로토타입 확인하기 <i class="ph-bold ph-arrow-up-right"></i>
                     </a>
                 </article>
 
                 <!-- Idea 2 -->
-                <article class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden">
+                <article class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden xl:col-span-2">
                     <div class="absolute top-0 right-0 w-24 h-24 bg-brand-50 rounded-bl-full -z-10 opacity-50"></div>
                     <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl mb-4">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl mb-4">
                             <i class="ph ph-book-open-text"></i>
                         </div>
                         <span class="text-5xl font-black text-slate-100 pointer-events-none">02</span>
@@ -294,19 +332,23 @@
                     <h4 class="text-xl font-bold text-slate-900 mb-3">도서 미리보기 리뉴얼</h4>
                     <p class="text-slate-600 text-base leading-relaxed mb-6 flex-grow">
                         기존 도서 미리보기 화면의 전면적인 <strong class="text-slate-800">UI/UX 리뉴얼</strong>을 진행합니다.<br><br>
-                        PC 및 모바일 환경에 완벽히 대응하는 <strong class="text-slate-800">반응형 구성</strong>을 적용하며, 사용자의 독서 경험을 향상시킬 수 있는 <strong class="text-indigo-600 bg-indigo-50 px-1 rounded">AI 요약 기능</strong>을 새롭게 제공합니다.<br><br>
-                         <strong class="text-slate-800">사내 LLM 연계</strong>를 통해 미리보기 페이지의 주요 문장을 추출 합니다.
+                        PC 및 모바일 환경에 완벽히 대응하는 <strong class="text-slate-800">반응형 구성</strong>을 적용하며, 사용자의 독서 경험을 향상시킬 수
+                        있는 <strong class="text-indigo-600 bg-indigo-50 px-1 rounded">AI 요약 기능</strong>을 새롭게
+                        제공합니다.<br><br>
+                        <strong class="text-slate-800">사내 LLM 연계</strong>를 통해 미리보기 페이지의 주요 문장을 추출 합니다.
                     </p>
-                    <a href="https://dietgogo7.github.io/dietgogo/preview/preview-v2.html" target="_blank" class="w-full inline-flex justify-center items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 py-2.5 px-4 rounded-xl transition-colors font-medium text-base border border-indigo-200">
+                    <a href="https://dietgogo7.github.io/dietgogo/preview/preview-v2.html" target="_blank"
+                        class="w-full inline-flex justify-center items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 py-2.5 px-4 rounded-xl transition-colors font-medium text-base border border-indigo-200">
                         프로토타입 확인하기 <i class="ph-bold ph-arrow-up-right"></i>
                     </a>
                 </article>
 
                 <!-- Idea 3 -->
-                <article class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden">
+                <article class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden xl:col-span-2">
                     <div class="absolute top-0 right-0 w-24 h-24 bg-brand-50 rounded-bl-full -z-10 opacity-50"></div>
                     <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center text-2xl mb-4">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center text-2xl mb-4">
                             <i class="ph ph-smiley-wink"></i>
                         </div>
                         <span class="text-5xl font-black text-slate-100 pointer-events-none">03</span>
@@ -314,36 +356,46 @@
                     <h4 class="text-xl font-bold text-slate-900 mb-3">이모지 생성</h4>
                     <p class="text-slate-600 text-base leading-relaxed mb-4 flex-grow">
                         예스24의 캐릭터를 활용하여 AI 이미지 기반의 독창적인 이모지를 제작합니다.<br><br>
-                        이벤트 댓글 게시판에 등록 가능하도록 연동 프로세스를 구축하며, <strong class="text-slate-800">옴니솔 메신저</strong> 추가 적용도 긍정적으로 검토합니다.
+                        이벤트 댓글 게시판에 등록 가능하도록 연동 프로세스를 구축하며, <strong class="text-slate-800">옴니솔 메신저</strong> 추가 적용도 긍정적으로
+                        검토합니다.
                     </p>
-                    <div class="mb-6 rounded-lg overflow-hidden border border-slate-100 h-24 bg-slate-50 flex items-center justify-center">
-                        <img src="https://dietgogo7.github.io/dietgogo/preview/Emoji.png" alt="이모지 미리보기" class="h-full w-full object-cover opacity-80 mix-blend-multiply" onerror="this.style.display='none'">
+                    <div
+                        class="mb-6 rounded-lg overflow-hidden border border-slate-100 h-24 bg-slate-50 flex items-center justify-center">
+                        <img src="https://dietgogo7.github.io/dietgogo/preview/Emoji.png" alt="이모지 미리보기"
+                            class="h-full w-full object-cover opacity-80 mix-blend-multiply"
+                            onerror="this.style.display='none'">
                     </div>
-                     <button onclick="openEmojiModal()" class="w-full inline-flex justify-center items-center gap-2 bg-pink-50 hover:bg-pink-100 text-pink-700 py-2.5 px-4 rounded-xl transition-colors font-medium text-base border border-pink-200">
+                    <button onclick="openEmojiModal()"
+                        class="w-full inline-flex justify-center items-center gap-2 bg-pink-50 hover:bg-pink-100 text-pink-700 py-2.5 px-4 rounded-xl transition-colors font-medium text-base border border-pink-200">
                         샘플 이미지 보기 <i class="ph-bold ph-image"></i>
                     </button>
                 </article>
 
                 <!-- Idea 4 -->
-                <article class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden md:col-span-2 xl:col-span-1">
+                <article
+                    class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden md:col-span-2 xl:col-span-3">
                     <div class="absolute top-0 right-0 w-24 h-24 bg-brand-50 rounded-bl-full -z-10 opacity-50"></div>
                     <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mb-4">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mb-4">
                             <i class="ph ph-list-checks"></i>
                         </div>
                         <span class="text-5xl font-black text-slate-100 pointer-events-none">04</span>
                     </div>
                     <h4 class="text-xl font-bold text-slate-900 mb-3">설문조사 시스템</h4>
                     <p class="text-slate-600 text-base leading-relaxed mb-6 flex-grow">
-                        구글폼이나 네이버폼을 대체할 수 있는 <strong class="text-emerald-600 bg-emerald-50 px-1 rounded">예스24 전용 설문조사 폼</strong>을 자체 구축합니다.<br><br>
+                        구글폼이나 네이버폼을 대체할 수 있는 <strong class="text-emerald-600 bg-emerald-50 px-1 rounded">예스24 전용 설문조사
+                            폼</strong>을 자체 구축합니다.<br><br>
                         고객 대상의 프론트엔드 화면은 물론, 설문 생성 및 결과 데이터를 확인하고 관리할 수 있는 어드민 페이지까지 풀세트로 구성합니다.
                     </p>
                     <div class="grid grid-cols-2 gap-3 mt-auto">
-                        <a href="https://dietgogo7.github.io/dietgogo/form/index.html" target="_blank" class="w-full flex flex-col justify-center items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 px-2 rounded-xl transition-colors text-base font-medium border border-emerald-200">
+                        <a href="https://dietgogo7.github.io/dietgogo/form/index.html" target="_blank"
+                            class="w-full flex flex-col justify-center items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 px-2 rounded-xl transition-colors text-base font-medium border border-emerald-200">
                             <i class="ph-bold ph-monitor text-lg"></i>
                             프로토타입: 프론트
                         </a>
-                        <a href="https://dietgogo7.github.io/dietgogo/form/admin.html" target="_blank" class="w-full flex flex-col justify-center items-center gap-1 bg-slate-800 hover:bg-slate-900 text-white py-3 px-2 rounded-xl transition-colors text-base font-medium shadow-sm">
+                        <a href="https://dietgogo7.github.io/dietgogo/form/admin.html" target="_blank"
+                            class="w-full flex flex-col justify-center items-center gap-1 bg-slate-800 hover:bg-slate-900 text-white py-3 px-2 rounded-xl transition-colors text-base font-medium shadow-sm">
                             <i class="ph-bold ph-lock-key text-lg"></i>
                             프로토타입: 관리자
                         </a>
@@ -351,21 +403,24 @@
                 </article>
 
                 <!-- Idea 5 -->
-                <article class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden md:col-span-2 xl:col-span-2">
+                <article
+                    class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden md:col-span-2 xl:col-span-3">
                     <div class="absolute top-0 right-0 w-24 h-24 bg-brand-50 rounded-bl-full -z-10 opacity-50"></div>
                     <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl mb-4">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl mb-4">
                             <i class="ph ph-buildings"></i>
                         </div>
                         <span class="text-5xl font-black text-slate-100 pointer-events-none">05</span>
                     </div>
                     <h4 class="text-xl font-bold text-slate-900 mb-3">자회사 홈페이지 구축</h4>
                     <p class="text-slate-600 text-base leading-relaxed mb-6 flex-grow max-w-2xl">
-                        예스24 메인 사이트의 엄격한 톤앤매너나 레거시 시스템과 직접 연결되지 않는 독립적인 영역의 경우, 
-                        <strong class="text-orange-600 bg-orange-50 px-1 rounded">순수 바이브 코딩 방식</strong>을 도입하여 개발 리소스를 획기적으로 줄이고 매우 빠르게 구축 가능할 것으로 판단됩니다.<br><br>
+                        예스24 메인 사이트의 엄격한 톤앤매너나 레거시 시스템과 직접 연결되지 않는 독립적인 영역의 경우,
+                        <strong class="text-orange-600 bg-orange-50 px-1 rounded">순수 바이브 코딩 방식</strong>을 도입하여 개발 리소스를
+                        획기적으로 줄이고 매우 빠르게 구축 가능할 것으로 판단됩니다.<br><br>
                         향후 신규 자회사 사이트 구축 니즈 발생 시, 바이브 코딩을 우선 적용 가능한 최적의 후보군으로 검토할 수 있습니다.
                     </p>
-                  
+
                 </article>
 
             </div>
@@ -380,9 +435,11 @@
         </div>
     </footer>
 
-      <!-- Emoji Preview Modal -->
-    <div id="emojiModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+    <!-- Emoji Preview Modal -->
+    <div id="emojiModal"
+        class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+        <div
+            class="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
             <div class="flex justify-between items-center p-4 border-b">
                 <h5 class="font-bold text-slate-800">이모지 생성 결과물</h5>
                 <button onclick="closeEmojiModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
@@ -390,7 +447,8 @@
                 </button>
             </div>
             <div class="p-6 bg-slate-50 flex justify-center">
-                <img src="https://dietgogo7.github.io/dietgogo/preview/Emoji.png" alt="이모지 확장 이미지" class="max-w-full h-auto rounded-lg shadow-sm">
+                <img src="https://dietgogo7.github.io/dietgogo/preview/Emoji.png" alt="이모지 확장 이미지"
+                    class="max-w-full h-auto rounded-lg shadow-sm">
             </div>
             <div class="p-4 text-center border-t bg-white text-sm text-slate-500">
                 AI를 통해 생성된 예스24 캐릭터 활용 이모지 예시입니다.
@@ -414,7 +472,7 @@
         }
 
         // 배경 클릭 시 닫기
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('emojiModal');
             if (event.target == modal) {
                 closeEmojiModal();
@@ -422,4 +480,5 @@
         }
     </script>
 </body>
+
 </html>

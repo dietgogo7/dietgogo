@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="YNK미디어 브랜드 공식 홈페이지 - Y노블, Y코믹스 출판물 및 아티스트 소개">
+    <title>YNK미디어 | YNK Media</title>
+    <!-- 폰트 적용: 나눔스퀘어라운드 -->
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-inner">
+            <h1 class="logo"><a href="#home">YNK미디어</a></h1>
+            <nav class="gnb">
+                <ul>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                    <li><a href="#works" class="nav-link">Works</a></li>
+                    <li><a href="#news" class="nav-link">News & Event</a></li>
+                    <li><a href="#contact" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="app-content">
+        <!-- Home Section -->
+        <section id="home" class="page-section active">
+            <!-- Hero Banner -->
+            <div class="hero-banner">
+                <div class="container hero-content">
+                    <h2>따뜻한 이야기,<br>YNK미디어와 함께</h2>
+                    <p>당신의 일상에 산뜻한 감성을 더합니다.</p>
+                </div>
+            </div>
+
+            <!-- New Curation -->
+            <div class="curation-section container">
+                <h3 class="section-title">주목할만한 작품</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-img placeholder-1"></div>
+                        <div class="card-body">
+                            <h4>스킵과 로퍼 (Y코믹스)</h4>
+                            <p>조금 엇갈리기도 하지만 어느새 서로를 이해하게 되는, 무해하고 따뜻한 청춘 코미디!</p>
+                            <a href="#works" class="btn btn-primary">자세히 보기</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-img placeholder-2"></div>
+                        <div class="card-body">
+                            <h4>보석의 나라 (Y코믹스)</h4>
+                            <p>먼 미래, 불사의 몸을 가진 보석들의 투쟁과 성장을 그린 깊이 있는 판타지</p>
+                            <a href="#works" class="btn btn-primary">자세히 보기</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Labels -->
+            <div class="labels-section container">
+                <h3 class="section-title">Our Labels</h3>
+                <div class="label-grid">
+                    <div class="label-card y-novel" onclick="location.hash='#works'">
+                        <h4>Y Novel</h4>
+                        <p>감성을 자극하는 라이트노벨</p>
+                    </div>
+                    <div class="label-card y-comics" onclick="location.hash='#works'">
+                        <h4>Y Comics</h4>
+                        <p>눈과 마음이 즐거운 만화</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About Section -->
+        <section id="about" class="page-section" style="display:none;">
+            <div class="container">
+                <h2 class="section-title">About YNK미디어</h2>
+                <div class="about-content card">
+                    <h3>국내 대표 서브컬처 & 전자책 기업</h3>
+                    <p style="margin-top: 20px;">YNK미디어는 대한민국 전자책 1위 기업 YES24의 자회사로서, 서브컬처의 대중화를 이끌고 있습니다.</p>
+                    <p style="margin-top: 15px; color: #666;">만화, 라이트노벨 등 다양한 장르의 콘텐츠를 발굴하며 파스텔톤의 따뜻한 감성으로 독자 여러분의 일상에 산뜻한 즐거움을 선사합니다.</p>
+                    
+                    <div style="margin-top: 40px; display: flex; justify-content: center; gap: 30px;">
+                        <div style="flex: 1; padding: 20px; background: #FFEBEE; border-radius: 16px;">
+                            <h4 style="margin-bottom: 10px;">설립</h4>
+                            <p style="color: #666; font-size: 0.95rem;">2015년 10월 29일</p>
+                        </div>
+                        <div style="flex: 1; padding: 20px; background: #FFF9C4; border-radius: 16px;">
+                            <h4 style="margin-bottom: 10px;">모기업</h4>
+                            <p style="color: #666; font-size: 0.95rem;">YES24 (한세예스24홀딩스)</p>
+                        </div>
+                        <div style="flex: 1; padding: 20px; background: #E3F2FD; border-radius: 16px;">
+                            <h4 style="margin-bottom: 10px;">주요사업</h4>
+                            <p style="color: #666; font-size: 0.95rem;">도서 및 전자책 출판</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Works Section -->
+        <section id="works" class="page-section" style="display:none;">
+            <div class="container">
+                <h2 class="section-title">최신 작품 (Works)</h2>
+                
+                <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                    <!-- Item 1 -->
+                    <div class="card">
+                        <div class="card-img" style="background-color: #E8F5E9;"></div>
+                        <div class="card-body">
+                            <h4>스킵과 로퍼</h4>
+                            <p style="font-size: 0.85rem; margin-bottom: 5px;"><strong>장르:</strong> Y코믹스</p>
+                            <p style="font-size: 0.9rem;">따뜻한 감성의 학원 청춘물</p>
+                        </div>
+                    </div>
+                    <!-- Item 2 -->
+                    <div class="card">
+                        <div class="card-img" style="background-color: #E3F2FD;"></div>
+                        <div class="card-body">
+                            <h4>보석의 나라</h4>
+                            <p style="font-size: 0.85rem; margin-bottom: 5px;"><strong>장르:</strong> Y코믹스</p>
+                            <p style="font-size: 0.9rem;">보석 생명체들의 투쟁 액션 판타지</p>
+                        </div>
+                    </div>
+                    <!-- Item 3 -->
+                    <div class="card">
+                        <div class="card-img" style="background-color: #FFF9C4;"></div>
+                        <div class="card-body">
+                            <h4>마도구사 달리아는 고개 숙이지 않아</h4>
+                            <p style="font-size: 0.85rem; margin-bottom: 5px;"><strong>장르:</strong> Y노블</p>
+                            <p style="font-size: 0.9rem;">오늘부터 자유로운 장인 생활!</p>
+                        </div>
+                    </div>
+                    <!-- Item 4 -->
+                    <div class="card">
+                        <div class="card-img" style="background-color: #FFEBEE;"></div>
+                        <div class="card-body">
+                            <h4>29세 독신은 이세계에서 자유롭게 살고싶었다</h4>
+                            <p style="font-size: 0.85rem; margin-bottom: 5px;"><strong>장르:</strong> Y노블</p>
+                            <p style="font-size: 0.9rem;">독신의 힐링 이세계 슬로우 라이프</p>
+                        </div>
+                    </div>
+                    <!-- Item 5 -->
+                    <div class="card">
+                        <div class="card-img" style="background-color: #F3E5F5;"></div>
+                        <div class="card-body">
+                            <h4>검술 천재 조상님이 돌아왔다</h4>
+                            <p style="font-size: 0.85rem; margin-bottom: 5px;"><strong>장르:</strong> 웹소설 (그래출판)</p>
+                            <p style="font-size: 0.9rem;">검술의 정점, 현대에 귀환하다</p>
+                        </div>
+                    </div>
+                    <!-- Item 6 -->
+                    <div class="card">
+                        <div class="card-img" style="background-color: #E0F7FA;"></div>
+                        <div class="card-body">
+                            <h4>천재경찰 재벌가 사위되다</h4>
+                            <p style="font-size: 0.85rem; margin-bottom: 5px;"><strong>장르:</strong> 웹소설 (그래출판)</p>
+                            <p style="font-size: 0.9rem;">천재 경찰의 재계 정복기</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- News Section -->
+        <section id="news" class="page-section" style="display:none;">
+            <div class="container">
+                <h2 class="section-title">News & Event</h2>
+                <div class="card">
+                    <ul class="news-list" style="list-style: none; margin: 0; padding: 0;">
+                        <li style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                            <a href="#" style="font-size: 1.1rem; font-weight: 700;">YNK미디어 기업 가치 제고를 위한 브랜드 웹사이트 오픈</a>
+                            <span style="color: #999; font-size: 0.9rem;">2026.03.29</span>
+                        </li>
+                        <li style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                            <a href="#" style="font-size: 1.1rem; font-weight: 700;">'스킵과 로퍼' 신간 출간 기념 굿즈 증정 이벤트 (YES24 단독)</a>
+                            <span style="color: #999; font-size: 0.9rem;">2026.03.15</span>
+                        </li>
+                        <li style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                            <a href="#" style="font-size: 1.1rem; font-weight: 700;">그래출판 신규 오리지널 웹소설 공모전 개최 안내</a>
+                            <span style="color: #999; font-size: 0.9rem;">2026.02.28</span>
+                        </li>
+                        <li style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                            <a href="#" style="font-size: 1.1rem; font-weight: 700;">Y노블 & Y코믹스 전자책(eBook) 정기구독 서비스 론칭</a>
+                            <span style="color: #999; font-size: 0.9rem;">2026.01.10</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="page-section" style="display:none;">
+            <div class="container">
+                <h2 class="section-title">Contact Us</h2>
+                <div class="card" style="max-width: 600px; margin: 0 auto;">
+                    <form class="contact-form" style="padding: 3rem;">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold;">문의 유형</label>
+                            <select class="form-control" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; transition: border-color 0.3s; font-family: inherit;">
+                                <option>원고 투고 (소설/만화)</option>
+                                <option>비즈니스 / 제휴 문의</option>
+                                <option>기타 문의</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold;">이름 / 담당자명</label>
+                            <input type="text" class="form-control" placeholder="이름을 입력해주세요" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; transition: border-color 0.3s; font-family: inherit;">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold;">이메일</label>
+                            <input type="email" class="form-control" placeholder="답변을 받으실 이메일 주소" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; transition: border-color 0.3s; font-family: inherit;">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold;">제목</label>
+                            <input type="text" class="form-control" placeholder="문의 제목을 입력해주세요" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; transition: border-color 0.3s; font-family: inherit;">
+                        </div>
+                        <div style="margin-bottom: 30px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold;">내용</label>
+                            <textarea class="form-control" rows="5" placeholder="문의하실 내용을 상세히 적어주세요" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; resize: vertical; transition: border-color 0.3s; font-family: inherit;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem; border-radius: 12px;">문의 접수하기</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <h2 style="font-size: 1.2rem; margin-bottom: 10px; color: #333;">YNK Media (YES24 자회사)</h2>
+            <p style="margin-bottom: 5px;">서울특별시 영등포구 은행로 11 (여의도동, 일신빌딩) 6층</p>
+            <p>&copy; 2026 YNK Media. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // form focus styles (inline application for form focus state)
+        $(document).ready(function(){
+            $('.form-control').focus(function(){
+                $(this).css('border-color', '#E3F2FD');
+                $(this).css('box-shadow', '0 0 0 3px rgba(227, 242, 253, 0.5)');
+            }).blur(function(){
+                $(this).css('border-color', '#ddd');
+                $(this).css('box-shadow', 'none');
+            });
+        });
+    </script>
+</body>
+</html>
