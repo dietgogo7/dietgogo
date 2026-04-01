@@ -9,13 +9,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- YES24 Font -->
+    <!-- Noto Sans KR Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Yes24', 'sans-serif'],
+                        sans: ['"Noto Sans KR"', 'sans-serif'],
                     },
                     colors: {
                         brand: {
@@ -33,7 +36,7 @@
     </script>
     <style>
         body {
-            font-family: 'Yes24';
+            font-family: 'Noto Sans KR', sans-serif;
             background-color: #f8fafc;
         }
 
