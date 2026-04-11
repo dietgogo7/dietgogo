@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>코스별 현황 - 리딩런 BackOffice</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="readingRunAdmin.css"/>
+<style>
+.top-bar-admin { font-size:13px; color:#475569; font-weight:500; }
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.w-120 { width:120px; }
+.w-110 { width:110px; }
+.w-140 { width:140px; }
+.w-150 { width:150px; }
+.date-range { display:flex; align-items:center; gap:4px; }
+.date-sep { color:#94a3b8; }
+.btn-group { display:flex; gap:6px; align-items:flex-end; }
+.card-header-text { font-size:13px; color:#475569; }
+.table-wrap { overflow-x:auto; }
+</style>
+</head>
+<body>
+<div class="main-wrap">
+  <div class="top-bar">
+    <div class="breadcrumb">리딩런 &gt; <strong>코스별 현황</strong></div>
+    <div class="top-bar-admin">관리자</div>
+  </div>
+  <div class="content-wrap">
+
+    <div class="page-header">
+      <h1 class="page-title">코스별 현황</h1>
+    </div>
+
+    <div class="search-box">
+      <div><label class="form-label">코스 선택</label>
+        <select id="fCourse" class="form-select w-120">
+          <option value="">전체</option><option>Starter</option><option>Half</option><option>Marathon</option>
+        </select>
+      </div>
+      <div><label class="form-label">완주 여부</label>
+        <select id="fComplete" class="form-select w-110">
+          <option value="">전체</option><option value="1">완주</option><option value="0">미완주</option>
+        </select>
+      </div>
+      <div><label class="form-label">코스 시작일</label>
+        <div class="date-range">
+          <input type="date" id="fStart" class="form-input w-140" value="2026-03-01"/>
+          <span class="date-sep">~</span>
+          <input type="date" id="fEnd" class="form-input w-140" value="2026-04-11"/>
+        </div>
+      </div>
+      <div><label class="form-label">회원 ID</label>
+        <input type="text" id="fMember" class="form-input w-150" placeholder="회원 ID 입력"/>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="doSearch()">검색</button>
+        <button class="btn btn-secondary" onclick="doReset()">초기화</button>
+        <button class="btn btn-success" onclick="BO.toast('엑셀 다운로드 요청되었습니다.','success')">↓ 엑셀 다운로드</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-text">총 <strong id="totalCnt">0</strong>건</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr>
+            <th>번호</th><th>회원 ID</th><th>코스명</th><th>코스 회차</th><th>결과 상태</th>
+            <th>코스 시작일시</th><th>완주</th><th>완주 일시</th><th>배지</th><th>상품권</th><th>기부</th><th>등록일시</th>
+          </tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div id="pagination"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="scripts/common.js"></script>
+<script src="scripts/course-status.js"></script>
+</body>
+</html>

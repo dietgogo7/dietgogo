@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>누적 통계 (대시보드) - 리딩런 BackOffice</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="readingRunAdmin.css"/>
+<style>
+.top-bar-admin { font-size:15px; color:#475569; font-weight:500; }
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.page-header-info { font-size:14px; color:#64748b; display:flex; align-items:center; gap:10px; }
+.campaign-badge { background:#fffbeb; border:1px solid #fde68a; color:#92400e; padding:4px 12px; border-radius:20px; font-size:12px; }
+.grid-5col { grid-template-columns:repeat(5,1fr); margin-bottom:24px; }
+.grid-3col { grid-template-columns:repeat(3,1fr); margin-bottom:24px; }
+.sv-primary { color:#a51818; }
+.sv-dark { color:#333; }
+.sv-muted { color:#555; }
+.sv-success { color:#2e7d32; }
+.sv-danger { color:#c62828; }
+.course-header-starter { background:#fef2f2; border-bottom:1px solid #fecaca; padding:12px 16px; }
+.course-header-half { background:#e8f5e9; border-bottom:1px solid #c8e6c9; padding:12px 16px; }
+.course-header-marathon { background:#fff8e1; border-bottom:1px solid #ffe082; padding:12px 16px; }
+.course-name-blue { font-weight:600; color:#1565c0; font-size:14px; margin-left:6px; }
+.course-name-green { font-weight:600; color:#2e7d32; font-size:14px; margin-left:6px; }
+.course-name-orange { font-weight:600; color:#e65100; font-size:14px; margin-left:6px; }
+.course-body { padding:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.course-item { text-align:center; }
+.course-item-label { font-size:12px; color:#777; margin-bottom:4px; }
+.course-item-val { font-size:22px; font-weight:700; }
+.course-item-val-success { font-size:22px; font-weight:700; color:#2e7d32; }
+.course-item-val-dark { font-size:22px; font-weight:700; color:#333; }
+.course-item-val-orange { font-size:22px; font-weight:700; color:#e65100; }
+.course-item-val-danger { font-size:22px; font-weight:700; color:#c62828; }
+.course-donation { text-align:center; grid-column:span 2; border-top:1px solid #f0f0f0; padding-top:12px; }
+.course-donation-unit { font-size:12px; color:#999; }
+.table-wrap { overflow-x:auto; }
+</style>
+</head>
+<body>
+<!-- main-wrap -->
+<div class="main-wrap">
+  <div class="top-bar">
+    <div class="breadcrumb">리딩런 &gt; <strong>누적 통계 (대시보드)</strong></div>
+    <div class="top-bar-admin">관리자</div>
+  </div>
+  <div class="content-wrap">
+
+    <div class="page-header">
+      <h1 class="page-title">리딩런 누적 통계 (대시보드)</h1>
+      <div class="page-header-info">
+        <span class="campaign-badge">
+          ⚠ 캠페인 시작일 : <strong><span id="valCampaignStart">-</span></strong>
+        </span>
+        정보 업데이트일 : <strong><span id="valUpdateDt">-</span></strong> 기준
+      </div>
+    </div>
+
+    <!-- 전체 누적 -->
+    <div class="section-title">전체 누적</div>
+    <div class="grid-stat grid-5col">
+      <div class="stat-card"><div class="stat-label">참여자 누적</div><div class="stat-value sv-primary"><span id="valTotalParticipant">-</span></div><div class="stat-unit">명</div></div>
+      <div class="stat-card"><div class="stat-label">세션 누적</div><div class="stat-value sv-dark"><span id="valTotalSession">-</span></div><div class="stat-unit">회</div></div>
+      <div class="stat-card"><div class="stat-label">누적 독서 시간</div><div class="stat-value sv-muted"><span id="valTotalReadingTime">-</span></div><div class="stat-unit">분</div></div>
+      <div class="stat-card"><div class="stat-label">누적 완주 횟수</div><div class="stat-value sv-success"><span id="valTotalComplete">-</span></div><div class="stat-unit">회</div></div>
+      <div class="stat-card"><div class="stat-label">누적 기부 금액</div><div class="stat-value sv-danger"><span id="valTotalDonation">-</span></div><div class="stat-unit">원</div></div>
+    </div>
+
+    <!-- 코스별 현황 -->
+    <div class="section-title">코스별 현황</div>
+    <div class="grid-stat grid-3col">
+      <!-- 스타터 -->
+      <div class="card">
+        <div class="course-header-starter">
+          <span class="badge badge-blue">스타터</span> <span class="course-name-blue">Starter Course</span>
+        </div>
+        <div class="course-body">
+          <div class="course-item"><div class="course-item-label">참여 횟수</div><div class="course-item-val"><span id="valStarterJoin">-</span></div></div>
+          <div class="course-item"><div class="course-item-label">완주 횟수</div><div class="course-item-val-success"><span id="valStarterComplete">-</span></div></div>
+          <div class="course-item"><div class="course-item-label">완주율</div><div class="course-item-val-dark"><span id="valStarterRate">-</span>%</div></div>
+          <div class="course-item"><div class="course-item-label">잔여 완주 필요</div><div class="course-item-val-orange"><span id="valStarterRemain">-</span></div></div>
+          <div class="course-donation"><div class="course-item-label">기부 금액</div><div class="course-item-val-danger"><span id="valStarterDonation">-</span></div><div class="course-donation-unit">원</div></div>
+        </div>
+      </div>
+      <!-- 하프 -->
+      <div class="card">
+        <div class="course-header-half">
+          <span class="badge badge-green">하프</span> <span class="course-name-green">Half Course</span>
+        </div>
+        <div class="course-body">
+          <div class="course-item"><div class="course-item-label">참여 횟수</div><div class="course-item-val"><span id="valHalfJoin">-</span></div></div>
+          <div class="course-item"><div class="course-item-label">완주 횟수</div><div class="course-item-val-success"><span id="valHalfComplete">-</span></div></div>
+          <div class="course-item"><div class="course-item-label">완주율</div><div class="course-item-val-dark"><span id="valHalfRate">-</span>%</div></div>
+          <div class="course-item"><div class="course-item-label">잔여 완주 필요</div><div class="course-item-val-orange"><span id="valHalfRemain">-</span></div></div>
+          <div class="course-donation"><div class="course-item-label">기부 금액</div><div class="course-item-val-danger"><span id="valHalfDonation">-</span></div><div class="course-donation-unit">원</div></div>
+        </div>
+      </div>
+      <!-- 마라톤 -->
+      <div class="card">
+        <div class="course-header-marathon">
+          <span class="badge badge-yellow">마라톤</span> <span class="course-name-orange">Marathon Course</span>
+        </div>
+        <div class="course-body">
+          <div class="course-item"><div class="course-item-label">참여 횟수</div><div class="course-item-val"><span id="valMarathonJoin">-</span></div></div>
+          <div class="course-item"><div class="course-item-label">완주 횟수</div><div class="course-item-val-success"><span id="valMarathonComplete">-</span></div></div>
+          <div class="course-item"><div class="course-item-label">완주율</div><div class="course-item-val-dark"><span id="valMarathonRate">-</span>%</div></div>
+          <div class="course-item"><div class="course-item-label">잔여 완주 필요</div><div class="course-item-val-orange"><span id="valMarathonRemain">-</span></div></div>
+          <div class="course-donation"><div class="course-item-label">기부 금액</div><div class="course-item-val-danger"><span id="valMarathonDonation">-</span></div><div class="course-donation-unit">원</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 일별 현황 -->
+    <div class="section-title">일별 현황</div>
+    <div class="card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr>
+            <th>기준일</th><th>참여자</th><th>기부 금액(총)</th><th>완주(총)</th>
+            <th>스타터 참여</th><th>스타터 완주</th><th>하프 참여</th><th>하프 완주</th><th>마라톤 참여</th><th>마라톤 완주</th>
+          </tr></thead>
+          <tbody id="dailyBody"></tbody>
+        </table>
+      </div>
+      <div id="dailyPag"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="scripts/common.js"></script>
+<script src="scripts/dashboard.js"></script>
+</body>
+</html>

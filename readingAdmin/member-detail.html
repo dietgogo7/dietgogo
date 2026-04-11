@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>리딩런 회원정보 - 리딩런 BackOffice</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="readingRunAdmin.css"/>
+<style>
+.top-bar-admin { font-size:13px; color:#475569; font-weight:500; }
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.btn-back { text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
+.card-mb { margin-bottom:16px; }
+.section-label { font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; }
+.info-grid { padding:16px 20px; display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.info-item-label { font-size:12px; color:#777; margin-bottom:4px; }
+.info-item-val { font-weight:600; }
+.info-item-val-complete { font-size:22px; font-weight:700; color:#2e7d32; }
+.info-item-val-primary { font-weight:600; color:#a51818; }
+.info-item-val-dark { font-weight:600; color:#333; }
+.reward-btn-group { display:flex; gap:6px; }
+.btn-sm { font-size:12px; }
+.sv-primary { color:#a51818; }
+.sv-orange { color:#e65100; }
+.card-header-text { font-size:13px; color:#64748b; }
+.table-wrap { overflow-x:auto; }
+.code-cell { font-family:monospace; font-size:12px; }
+.empty-row { padding:16px; color:#94a3b8; }
+</style>
+</head>
+<body>
+<div class="main-wrap">
+  <div class="top-bar">
+    <div class="breadcrumb">회원관리 &gt; <strong>리딩런 회원정보</strong></div>
+    <div class="top-bar-admin">관리자</div>
+  </div>
+  <div class="content-wrap">
+
+    <div class="page-header">
+      <h1 class="page-title">리딩런 회원정보</h1>
+      <a href="member-list.html" class="btn btn-secondary btn-back">← 목록으로</a>
+    </div>
+
+    <!-- 기본 정보 -->
+    <div class="card card-mb">
+      <div class="card-header"><span class="section-label">회원 기본 정보</span></div>
+      <div id="memberInfo" class="info-grid"></div>
+    </div>
+
+    <!-- 리워드 정보 -->
+    <div class="card card-mb">
+      <div class="card-header">
+        <span class="section-label">리워드 정보</span>
+        <div class="reward-btn-group">
+          <button class="btn btn-secondary btn-sm" onclick="$('#badgeModal').addClass('active')">배지 획득 상세</button>
+          <button class="btn btn-secondary btn-sm" onclick="$('#giftModal').addClass('active')">상품권 발급 이력</button>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="stat-card"><div class="stat-label">획득 배지 수</div><div class="stat-value sv-primary" id="badgeCnt">-</div><div class="stat-unit">개</div></div>
+        <div class="stat-card"><div class="stat-label">상품권 발급 수</div><div class="stat-value sv-orange" id="giftCnt">-</div><div class="stat-unit">개</div></div>
+      </div>
+    </div>
+
+    <!-- 챌린지 참여 상세 -->
+    <div class="card card-mb">
+      <div class="card-header">
+        <span class="section-label">챌린지 참여 상세 정보</span>
+        <span class="card-header-text">총 <strong id="resultCnt">0</strong>건</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>번호</th><th>코스명</th><th>코스 회차</th><th>결과 상태</th><th>코스 시작일시</th><th>완주</th><th>완주 일시</th><th>증서</th><th>배지</th><th>상품권</th><th>기부</th></tr></thead>
+          <tbody id="resultBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 독서 활동 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="section-label">독서 활동 (세션)</span>
+        <span class="card-header-text">총 <strong id="actCnt">0</strong>건</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>번호</th><th>활동일</th><th>코스명</th><th>세션 상태</th><th>시작 일시</th><th>종료 일시</th><th>독서 시간(분)</th><th>거리(km)</th><th>도서 상품번호</th></tr></thead>
+          <tbody id="activityBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 배지 팝업 -->
+<div id="badgeModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">배지 획득 리워드 상세</div>
+      <button class="close-btn" onclick="$('#badgeModal').removeClass('active')">×</button>
+    </div>
+    <div class="modal-body">
+      <table class="data-table">
+        <thead><tr><th>번호</th><th>배지 ID</th><th>배지명</th><th>획득 일시</th></tr></thead>
+        <tbody id="badgeBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 상품권 팝업 -->
+<div id="giftModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">상품권 발급 이력 상세</div>
+      <button class="close-btn" onclick="$('#giftModal').removeClass('active')">×</button>
+    </div>
+    <div class="modal-body">
+      <table class="data-table">
+        <thead><tr><th>번호</th><th>상품권 ID</th><th>상품권명</th><th>발급 일시</th></tr></thead>
+        <tbody id="giftBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="scripts/common.js"></script>
+<script src="scripts/member-detail.js"></script>
+</body>
+</html>
