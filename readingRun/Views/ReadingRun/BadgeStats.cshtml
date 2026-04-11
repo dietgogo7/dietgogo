@@ -1,0 +1,163 @@
+@{
+    ViewBag.Title = "배지 획득 통계";
+    ViewBag.Breadcrumb = Html.Raw("리딩런 리워드관리 &gt; <span class='font-semibold text-gray-800'>배지 획득 통계</span>");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="space-y-4" id="badgeStatsPage">
+    <!-- 페이지 헤더 -->
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-bold text-gray-900">배지 획득 통계</h1>
+        <div class="text-sm text-gray-500">
+            정보 업데이트일 : <span id="updateDatetime" class="font-medium">-</span> 기준
+        </div>
+    </div>
+
+    <!-- 배지 타입별 요약 -->
+    <section>
+        <h2 class="text-sm font-semibold text-gray-500 uppercase mb-3">배지 타입별 요약</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="stat-card">
+                <div class="text-xs text-gray-500">총 배지 종류</div>
+                <div class="text-2xl font-bold text-blue-600" id="totalBadgeKind">-</div>
+                <div class="text-xs text-gray-400">종</div>
+            </div>
+            <div class="stat-card">
+                <div class="text-xs text-gray-500">총 배지 획득</div>
+                <div class="text-2xl font-bold text-purple-600" id="totalBadgeAcquire">-</div>
+                <div class="text-xs text-gray-400">회</div>
+            </div>
+            <div class="stat-card">
+                <div class="text-xs text-gray-500">총 상품권 종류</div>
+                <div class="text-2xl font-bold text-amber-600" id="totalGiftKind">-</div>
+                <div class="text-xs text-gray-400">종</div>
+            </div>
+            <div class="stat-card">
+                <div class="text-xs text-gray-500">총 상품권 발급</div>
+                <div class="text-2xl font-bold text-rose-600" id="totalGiftAcquire">-</div>
+                <div class="text-xs text-gray-400">회</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 배지별 획득 현황 -->
+    <section>
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase">배지별 획득 현황</h2>
+            <div class="flex items-center gap-2">
+                <select id="filterRewardType" class="form-select w-36 text-sm">
+                    <option value="">전체 타입</option>
+                    <option value="BADGE">BADGE (배지)</option>
+                    <option value="GIFT">GIFT (상품권)</option>
+                </select>
+                <button type="button" id="btnExcel" class="inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    엑셀 다운로드
+                </button>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>배지 코드</th>
+                        <th>배지명</th>
+                        <th>타입</th>
+                        <th>획득 횟수</th>
+                        <th>획득 회원 수</th>
+                        <th>최근 획득일</th>
+                        <th>사용 여부</th>
+                    </tr>
+                </thead>
+                <tbody id="statsTableBody">
+                    <tr><td colspan="8" class="py-8 text-gray-400">데이터를 불러오는 중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="statsPagination"></div>
+    </section>
+</div>
+
+@section Scripts {
+<script>
+var statsCurrentPage = 1;
+var defaultEventNo = @(ViewBag.EventNo ?? 0);
+
+$(function () {
+    loadStats();
+    loadStatsList(1);
+
+    $('#filterRewardType').on('change', function () { loadStatsList(1); });
+    $('#btnExcel').on('click', function () {
+        window.location.href = '/api/Reward/BadgeStats/Excel?Event_No=' + defaultEventNo + '&Reward_Type=' + $('#filterRewardType').val();
+    });
+});
+
+function loadStats() {
+    $.getJSON('/api/Reward/BadgeSummary', { Event_No: defaultEventNo }, function (data) {
+        $('#updateDatetime').text(BO.dateFormat(data.Update_Datetime));
+        $('#totalBadgeKind').text(BO.numFormat(data.Badge_Kind_Count));
+        $('#totalBadgeAcquire').text(BO.numFormat(data.Badge_Acquire_Count));
+        $('#totalGiftKind').text(BO.numFormat(data.Gift_Kind_Count));
+        $('#totalGiftAcquire').text(BO.numFormat(data.Gift_Acquire_Count));
+    });
+}
+
+function loadStatsList(page) {
+    statsCurrentPage = page;
+    var params = { Event_No: defaultEventNo, Reward_Type: $('#filterRewardType').val(), page: page, pageSize: 20 };
+    $('#statsTableBody').html('<tr><td colspan="8" class="py-8 text-gray-400">불러오는 중...</td></tr>');
+    $.getJSON('/api/Reward/BadgeStats', params, function (res) {
+        var rows = '';
+        if (!res.List || res.List.length === 0) {
+            rows = '<tr><td colspan="8" class="py-8 text-gray-400">조회된 데이터가 없습니다.</td></tr>';
+        } else {
+            var sn = (res.TotalCount || 0) - ((page - 1) * 20);
+            $.each(res.List, function (i, d) {
+                rows += '<tr>' +
+                    '<td><span class="font-bold text-gray-700">' + (sn - i) + '</span></td>' +
+                    '<td class="font-mono text-xs">' + (d.Reward_Code || '-') + '</td>' +
+                    '<td class="text-left font-medium">' + (d.Reward_Name || '-') + '</td>' +
+                    '<td>' + rewardTypeBadge(d.Reward_Type) + '</td>' +
+                    '<td class="font-semibold text-blue-600">' + BO.numFormat(d.Acquire_Count) + '</td>' +
+                    '<td>' + BO.numFormat(d.Acquire_Member_Count) + '</td>' +
+                    '<td>' + (d.Last_Acquire_Date ? BO.dateFormat(d.Last_Acquire_Date) : '-') + '</td>' +
+                    '<td>' + (d.Use_YN ? '<span class="badge-green">사용</span>' : '<span class="badge-gray">미사용</span>') + '</td>' +
+                    '</tr>';
+            });
+        }
+        $('#statsTableBody').html(rows);
+        renderPagination(res.TotalCount || 0, page, '#statsPagination', loadStatsList);
+    });
+}
+
+function rewardTypeBadge(type) {
+    if (type === 'BADGE') return '<span class="badge-blue">BADGE</span>';
+    if (type === 'GIFT') return '<span class="badge-yellow">GIFT</span>';
+    return type || '-';
+}
+
+function renderPagination(totalCount, currentPage, containerId, callback) {
+    var pageSize = 20, totalPages = Math.ceil(totalCount / pageSize);
+    var html = '<div class="flex items-center justify-between mt-3 flex-wrap gap-2">' +
+        '<div class="text-sm text-gray-500">총 <span class="font-semibold">' + totalCount.toLocaleString() + '</span>건 | ' + currentPage + ' / ' + (totalPages||1) + '</div>';
+    if (totalPages > 1) {
+        html += '<nav class="flex items-center gap-1 text-sm">';
+        var blockSize = 10, blockStart = Math.floor((currentPage-1)/blockSize)*blockSize+1, blockEnd = Math.min(blockStart+blockSize-1, totalPages);
+        if (blockStart > 1) { html += '<a href="#" class="pag-btn px-2 py-1 rounded border text-gray-600 hover:bg-gray-100" data-page="1">&laquo;</a><a href="#" class="pag-btn px-2 py-1 rounded border text-gray-600 hover:bg-gray-100" data-page="'+(blockStart-1)+'">&lt;</a>'; }
+        for (var p = blockStart; p <= blockEnd; p++) {
+            if (p === currentPage) html += '<span class="px-3 py-1 rounded border border-blue-500 bg-blue-500 text-white font-semibold">'+p+'</span>';
+            else html += '<a href="#" class="pag-btn px-3 py-1 rounded border text-gray-600 hover:bg-gray-100" data-page="'+p+'">'+p+'</a>';
+        }
+        if (blockEnd < totalPages) { html += '<a href="#" class="pag-btn px-2 py-1 rounded border text-gray-600 hover:bg-gray-100" data-page="'+(blockEnd+1)+'">&gt;</a><a href="#" class="pag-btn px-2 py-1 rounded border text-gray-600 hover:bg-gray-100" data-page="'+totalPages+'">&raquo;</a>'; }
+        html += '</nav>';
+    }
+    html += '</div>';
+    $(containerId).html(html);
+    $(containerId).off('click', '.pag-btn').on('click', '.pag-btn', function(e){ e.preventDefault(); callback(parseInt($(this).data('page'))); });
+}
+</script>
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>리딩런 회원정보 - 리딩런 BackOffice</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<script src="_common.js"></script>
+<script>
+var MOCK = {
+  Member_No: 10042, Member_Id: 'yes24_user042', Event_No: 1,
+  Current_Course: 'Half', Total_Reading_Time: 1840, Total_Distance: '92.30',
+  Complete_Count: 5, Last_Activity_Datetime: '2026-04-10 21:14', Regist_Datetime: '2026-03-01 09:00',
+  Badge_Count: 7, Gift_Count: 3
+};
+var MOCK_RESULTS = [
+  {Course_Round_No:5,Course_Name:'Half',Result_Status_Code:'COMPLETED',Course_Start_Datetime:'2026-04-01 09:00',Complete_Yn:true,Complete_Datetime:'2026-04-10 20:30',Certificate_Create_Yn:true,Badge_Reward_Yn:true,Gift_Reward_Yn:false,Donation_Apply_Yn:true,Activity_Date:'2026-04-10'},
+  {Course_Round_No:4,Course_Name:'Starter',Result_Status_Code:'COMPLETED',Course_Start_Datetime:'2026-03-20 09:00',Complete_Yn:true,Complete_Datetime:'2026-03-28 19:45',Certificate_Create_Yn:true,Badge_Reward_Yn:true,Gift_Reward_Yn:true,Donation_Apply_Yn:true,Activity_Date:'2026-03-28'},
+  {Course_Round_No:3,Course_Name:'Half',Result_Status_Code:'COMPLETED',Course_Start_Datetime:'2026-03-10 09:00',Complete_Yn:true,Complete_Datetime:'2026-03-18 20:10',Certificate_Create_Yn:true,Badge_Reward_Yn:false,Gift_Reward_Yn:true,Donation_Apply_Yn:true,Activity_Date:'2026-03-18'},
+  {Course_Round_No:2,Course_Name:'Starter',Result_Status_Code:'COMPLETED',Course_Start_Datetime:'2026-03-05 09:00',Complete_Yn:true,Complete_Datetime:'2026-03-09 18:00',Certificate_Create_Yn:true,Badge_Reward_Yn:true,Gift_Reward_Yn:false,Donation_Apply_Yn:true,Activity_Date:'2026-03-09'},
+  {Course_Round_No:1,Course_Name:'Starter',Result_Status_Code:'COMPLETED',Course_Start_Datetime:'2026-03-01 09:00',Complete_Yn:true,Complete_Datetime:'2026-03-04 17:30',Certificate_Create_Yn:true,Badge_Reward_Yn:true,Gift_Reward_Yn:false,Donation_Apply_Yn:true,Activity_Date:'2026-03-04'},
+];
+var MOCK_ACTIVITIES = [
+  {Activity_Date:'2026-04-10',Course_Name:'Half',Session_Status:'COMPLETED',Session_Start_Datetime:'2026-04-10 19:30',Session_End_Datetime:'2026-04-10 21:00',Reading_Time:90,Distance:'0.90',Goods_No:1234567},
+  {Activity_Date:'2026-04-09',Course_Name:'Half',Session_Status:'COMPLETED',Session_Start_Datetime:'2026-04-09 20:00',Session_End_Datetime:'2026-04-09 21:10',Reading_Time:70,Distance:'0.70',Goods_No:9876543},
+  {Activity_Date:'2026-04-08',Course_Name:'Half',Session_Status:'COMPLETED',Session_Start_Datetime:'2026-04-08 07:00',Session_End_Datetime:'2026-04-08 08:00',Reading_Time:60,Distance:'0.60',Goods_No:1234567},
+  {Activity_Date:'2026-04-07',Course_Name:'Half',Session_Status:'COMPLETED',Session_Start_Datetime:'2026-04-07 22:00',Session_End_Datetime:'2026-04-07 23:05',Reading_Time:65,Distance:'0.65',Goods_No:2345678},
+  {Activity_Date:'2026-04-06',Course_Name:'Half',Session_Status:'ABANDONED',Session_Start_Datetime:'2026-04-06 20:00',Session_End_Datetime:'2026-04-06 20:12',Reading_Time:12,Distance:'0.12',Goods_No:3456789},
+];
+var MOCK_BADGES = [
+  {Reward_Code:'BG001',Reward_Name:'첫 독서 완료',Regist_Datetime:'2026-03-01 17:30'},
+  {Reward_Code:'BG002',Reward_Name:'몰입하는 독서가',Regist_Datetime:'2026-03-04 17:30'},
+  {Reward_Code:'BG003',Reward_Name:'아침형 독서가',Regist_Datetime:'2026-03-09 07:00'},
+  {Reward_Code:'BG004',Reward_Name:'주말 독서가',Regist_Datetime:'2026-03-15 10:00'},
+  {Reward_Code:'BG005',Reward_Name:'열정 독서가',Regist_Datetime:'2026-03-20 21:00'},
+  {Reward_Code:'BG006',Reward_Name:'꾸준한 독서가',Regist_Datetime:'2026-04-01 09:00'},
+  {Reward_Code:'BG007',Reward_Name:'마라톤 완주',Regist_Datetime:'2026-04-10 20:30'},
+];
+var MOCK_GIFTS = [
+  {Reward_Code:'GF001',Reward_Name:'스타터 코스 완주 상품권',Regist_Datetime:'2026-03-04 17:30'},
+  {Reward_Code:'GF002',Reward_Name:'하프 코스 완주 상품권',Regist_Datetime:'2026-03-18 20:10'},
+  {Reward_Code:'GF003',Reward_Name:'누적 독서 100분 달성',Regist_Datetime:'2026-04-02 10:00'},
+];
+var MOCK_SESSIONS = [
+  {Session_Start_Datetime:'2026-04-10 19:30',Session_End_Datetime:'2026-04-10 21:00',Reading_Time:90,Distance:'0.90',Session_Status:'정상 종료',Book_Name:'괴테는 모든 것을 말했다',Goods_No:1234567},
+  {Session_Start_Datetime:'2026-04-10 14:00',Session_End_Datetime:'2026-04-10 14:30',Reading_Time:30,Distance:'0.30',Session_Status:'정상 종료',Book_Name:'82년생 김지영',Goods_No:7654321},
+  {Session_Start_Datetime:'2026-04-10 07:10',Session_End_Datetime:'2026-04-10 07:22',Reading_Time:12,Distance:'0.12',Session_Status:'앱 종료',Book_Name:'채식주의자',Goods_No:9991111},
+];
+
+function courseLabel(n){var m={Starter:'<span class="badge badge-blue">스타터</span>',Half:'<span class="badge badge-green">하프</span>',Marathon:'<span class="badge badge-yellow">마라톤</span>'};return m[n]||n;}
+function ynBadge(v){return v?'<span class="badge badge-green">Y</span>':'<span class="badge badge-gray">N</span>';}
+
+renderLayout({
+  title:'리딩런 회원정보',
+  breadcrumb:'리딩런 회원관리 &gt; <a href="member-list.html" style="color:#2563eb;text-decoration:none;">리딩런 회원관리</a> &gt; <strong>리딩런 회원정보</strong>',
+  activePage:'member-list',
+  content:`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <h1 class="page-title">리딩런 회원정보</h1>
+    <a href="member-list.html" class="btn btn-secondary" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">← 목록으로</a>
+  </div>
+
+  <!-- 기본 정보 -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-header"><span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;">회원 기본 정보</span></div>
+    <div style="padding:16px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+      <div><div style="font-size:11px;color:#64748b;margin-bottom:4px;">회원 번호</div><div style="font-weight:600;">${MOCK.Member_No}</div></div>
+      <div><div style="font-size:11px;color:#64748b;margin-bottom:4px;">회원 ID</div><div style="font-weight:600;">${MOCK.Member_Id}</div></div>
+      <div><div style="font-size:11px;color:#64748b;margin-bottom:4px;">현재 코스</div><div>${courseLabel(MOCK.Current_Course)}</div></div>
+      <div><div style="font-size:11px;color:#64748b;margin-bottom:4px;">총 완주 횟수</div><div style="font-size:20px;font-weight:700;color:#16a34a;">${MOCK.Complete_Count}</div></div>
+      <div><div style="font-size:11px;color:#64748b;margin-bottom:4px;">총 독서 시간(분)</div><div style="font-weight:600;color:#2563eb;">${MOCK.Total_Reading_Time.toLocaleString()}</div></div>
+      <div><div style="font-size:11px;color:#64748b;margin-bottom:4px;">누적 거리(km)</div><div style="font-weight:600;color:#4f46e5;">${MOCK.Total_Distance}</div></div>
+      <div><div style="font-size:11px;color:#64748b;margin-bottom:4px;">마지막 활동일시</div><div>${MOCK.Last_Activity_Datetime}</div></div>
+      <div><div style="font-size:11px;color:#64748b;margin-bottom:4px;">이벤트 가입일시</div><div>${MOCK.Regist_Datetime}</div></div>
+    </div>
+  </div>
+
+  <!-- 리워드 정보 -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-header">
+      <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;">리워드 정보</span>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-secondary" style="font-size:12px;" onclick="document.getElementById('badgeModal').style.display='flex'">배지 획득 리워드 상세</button>
+        <button class="btn btn-secondary" style="font-size:12px;" onclick="document.getElementById('giftModal').style.display='flex'">상품권 발급 이력 상세</button>
+      </div>
+    </div>
+    <div style="padding:16px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+      <div class="stat-card"><div class="stat-label">획득 배지 수</div><div class="stat-value" style="color:#7c3aed;">${MOCK.Badge_Count}</div><div class="stat-unit">개</div></div>
+      <div class="stat-card"><div class="stat-label">상품권 발급 수</div><div class="stat-value" style="color:#d97706;">${MOCK.Gift_Count}</div><div class="stat-unit">개</div></div>
+    </div>
+  </div>
+
+  <!-- 챌린지 참여 상세 -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-header">
+      <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;">챌린지 참여 상세 정보</span>
+      <span style="font-size:13px;color:#64748b;">총 <strong>${MOCK_RESULTS.length}</strong>건</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead><tr><th>번호</th><th>코스명</th><th>코스 회차</th><th>결과 상태</th><th>코스 시작일시</th><th>완주</th><th>완주 일시</th><th>증서</th><th>배지</th><th>상품권</th><th>기부</th><th>세션 상세</th></tr></thead>
+        <tbody id="resultBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 독서 활동 -->
+  <div class="card">
+    <div class="card-header">
+      <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;">독서 활동 (세션)</span>
+      <span style="font-size:13px;color:#64748b;">총 <strong>${MOCK_ACTIVITIES.length}</strong>건</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead><tr><th>번호</th><th>활동일</th><th>코스명</th><th>세션 상태</th><th>시작 일시</th><th>종료 일시</th><th>독서 시간(분)</th><th>거리(km)</th><th>도서 상품번호</th><th>세션 상세</th></tr></thead>
+        <tbody id="activityBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 배지 팝업 -->
+  <div id="badgeModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:560px;">
+      <div class="modal-header">
+        <div class="modal-title">배지 획득 리워드 상세</div>
+        <button class="close-btn" onclick="document.getElementById('badgeModal').style.display='none'">×</button>
+      </div>
+      <div class="modal-body">
+        <table class="data-table">
+          <thead><tr><th>번호</th><th>배지 ID</th><th>배지명</th><th>획득 일시</th></tr></thead>
+          <tbody>${MOCK_BADGES.map(function(d,i){return '<tr><td>'+(i+1)+'</td><td style="font-family:monospace;font-size:12px;">'+d.Reward_Code+'</td><td class="text-left">'+d.Reward_Name+'</td><td>'+d.Regist_Datetime+'</td></tr>';}).join('')}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 상품권 팝업 -->
+  <div id="giftModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:560px;">
+      <div class="modal-header">
+        <div class="modal-title">상품권 발급 이력 상세</div>
+        <button class="close-btn" onclick="document.getElementById('giftModal').style.display='none'">×</button>
+      </div>
+      <div class="modal-body">
+        <table class="data-table">
+          <thead><tr><th>번호</th><th>상품권 ID</th><th>상품권명</th><th>발급 일시</th></tr></thead>
+          <tbody>${MOCK_GIFTS.map(function(d,i){return '<tr><td>'+(i+1)+'</td><td style="font-family:monospace;font-size:12px;">'+d.Reward_Code+'</td><td class="text-left">'+d.Reward_Name+'</td><td>'+d.Regist_Datetime+'</td></tr>';}).join('')}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 세션 상세 팝업 -->
+  <div id="sessionModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:860px;">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">세션 상세 정보</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px;">활동일 : <strong id="sessionDate">-</strong></div>
+        </div>
+        <button class="close-btn" onclick="document.getElementById('sessionModal').style.display='none'">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr><th>번호</th><th>시작 시간</th><th>종료 시간</th><th>독서 시간</th><th>환산 거리</th><th>세션 상태</th><th>도서명</th><th>도서 상품ID</th></tr></thead>
+            <tbody id="sessionBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  `
+});
+
+// 결과 테이블
+var resultRows = MOCK_RESULTS.map(function(d,i){
+  return '<tr><td>'+(MOCK_RESULTS.length-i)+'</td><td>'+courseLabel(d.Course_Name)+'</td><td>'+d.Course_Round_No+'</td>' +
+    '<td><span class="badge '+(d.Complete_Yn?'badge-green':'badge-gray')+'">'+d.Result_Status_Code+'</span></td>' +
+    '<td>'+d.Course_Start_Datetime+'</td>' +
+    '<td>'+(d.Complete_Yn?'<span class="badge badge-green">완주</span>':'<span class="badge badge-gray">미완주</span>')+'</td>' +
+    '<td>'+(d.Complete_Datetime||'-')+'</td>' +
+    '<td>'+ynBadge(d.Certificate_Create_Yn)+'</td><td>'+ynBadge(d.Badge_Reward_Yn)+'</td><td>'+ynBadge(d.Gift_Reward_Yn)+'</td><td>'+ynBadge(d.Donation_Apply_Yn)+'</td>' +
+    '<td><button class="btn btn-secondary" style="font-size:12px;padding:3px 10px;" onclick="openSession(\''+d.Activity_Date+'\')">세션 보기</button></td></tr>';
+}).join('');
+document.getElementById('resultBody').innerHTML = resultRows;
+
+// 활동 테이블
+var actRows = MOCK_ACTIVITIES.map(function(d,i){
+  return '<tr><td>'+(MOCK_ACTIVITIES.length-i)+'</td><td>'+d.Activity_Date+'</td><td>'+courseLabel(d.Course_Name)+'</td>' +
+    '<td><span class="badge '+(d.Session_Status==='COMPLETED'||d.Session_Status==='정상 종료'?'badge-green':'badge-gray')+'">'+d.Session_Status+'</span></td>' +
+    '<td>'+d.Session_Start_Datetime+'</td><td>'+d.Session_End_Datetime+'</td>' +
+    '<td>'+d.Reading_Time+'</td><td>'+d.Distance+'</td><td style="font-family:monospace;font-size:12px;">'+d.Goods_No+'</td>' +
+    '<td><button class="btn btn-secondary" style="font-size:12px;padding:3px 10px;" onclick="openSession(\''+d.Activity_Date+'\')">상세</button></td></tr>';
+}).join('');
+document.getElementById('activityBody').innerHTML = actRows;
+
+function openSession(date) {
+  document.getElementById('sessionDate').textContent = date;
+  var rows = MOCK_SESSIONS.map(function(d,i){
+    return '<tr><td>'+(i+1)+'</td><td>'+d.Session_Start_Datetime+'</td><td>'+d.Session_End_Datetime+'</td>' +
+      '<td>'+d.Reading_Time+' 분</td><td>'+d.Distance+' km</td>' +
+      '<td><span class="badge '+(d.Session_Status==='정상 종료'?'badge-green':'badge-gray')+'">'+d.Session_Status+'</span></td>' +
+      '<td class="text-left">'+d.Book_Name+'</td><td style="font-family:monospace;font-size:12px;">'+d.Goods_No+'</td></tr>';
+  }).join('');
+  document.getElementById('sessionBody').innerHTML = rows;
+  document.getElementById('sessionModal').style.display = 'flex';
+}
+</script>
+</body>
+</html>

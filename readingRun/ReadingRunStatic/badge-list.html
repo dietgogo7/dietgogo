@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>배지 관리 - 리딩런 BackOffice</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<script src="_common.js"></script>
+<script>
+var MOCK_BADGES = [
+  {Seq:1,Reward_Code:'BG001',Reward_Type:'BADGE',Reward_Name:'첫 독서 완료',Reward_Description:'첫 독서 세션을 완료한 회원에게 지급',Reward_Message:'첫 번째 독서 세션을 완료했습니다! 앞으로도 꾸준히 읽어요.',Reward_Value:null,Use_YN:true,Delete_YN:false,Regist_Datetime:'2026-02-20 10:00',Update_Datetime:null},
+  {Seq:2,Reward_Code:'BG002',Reward_Type:'BADGE',Reward_Name:'몰입하는 독서가',Reward_Description:'하루 60분 이상 독서 3회 달성',Reward_Message:'집중력 있는 독서 습관을 만들어가고 있어요!',Reward_Value:null,Use_YN:true,Delete_YN:false,Regist_Datetime:'2026-02-20 10:05',Update_Datetime:null},
+  {Seq:3,Reward_Code:'BG003',Reward_Type:'BADGE',Reward_Name:'아침형 독서가',Reward_Description:'오전 7시 이전 독서 세션 5회 달성',Reward_Message:'아침 독서로 하루를 시작하는 습관, 멋져요!',Reward_Value:null,Use_YN:true,Delete_YN:false,Regist_Datetime:'2026-02-20 10:10',Update_Datetime:null},
+  {Seq:4,Reward_Code:'BG004',Reward_Type:'BADGE',Reward_Name:'주말 독서가',Reward_Description:'주말에 독서 세션 4회 달성',Reward_Message:'주말에도 책과 함께하는 당신, 정말 멋지네요!',Reward_Value:null,Use_YN:true,Delete_YN:false,Regist_Datetime:'2026-02-20 10:15',Update_Datetime:'2026-03-01 09:00'},
+  {Seq:5,Reward_Code:'BG005',Reward_Type:'BADGE',Reward_Name:'열정 독서가',Reward_Description:'누적 독서 시간 300분 달성',Reward_Message:'독서에 대한 열정이 대단해요!',Reward_Value:null,Use_YN:true,Delete_YN:false,Regist_Datetime:'2026-02-20 10:20',Update_Datetime:null},
+  {Seq:6,Reward_Code:'BG006',Reward_Type:'BADGE',Reward_Name:'꾸준한 독서가',Reward_Description:'7일 연속 독서 달성',Reward_Message:'7일 연속 독서! 습관이 만들어지고 있어요.',Reward_Value:null,Use_YN:true,Delete_YN:false,Regist_Datetime:'2026-02-20 10:25',Update_Datetime:null},
+  {Seq:7,Reward_Code:'BG007',Reward_Type:'BADGE',Reward_Name:'마라톤 완주',Reward_Description:'마라톤 코스 완주',Reward_Message:'마라톤 코스를 완주했습니다! 정말 대단해요!',Reward_Value:null,Use_YN:true,Delete_YN:false,Regist_Datetime:'2026-02-20 10:30',Update_Datetime:null},
+  {Seq:8,Reward_Code:'GF001',Reward_Type:'GIFT',Reward_Name:'스타터 완주 상품권',Reward_Description:'스타터 코스 완주 시 지급되는 1,000원 상품권',Reward_Message:'스타터 코스를 완주해 상품권을 획득했습니다!',Reward_Value:1000,Use_YN:true,Delete_YN:false,Regist_Datetime:'2026-02-20 11:00',Update_Datetime:null},
+  {Seq:9,Reward_Code:'GF002',Reward_Type:'GIFT',Reward_Name:'하프 완주 상품권',Reward_Description:'하프 코스 완주 시 지급되는 2,000원 상품권',Reward_Message:'하프 코스를 완주해 상품권을 획득했습니다!',Reward_Value:2000,Use_YN:true,Delete_YN:false,Regist_Datetime:'2026-02-20 11:05',Update_Datetime:null},
+  {Seq:10,Reward_Code:'GF003',Reward_Type:'GIFT',Reward_Name:'마라톤 완주 상품권',Reward_Description:'마라톤 코스 완주 시 지급되는 5,000원 상품권',Reward_Message:'마라톤 코스를 완주해 상품권을 획득했습니다!',Reward_Value:5000,Use_YN:true,Delete_YN:false,Regist_Datetime:'2026-02-20 11:10',Update_Datetime:null},
+  {Seq:11,Reward_Code:'GF004',Reward_Type:'GIFT',Reward_Name:'누적 독서 100분 상품권',Reward_Description:'누적 독서 100분 달성 시 지급 500원',Reward_Message:'100분 독서 달성! 상품권을 드립니다.',Reward_Value:500,Use_YN:false,Delete_YN:false,Regist_Datetime:'2026-02-20 11:15',Update_Datetime:'2026-03-05 14:00'},
+];
+
+var selectedSeqs = new Set();
+
+function rewardTypeBadge(t){return t==='BADGE'?'<span class="badge badge-blue">BADGE</span>':'<span class="badge badge-yellow">GIFT</span>';}
+
+renderLayout({
+  title:'배지 관리',
+  breadcrumb:'리딩런 리워드관리 &gt; <strong>배지 관리</strong>',
+  activePage:'badge-list',
+  content:`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <h1 class="page-title">배지 관리</h1>
+    <button class="btn btn-primary" style="display:inline-flex;align-items:center;gap:4px;" onclick="openRegisterModal()">+ 배지 등록</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:13px;color:#475569;">총 <strong id="totalCnt">${MOCK_BADGES.length}</strong>건</span>
+        <button id="btnDeleteSel" class="btn btn-danger" style="font-size:12px;padding:4px 12px;display:none;" onclick="deleteSelected()">선택 삭제</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead><tr>
+          <th style="width:36px;"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"/></th>
+          <th>번호</th><th>배지 ID</th><th>배지명</th><th>타입</th><th>설명</th><th>리워드 값</th><th>사용</th><th>등록일시</th><th>수정일시</th><th>관리</th>
+        </tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div id="pagination"></div>
+  </div>
+
+  <!-- 등록 팝업 -->
+  <div id="regModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:460px;">
+      <div class="modal-header">
+        <div class="modal-title">배지 등록</div>
+        <button class="close-btn" onclick="document.getElementById('regModal').style.display='none'">×</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label class="form-label"><span style="color:#dc2626;">*</span> 배지명</label>
+          <input type="text" id="regName" class="form-input" style="width:100%;" placeholder="배지명을 입력하세요" maxlength="100"/>
+        </div>
+        <div>
+          <label class="form-label">리워드 타입</label>
+          <select id="regType" class="form-select" style="width:100%;"><option value="BADGE">BADGE (배지)</option><option value="GIFT">GIFT (상품권)</option></select>
+        </div>
+        <div>
+          <label class="form-label">배지 코드</label>
+          <input type="text" id="regCode" class="form-input" style="width:100%;" placeholder="예: BG012" maxlength="50"/>
+        </div>
+        <div>
+          <label class="form-label">설명</label>
+          <textarea id="regDesc" class="form-input" style="width:100%;resize:vertical;" rows="2" placeholder="배지 설명" maxlength="300"></textarea>
+        </div>
+        <div>
+          <label class="form-label">메시지</label>
+          <textarea id="regMsg" class="form-input" style="width:100%;resize:vertical;" rows="2" placeholder="획득 메시지" maxlength="300"></textarea>
+        </div>
+        <div>
+          <label class="form-label">리워드 값 (상품권 금액)</label>
+          <input type="number" id="regVal" class="form-input" style="width:100%;" placeholder="배지는 비워두세요"/>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="regUse" checked/><label for="regUse" style="font-size:13px;">사용 여부</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="document.getElementById('regModal').style.display='none'">취소</button>
+        <button class="btn btn-primary" onclick="confirmRegister()">등록</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 수정 팝업 -->
+  <div id="editModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:460px;">
+      <div class="modal-header">
+        <div class="modal-title">배지 수정</div>
+        <button class="close-btn" onclick="document.getElementById('editModal').style.display='none'">×</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:14px;">
+        <input type="hidden" id="editSeq"/>
+        <div>
+          <label class="form-label">배지 ID (수정 불가)</label>
+          <input type="text" id="editCode" class="form-input" style="width:100%;background:#f1f5f9;" readonly/>
+        </div>
+        <div>
+          <label class="form-label"><span style="color:#dc2626;">*</span> 배지명</label>
+          <input type="text" id="editName" class="form-input" style="width:100%;" maxlength="100"/>
+        </div>
+        <div>
+          <label class="form-label">설명</label>
+          <textarea id="editDesc" class="form-input" style="width:100%;resize:vertical;" rows="2" maxlength="300"></textarea>
+        </div>
+        <div>
+          <label class="form-label">메시지</label>
+          <textarea id="editMsg" class="form-input" style="width:100%;resize:vertical;" rows="2" maxlength="300"></textarea>
+        </div>
+        <div>
+          <label class="form-label">리워드 값</label>
+          <input type="number" id="editVal" class="form-input" style="width:100%;"/>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="editUse"/><label for="editUse" style="font-size:13px;">사용 여부</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="document.getElementById('editModal').style.display='none'">취소</button>
+        <button class="btn btn-primary" onclick="confirmEdit()">수정</button>
+      </div>
+    </div>
+  </div>
+  `
+});
+
+function renderTable(page) {
+  var pageSize = 20, total = MOCK_BADGES.length;
+  var start = (page-1)*pageSize, end = Math.min(start+pageSize, total);
+  var rows = '';
+  for (var i = start; i < end; i++) {
+    var d = MOCK_BADGES[i], sn = total - i;
+    rows += '<tr>' +
+      '<td><input type="checkbox" class="row-check" value="'+d.Seq+'" onchange="onCheckChange()"/></td>' +
+      '<td>'+sn+'</td>' +
+      '<td style="font-family:monospace;font-size:12px;">'+d.Reward_Code+'</td>' +
+      '<td class="text-left" style="font-weight:500;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+d.Reward_Name+'">'+d.Reward_Name+'</td>' +
+      '<td>'+rewardTypeBadge(d.Reward_Type)+'</td>' +
+      '<td class="text-left" style="font-size:12px;color:#64748b;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+(d.Reward_Description||'')+'">'+( d.Reward_Description||'-')+'</td>' +
+      '<td>'+(d.Reward_Value!=null ? d.Reward_Value.toLocaleString()+'원':'-')+'</td>' +
+      '<td>'+(d.Use_YN?'<span class="badge badge-green">사용</span>':'<span class="badge badge-gray">미사용</span>')+'</td>' +
+      '<td style="font-size:12px;">'+d.Regist_Datetime+'</td>' +
+      '<td style="font-size:12px;">'+(d.Update_Datetime||'-')+'</td>' +
+      '<td><button class="btn btn-secondary" style="font-size:12px;padding:3px 10px;" onclick="openEditModal('+i+')">수정</button></td>' +
+      '</tr>';
+  }
+  document.getElementById('tableBody').innerHTML = rows || '<tr><td colspan="11" style="padding:24px;color:#94a3b8;">데이터가 없습니다.</td></tr>';
+  renderPagination('pagination', total, page, pageSize, 'renderTable');
+}
+
+function toggleAll(cb) {
+  document.querySelectorAll('.row-check').forEach(function(c){c.checked=cb.checked;});
+  onCheckChange();
+}
+function onCheckChange() {
+  var cnt = document.querySelectorAll('.row-check:checked').length;
+  var btn = document.getElementById('btnDeleteSel');
+  btn.style.display = cnt > 0 ? '' : 'none';
+  if (cnt > 0) btn.textContent = '선택 삭제 (' + cnt + ')';
+}
+function deleteSelected() {
+  var seqs = Array.from(document.querySelectorAll('.row-check:checked')).map(function(c){return parseInt(c.value);});
+  if (!seqs.length) return;
+  if (!confirm(seqs.length + '개를 삭제하시겠습니까?')) return;
+  MOCK_BADGES = MOCK_BADGES.filter(function(d){ return seqs.indexOf(d.Seq) === -1; });
+  document.getElementById('totalCnt').textContent = MOCK_BADGES.length;
+  document.getElementById('btnDeleteSel').style.display = 'none';
+  renderTable(1);
+  BO.toast('삭제되었습니다.', 'success');
+}
+function openRegisterModal() {
+  ['regName','regCode','regDesc','regMsg','regVal'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('regType').value='BADGE';
+  document.getElementById('regUse').checked=true;
+  document.getElementById('regModal').style.display='flex';
+}
+function confirmRegister() {
+  var name = document.getElementById('regName').value.trim();
+  if (!name) { BO.toast('배지명을 입력하세요.','info'); return; }
+  var newSeq = Math.max.apply(null, MOCK_BADGES.map(function(d){return d.Seq;})) + 1;
+  MOCK_BADGES.unshift({
+    Seq:newSeq, Reward_Code:document.getElementById('regCode').value||'BG'+String(newSeq).padStart(3,'0'),
+    Reward_Type:document.getElementById('regType').value, Reward_Name:name,
+    Reward_Description:document.getElementById('regDesc').value,
+    Reward_Message:document.getElementById('regMsg').value,
+    Reward_Value:document.getElementById('regVal').value?parseInt(document.getElementById('regVal').value):null,
+    Use_YN:document.getElementById('regUse').checked, Delete_YN:false,
+    Regist_Datetime:'2026-04-11 (신규)', Update_Datetime:null
+  });
+  document.getElementById('totalCnt').textContent = MOCK_BADGES.length;
+  document.getElementById('regModal').style.display='none';
+  renderTable(1);
+  BO.toast('등록되었습니다.','success');
+}
+function openEditModal(idx) {
+  var d = MOCK_BADGES[idx];
+  document.getElementById('editSeq').value = d.Seq;
+  document.getElementById('editCode').value = d.Reward_Code;
+  document.getElementById('editName').value = d.Reward_Name;
+  document.getElementById('editDesc').value = d.Reward_Description||'';
+  document.getElementById('editMsg').value = d.Reward_Message||'';
+  document.getElementById('editVal').value = d.Reward_Value!=null?d.Reward_Value:'';
+  document.getElementById('editUse').checked = d.Use_YN;
+  document.getElementById('editModal').style.display='flex';
+}
+function confirmEdit() {
+  var seq = parseInt(document.getElementById('editSeq').value);
+  var name = document.getElementById('editName').value.trim();
+  if (!name) { BO.toast('배지명을 입력하세요.','info'); return; }
+  var d = MOCK_BADGES.find(function(b){return b.Seq===seq;});
+  if (d) {
+    d.Reward_Name = name;
+    d.Reward_Description = document.getElementById('editDesc').value;
+    d.Reward_Message = document.getElementById('editMsg').value;
+    d.Reward_Value = document.getElementById('editVal').value?parseInt(document.getElementById('editVal').value):null;
+    d.Use_YN = document.getElementById('editUse').checked;
+    d.Update_Datetime = '2026-04-11 (수정됨)';
+  }
+  document.getElementById('editModal').style.display='none';
+  renderTable(1);
+  BO.toast('수정되었습니다.','success');
+}
+renderTable(1);
+</script>
+</body>
+</html>

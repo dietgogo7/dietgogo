@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>리딩런 회원관리 - 리딩런 BackOffice</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<script src="_common.js"></script>
+<script>
+var COURSES = ['Starter','Half','Marathon'];
+var MOCK_MEMBERS = [];
+for (var i = 0; i < 154; i++) {
+  var course = COURSES[i % 3];
+  MOCK_MEMBERS.push({
+    Seq: i+1,
+    Member_No: 10001 + i,
+    Member_Id: 'yes24_user' + String(i+1).padStart(3,'0'),
+    Event_No: 1,
+    Current_Course: course,
+    Total_Reading_Time: Math.floor(Math.random()*3000) + 60,
+    Total_Distance: (Math.random()*200 + 5).toFixed(2),
+    Complete_Count: Math.floor(Math.random()*8),
+    Last_Activity_Datetime: '2026-04-' + String(Math.min((i%11)+1,11)).padStart(2,'0') + ' ' + String(8+(i%12)).padStart(2,'0') + ':30',
+    Regist_Datetime: '2026-03-' + String(Math.min((i%28)+1,28)).padStart(2,'0') + ' 10:00'
+  });
+}
+var filtered = MOCK_MEMBERS.slice();
+
+function courseLabel(name) {
+  var map={Starter:'<span class="badge badge-blue">스타터</span>',Half:'<span class="badge badge-green">하프</span>',Marathon:'<span class="badge badge-yellow">마라톤</span>'};
+  return map[name]||name;
+}
+
+renderLayout({
+  title: '리딩런 회원관리',
+  breadcrumb: '리딩런 회원관리 &gt; <strong>리딩런 회원관리</strong>',
+  activePage: 'member-list',
+  content: `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <h1 class="page-title">리딩런 회원관리</h1>
+  </div>
+
+  <div class="search-box">
+    <div><label class="form-label">검색 조건</label>
+      <div style="display:flex;gap:4px;">
+        <select id="fField" class="form-select" style="width:120px;">
+          <option value="Member_Id">회원 ID</option>
+          <option value="Member_No">회원 번호</option>
+        </select>
+        <input type="text" id="fKeyword" class="form-input" style="width:160px;" placeholder="검색어 입력" onkeydown="if(event.key==='Enter')doSearch()"/>
+      </div>
+    </div>
+    <div><label class="form-label">현재 코스</label>
+      <select id="fCourse" class="form-select" style="width:120px;">
+        <option value="">전체</option><option>Starter</option><option>Half</option><option>Marathon</option>
+      </select>
+    </div>
+    <div><label class="form-label">가입일</label>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <input type="date" id="fStart" class="form-input" style="width:140px;" value="2026-03-01"/>
+        <span style="color:#94a3b8;">~</span>
+        <input type="date" id="fEnd" class="form-input" style="width:140px;" value="2026-04-11"/>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:flex-end;">
+      <button class="btn btn-primary" onclick="doSearch()">검색</button>
+      <button class="btn btn-secondary" onclick="doReset()">초기화</button>
+      <button class="btn btn-success" onclick="BO.toast('엑셀 다운로드 요청되었습니다.','success')">↓ 엑셀 다운로드</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span style="font-size:13px;color:#475569;">총 <strong id="totalCnt">0</strong>건</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead><tr>
+          <th>번호</th><th>회원 ID</th><th>현재 코스</th>
+          <th>총 독서 시간(분)</th><th>누적 거리(km)</th><th>완주 횟수</th>
+          <th>마지막 활동일시</th><th>가입일시</th>
+        </tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div id="pagination"></div>
+  </div>
+  `
+});
+
+function doSearch() {
+  var field = document.getElementById('fField').value;
+  var kw = document.getElementById('fKeyword').value.trim().toLowerCase();
+  var course = document.getElementById('fCourse').value;
+  filtered = MOCK_MEMBERS.filter(function(d) {
+    if (course && d.Current_Course !== course) return false;
+    if (kw) {
+      var val = String(d[field] || '').toLowerCase();
+      if (val.indexOf(kw) === -1) return false;
+    }
+    return true;
+  });
+  renderTable(1);
+}
+function doReset() {
+  document.getElementById('fKeyword').value = '';
+  document.getElementById('fCourse').value = '';
+  filtered = MOCK_MEMBERS.slice();
+  renderTable(1);
+}
+function renderTable(page) {
+  var pageSize = 20, total = filtered.length;
+  document.getElementById('totalCnt').textContent = total.toLocaleString();
+  var start = (page-1)*pageSize, end = Math.min(start+pageSize, total);
+  var rows = '';
+  for (var i = start; i < end; i++) {
+    var d = filtered[i], sn = total - i;
+    rows += '<tr>' +
+      '<td>'+sn+'</td>' +
+      '<td class="text-left"><a href="member-detail.html?memberNo='+d.Member_No+'" style="color:#2563eb;font-weight:500;text-decoration:none;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">'+d.Member_Id+'</a></td>' +
+      '<td>'+courseLabel(d.Current_Course)+'</td>' +
+      '<td>'+Number(d.Total_Reading_Time).toLocaleString()+'</td>' +
+      '<td>'+d.Total_Distance+'</td>' +
+      '<td><strong style="color:#16a34a;">'+d.Complete_Count+'</strong></td>' +
+      '<td>'+d.Last_Activity_Datetime+'</td>' +
+      '<td>'+d.Regist_Datetime+'</td>' +
+      '</tr>';
+  }
+  document.getElementById('tableBody').innerHTML = rows || '<tr><td colspan="8" style="padding:24px;color:#94a3b8;">조회된 데이터가 없습니다.</td></tr>';
+  renderPagination('pagination', total, page, pageSize, 'renderTable');
+}
+doSearch();
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>코스별 기부 현황 - 리딩런 BackOffice</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<script src="_common.js"></script>
+<script>
+var MOCK_DONATIONS = [];
+var COURSES = ['Starter','Half','Marathon'];
+for (var i = 0; i < 42; i++) {
+  MOCK_DONATIONS.push({
+    Course_Round_No: i + 1,
+    Course_Name: COURSES[i % 3],
+    Result_Apply_Datetime: '2026-04-' + String(Math.min(i % 11 + 1, 11)).padStart(2,'0') + ' ' + String(8 + (i%12)).padStart(2,'0') + ':' + String((i*7)%60).padStart(2,'0'),
+    Member_No: 10000 + i,
+    Participant_Count: Math.floor(Math.random()*200) + 50
+  });
+}
+var MOCK_MEMBERS = ['yes24_hong001','yes24_kim002','yes24_lee003','yes24_park004','yes24_choi005',
+  'yes24_jung006','yes24_kang007','yes24_yoon008','yes24_lim009','yes24_shin010'];
+
+function courseLabel(name) {
+  var map={Starter:'<span class="badge badge-blue">스타터</span>',Half:'<span class="badge badge-green">하프</span>',Marathon:'<span class="badge badge-yellow">마라톤</span>'};
+  return map[name]||name;
+}
+
+renderLayout({
+  title: '코스별 기부 현황',
+  breadcrumb: '리딩런 &gt; <strong>코스별 기부 현황</strong>',
+  activePage: 'donation',
+  content: `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <h1 class="page-title">코스별 기부 현황</h1>
+    <div style="font-size:12px;color:#64748b;">정보 업데이트일 : <strong>2026-04-11 09:00</strong> 기준</div>
+  </div>
+
+  <!-- 누적 기부 요약 -->
+  <div class="section-title">누적 기부 현황</div>
+  <div class="grid-stat" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px;">
+    <div class="stat-card"><div class="stat-label">총 누적 기부 금액</div><div class="stat-value" style="color:#dc2626;">88,470,000</div><div class="stat-unit">원</div></div>
+    <div class="stat-card"><div class="stat-label">스타터 기부</div><div class="stat-value" style="color:#2563eb;">36,680,000</div><div class="stat-unit">원</div></div>
+    <div class="stat-card"><div class="stat-label">하프 기부</div><div class="stat-value" style="color:#16a34a;">24,860,000</div><div class="stat-unit">원</div></div>
+    <div class="stat-card"><div class="stat-label">마라톤 기부</div><div class="stat-value" style="color:#ea580c;">26,930,000</div><div class="stat-unit">원</div></div>
+  </div>
+
+  <!-- 기부 이력 -->
+  <div class="card">
+    <div class="card-header">
+      <span style="font-size:13px;font-weight:600;color:#374151;">기부 이력</span>
+      <span style="font-size:13px;color:#64748b;">총 <strong>${MOCK_DONATIONS.length}</strong>건</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead><tr><th>기부 회차</th><th>기부 일시</th><th>코스명</th><th>회원 번호</th><th>참여 회원</th></tr></thead>
+        <tbody id="donationBody"></tbody>
+      </table>
+    </div>
+    <div id="donationPag"></div>
+  </div>
+
+  <!-- 참여 회원 팝업 -->
+  <div id="memberModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:480px;">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">참여 회원</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px;">기부 회차 : <strong id="popRound">-</strong> &nbsp;|&nbsp; 기부 일시 : <strong id="popDate">-</strong></div>
+        </div>
+        <button class="close-btn" onclick="document.getElementById('memberModal').style.display='none'">×</button>
+      </div>
+      <div class="modal-body">
+        <table class="data-table">
+          <thead><tr><th>번호</th><th>아이디</th></tr></thead>
+          <tbody id="memberBody"></tbody>
+        </table>
+        <div id="memberPag"></div>
+      </div>
+    </div>
+  </div>
+  `
+});
+
+function renderDonation(page) {
+  var pageSize = 20, total = MOCK_DONATIONS.length;
+  var start = (page-1)*pageSize, end = Math.min(start+pageSize, total);
+  var rows = '';
+  for (var i = start; i < end; i++) {
+    var d = MOCK_DONATIONS[i];
+    rows += '<tr>' +
+      '<td><strong>'+d.Course_Round_No+'</strong></td>' +
+      '<td>'+d.Result_Apply_Datetime+'</td>' +
+      '<td>'+courseLabel(d.Course_Name)+'</td>' +
+      '<td>'+d.Member_No+'</td>' +
+      '<td><button class="btn btn-secondary" style="font-size:12px;padding:3px 12px;" onclick="openMemberModal('+d.Course_Round_No+',\''+d.Course_Name+'\',\''+d.Result_Apply_Datetime+'\')">보기</button></td>' +
+      '</tr>';
+  }
+  document.getElementById('donationBody').innerHTML = rows;
+  renderPagination('donationPag', total, page, pageSize, 'renderDonation');
+}
+
+var currentMembers = [];
+function openMemberModal(roundNo, courseName, donationDate) {
+  document.getElementById('popRound').textContent = roundNo + ' (' + courseName + ')';
+  document.getElementById('popDate').textContent = donationDate;
+  currentMembers = [];
+  var cnt = Math.floor(Math.random()*8)+3;
+  for (var i = 0; i < cnt; i++) {
+    currentMembers.push({ Member_Id: MOCK_MEMBERS[i % MOCK_MEMBERS.length] });
+  }
+  document.getElementById('memberModal').style.display = 'flex';
+  renderMembers(1);
+}
+function renderMembers(page) {
+  var pageSize = 20, total = currentMembers.length;
+  var rows = '';
+  for (var i = 0; i < total; i++) {
+    rows += '<tr><td>'+(i+1)+'</td><td class="text-left">'+currentMembers[i].Member_Id+'</td></tr>';
+  }
+  document.getElementById('memberBody').innerHTML = rows;
+  renderPagination('memberPag', total, page, pageSize, 'renderMembers');
+}
+renderDonation(1);
+</script>
+</body>
+</html>

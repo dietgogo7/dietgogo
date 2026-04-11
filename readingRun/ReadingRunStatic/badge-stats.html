@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>배지 획득 통계 - 리딩런 BackOffice</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<script src="_common.js"></script>
+<script>
+var MOCK_STATS = [
+  {Reward_Code:'BG001',Reward_Name:'첫 독서 완료',Reward_Type:'BADGE',Acquire_Count:12483,Acquire_Member_Count:12483,Last_Acquire_Date:'2026-04-11 08:52',Use_YN:true},
+  {Reward_Code:'BG006',Reward_Name:'꾸준한 독서가',Reward_Type:'BADGE',Acquire_Count:8847,Acquire_Member_Count:7210,Last_Acquire_Date:'2026-04-10 23:45',Use_YN:true},
+  {Reward_Code:'BG002',Reward_Name:'몰입하는 독서가',Reward_Type:'BADGE',Acquire_Count:7432,Acquire_Member_Count:6890,Last_Acquire_Date:'2026-04-11 06:30',Use_YN:true},
+  {Reward_Code:'GF001',Reward_Name:'스타터 완주 상품권',Reward_Type:'GIFT',Acquire_Count:6770,Acquire_Member_Count:5540,Last_Acquire_Date:'2026-04-10 21:10',Use_YN:true},
+  {Reward_Code:'BG005',Reward_Name:'열정 독서가',Reward_Type:'BADGE',Acquire_Count:5921,Acquire_Member_Count:5210,Last_Acquire_Date:'2026-04-11 07:14',Use_YN:true},
+  {Reward_Code:'GF002',Reward_Name:'하프 완주 상품권',Reward_Type:'GIFT',Acquire_Count:4380,Acquire_Member_Count:3920,Last_Acquire_Date:'2026-04-10 20:30',Use_YN:true},
+  {Reward_Code:'BG003',Reward_Name:'아침형 독서가',Reward_Type:'BADGE',Acquire_Count:3840,Acquire_Member_Count:3410,Last_Acquire_Date:'2026-04-11 06:58',Use_YN:true},
+  {Reward_Code:'BG004',Reward_Name:'주말 독서가',Reward_Type:'BADGE',Acquire_Count:3210,Acquire_Member_Count:2980,Last_Acquire_Date:'2026-04-06 18:22',Use_YN:true},
+  {Reward_Code:'GF003',Reward_Name:'마라톤 완주 상품권',Reward_Type:'GIFT',Acquire_Count:2190,Acquire_Member_Count:1870,Last_Acquire_Date:'2026-04-10 20:30',Use_YN:true},
+  {Reward_Code:'BG007',Reward_Name:'마라톤 완주',Reward_Type:'BADGE',Acquire_Count:2190,Acquire_Member_Count:1870,Last_Acquire_Date:'2026-04-10 20:30',Use_YN:true},
+  {Reward_Code:'GF004',Reward_Name:'누적 독서 100분 상품권',Reward_Type:'GIFT',Acquire_Count:980,Acquire_Member_Count:870,Last_Acquire_Date:'2026-03-28 14:00',Use_YN:false},
+];
+
+var filtered = MOCK_STATS.slice();
+
+function rewardTypeBadge(t){return t==='BADGE'?'<span class="badge badge-blue">BADGE</span>':'<span class="badge badge-yellow">GIFT</span>';}
+
+renderLayout({
+  title:'배지 획득 통계',
+  breadcrumb:'리딩런 리워드관리 &gt; <strong>배지 획득 통계</strong>',
+  activePage:'badge-stats',
+  content:`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <h1 class="page-title">배지 획득 통계</h1>
+    <div style="font-size:12px;color:#64748b;">정보 업데이트일 : <strong>2026-04-11 09:00</strong> 기준</div>
+  </div>
+
+  <!-- 요약 카드 -->
+  <div class="section-title">배지 타입별 요약</div>
+  <div class="grid-stat" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px;">
+    <div class="stat-card"><div class="stat-label">총 배지 종류</div><div class="stat-value" style="color:#2563eb;">7</div><div class="stat-unit">종</div></div>
+    <div class="stat-card"><div class="stat-label">총 배지 획득</div><div class="stat-value" style="color:#7c3aed;">43,923</div><div class="stat-unit">회</div></div>
+    <div class="stat-card"><div class="stat-label">총 상품권 종류</div><div class="stat-value" style="color:#d97706;">4</div><div class="stat-unit">종</div></div>
+    <div class="stat-card"><div class="stat-label">총 상품권 발급</div><div class="stat-value" style="color:#dc2626;">14,320</div><div class="stat-unit">회</div></div>
+  </div>
+
+  <!-- 필터 + 테이블 -->
+  <div class="card">
+    <div class="card-header">
+      <span style="font-size:13px;font-weight:600;color:#374151;">배지별 획득 현황</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select id="fType" class="form-select" style="width:150px;" onchange="doFilter()">
+          <option value="">전체 타입</option>
+          <option value="BADGE">BADGE (배지)</option>
+          <option value="GIFT">GIFT (상품권)</option>
+        </select>
+        <button class="btn btn-success" onclick="BO.toast('엑셀 다운로드 요청되었습니다.','success')">↓ 엑셀 다운로드</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead><tr>
+          <th>순위</th><th>배지 코드</th><th>배지명</th><th>타입</th>
+          <th>획득 횟수</th><th>획득 회원 수</th><th>최근 획득일</th><th>사용 여부</th>
+        </tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div id="pagination"></div>
+  </div>
+  `
+});
+
+function doFilter() {
+  var type = document.getElementById('fType').value;
+  filtered = MOCK_STATS.filter(function(d){ return !type || d.Reward_Type === type; });
+  renderTable(1);
+}
+
+function renderTable(page) {
+  var pageSize = 20, total = filtered.length;
+  var start = (page-1)*pageSize, end = Math.min(start+pageSize, total);
+  var rows = '';
+  for (var i = start; i < end; i++) {
+    var d = filtered[i], rank = i + 1;
+    var rankEl = rank === 1
+      ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#eab308;color:#fff;font-weight:700;font-size:13px;">1</span>'
+      : rank === 2
+      ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#9ca3af;color:#fff;font-weight:700;font-size:13px;">2</span>'
+      : rank === 3
+      ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#b45309;color:#fff;font-weight:700;font-size:13px;">3</span>'
+      : '<strong style="color:#374151;">'+rank+'</strong>';
+    rows += '<tr>' +
+      '<td>'+rankEl+'</td>' +
+      '<td style="font-family:monospace;font-size:12px;">'+d.Reward_Code+'</td>' +
+      '<td class="text-left" style="font-weight:500;">'+d.Reward_Name+'</td>' +
+      '<td>'+rewardTypeBadge(d.Reward_Type)+'</td>' +
+      '<td><strong style="color:#2563eb;">'+d.Acquire_Count.toLocaleString()+'</strong></td>' +
+      '<td>'+d.Acquire_Member_Count.toLocaleString()+'</td>' +
+      '<td style="font-size:12px;">'+d.Last_Acquire_Date+'</td>' +
+      '<td>'+(d.Use_YN?'<span class="badge badge-green">사용</span>':'<span class="badge badge-gray">미사용</span>')+'</td>' +
+      '</tr>';
+  }
+  document.getElementById('tableBody').innerHTML = rows || '<tr><td colspan="8" style="padding:24px;color:#94a3b8;">데이터가 없습니다.</td></tr>';
+  renderPagination('pagination', total, page, pageSize, 'renderTable');
+}
+renderTable(1);
+</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - 리딩런 BackOffice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#1e40af', light: '#3b82f6', dark: '#1e3a8a' },
+                        sidebar: { DEFAULT: '#0f172a', hover: '#1e293b', active: '#1e3a8a' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [v-cloak] { display: none; }
+        .sidebar-item.active { background-color: #1e3a8a; border-left: 3px solid #60a5fa; }
+        .sidebar-item:not(.active):hover { background-color: #1e293b; }
+        .modal-backdrop { background: rgba(0,0,0,0.5); }
+        .table-row-hover:hover { background-color: #f0f9ff; }
+        .btn-primary { @apply bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors; }
+        .btn-secondary { @apply bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm font-medium transition-colors; }
+        .btn-danger { @apply bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors; }
+        .form-input { @apply w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500; }
+        .form-select { @apply w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white; }
+        .search-box { @apply bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4; }
+        .data-table { @apply w-full text-sm border-collapse; }
+        .data-table thead th { @apply bg-gray-100 text-gray-700 font-semibold px-3 py-2 text-center border border-gray-200 whitespace-nowrap; }
+        .data-table tbody td { @apply px-3 py-2 text-center border border-gray-200 text-gray-800; }
+        .data-table tbody tr { @apply table-row-hover; }
+        .badge-blue { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800; }
+        .badge-green { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800; }
+        .badge-yellow { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800; }
+        .badge-gray { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800; }
+        .stat-card { @apply bg-white rounded-lg border border-gray-200 p-5 flex flex-col gap-1; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- Sidebar -->
+        <aside class="w-56 bg-slate-900 text-white flex flex-col flex-shrink-0 overflow-y-auto">
+            <div class="px-4 py-5 border-b border-slate-700">
+                <div class="text-sm text-slate-400 font-medium">YES24</div>
+                <div class="text-base font-bold text-white mt-0.5">리딩런 BackOffice</div>
+            </div>
+            <nav class="flex-1 py-3">
+                @Html.Partial("_LNB")
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top bar -->
+            <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+                <div class="text-sm text-gray-500 breadcrumb-area">
+                    @if (ViewBag.Breadcrumb != null)
+                    {
+                        @ViewBag.Breadcrumb
+                    }
+                </div>
+                <div class="flex items-center gap-3 text-sm text-gray-600">
+                    <span class="font-medium">관리자</span>
+                </div>
+            </header>
+
+            <!-- Page content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- Global Modal Container -->
+    <div id="globalModal" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-backdrop">
+        <div id="globalModalContent" class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Common utility functions
+        window.BO = {
+            // Open modal with content loaded via AJAX
+            openModal: function (url, params, width) {
+                var modalContent = $('#globalModalContent');
+                if (width) modalContent.css('max-width', width);
+                $.get(url, params, function (html) {
+                    modalContent.html(html);
+                    $('#globalModal').removeClass('hidden');
+                });
+            },
+            // Open modal with inline HTML
+            openModalHtml: function (html, width) {
+                var modalContent = $('#globalModalContent');
+                if (width) modalContent.css('max-width', width);
+                modalContent.html(html);
+                $('#globalModal').removeClass('hidden');
+            },
+            // Close modal
+            closeModal: function () {
+                $('#globalModal').addClass('hidden');
+                $('#globalModalContent').html('').css('max-width', '');
+            },
+            // Show toast message
+            toast: function (msg, type) {
+                var colors = { success: 'bg-green-600', error: 'bg-red-600', info: 'bg-blue-600' };
+                var color = colors[type || 'info'] || colors.info;
+                var el = $('<div>').addClass('fixed top-4 right-4 z-[9999] text-white px-5 py-3 rounded shadow-lg text-sm ' + color).text(msg);
+                $('body').append(el);
+                setTimeout(function () { el.fadeOut(400, function () { el.remove(); }); }, 2500);
+            },
+            // Format number with comma
+            numFormat: function (n) {
+                if (n == null || n === '') return '0';
+                return Number(n).toLocaleString('ko-KR');
+            },
+            // Format date
+            dateFormat: function (str) {
+                if (!str) return '-';
+                return str.replace('T', ' ').substring(0, 16);
+            },
+            // Confirm dialog
+            confirm: function (msg, callback) {
+                if (window.confirm(msg)) callback();
+            }
+        };
+
+        // Close modal on backdrop click
+        $('#globalModal').on('click', function (e) {
+            if ($(e.target).is('#globalModal')) {
+                BO.closeModal();
+            }
+        });
+
+        // Active menu highlight
+        $(function () {
+            var path = window.location.pathname.toLowerCase();
+            $('.sidebar-item').each(function () {
+                var href = $(this).attr('href');
+                if (href && path.indexOf(href.toLowerCase()) === 0) {
+                    $(this).addClass('active');
+                }
+            });
+        });
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,337 @@
+@{
+    ViewBag.Title = "배지 관리";
+    ViewBag.Breadcrumb = Html.Raw("리딩런 리워드관리 &gt; <span class='font-semibold text-gray-800'>배지 관리</span>");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="space-y-4" id="badgeListPage">
+    <!-- 페이지 헤더 -->
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-bold text-gray-900">배지 관리</h1>
+        <button type="button" id="btnAddBadge" class="btn-primary inline-flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            배지 등록
+        </button>
+    </div>
+
+    <!-- 조회 결과 -->
+    <div class="bg-white rounded-lg border border-gray-200">
+        <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="text-sm text-gray-600">
+                    총 <span id="totalCountDisplay" class="font-semibold text-gray-800">0</span>건
+                </span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" id="btnDeleteSelected" class="btn-danger text-xs hidden">선택 삭제</button>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="w-10">
+                            <input type="checkbox" id="checkAll" class="w-4 h-4 rounded border-gray-300 text-blue-600" />
+                        </th>
+                        <th>번호</th>
+                        <th>배지 ID</th>
+                        <th>배지명</th>
+                        <th>리워드 타입</th>
+                        <th>설명</th>
+                        <th>메시지</th>
+                        <th>리워드 값</th>
+                        <th>사용 여부</th>
+                        <th>등록일시</th>
+                        <th>수정일시</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody id="badgeTableBody">
+                    <tr><td colspan="12" class="py-8 text-gray-400">데이터를 불러오는 중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="px-4 pb-4" id="badgePagination"></div>
+    </div>
+</div>
+
+<!-- 배지 등록 팝업 -->
+<div id="badgeRegisterModal" class="fixed inset-0 z-50 hidden flex items-center justify-center" style="background:rgba(0,0,0,0.5)">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+            <h3 class="text-base font-bold text-gray-900">배지 등록</h3>
+            <button type="button" onclick="closeBadgeRegisterModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="p-5 space-y-4">
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block"><span class="text-red-500">*</span> 배지명</label>
+                <input type="text" id="regBadgeName" class="form-input" placeholder="배지명을 입력하세요" maxlength="100" />
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block">리워드 타입</label>
+                <select id="regRewardType" class="form-select">
+                    <option value="BADGE">BADGE (배지)</option>
+                    <option value="GIFT">GIFT (상품권)</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block">배지 코드</label>
+                <input type="text" id="regRewardCode" class="form-input" placeholder="배지 코드 입력 (예: BG001)" maxlength="50" />
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block">설명</label>
+                <textarea id="regDescription" class="form-input" rows="3" placeholder="배지 설명을 입력하세요" maxlength="300"></textarea>
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block">메시지</label>
+                <textarea id="regMessage" class="form-input" rows="3" placeholder="배지 획득 메시지를 입력하세요" maxlength="300"></textarea>
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block">리워드 값 (상품권 금액)</label>
+                <input type="number" id="regRewardValue" class="form-input" placeholder="금액 입력 (배지는 비워두세요)" />
+            </div>
+            <div class="flex items-center gap-2">
+                <input type="checkbox" id="regUseYn" class="w-4 h-4 rounded border-gray-300 text-blue-600" checked />
+                <label for="regUseYn" class="text-sm text-gray-700">사용 여부</label>
+            </div>
+        </div>
+        <div class="px-5 pb-5 flex justify-end gap-2">
+            <button type="button" onclick="closeBadgeRegisterModal()" class="btn-secondary">취소</button>
+            <button type="button" id="btnRegisterConfirm" class="btn-primary">등록</button>
+        </div>
+    </div>
+</div>
+
+<!-- 배지 수정 팝업 -->
+<div id="badgeEditModal" class="fixed inset-0 z-50 hidden flex items-center justify-center" style="background:rgba(0,0,0,0.5)">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+            <h3 class="text-base font-bold text-gray-900">배지 수정</h3>
+            <button type="button" onclick="closeBadgeEditModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="p-5 space-y-4">
+            <input type="hidden" id="editSeq" />
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block">배지 ID (수정 불가)</label>
+                <input type="text" id="editRewardCode" class="form-input bg-gray-100" readonly />
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block"><span class="text-red-500">*</span> 배지명</label>
+                <input type="text" id="editBadgeName" class="form-input" placeholder="배지명을 입력하세요" maxlength="100" />
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block">설명</label>
+                <textarea id="editDescription" class="form-input" rows="3" placeholder="배지 설명을 입력하세요" maxlength="300"></textarea>
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block">메시지</label>
+                <textarea id="editMessage" class="form-input" rows="3" placeholder="배지 획득 메시지를 입력하세요" maxlength="300"></textarea>
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-600 mb-1 block">리워드 값</label>
+                <input type="number" id="editRewardValue" class="form-input" placeholder="금액 입력" />
+            </div>
+            <div class="flex items-center gap-2">
+                <input type="checkbox" id="editUseYn" class="w-4 h-4 rounded border-gray-300 text-blue-600" />
+                <label for="editUseYn" class="text-sm text-gray-700">사용 여부</label>
+            </div>
+        </div>
+        <div class="px-5 pb-5 flex justify-end gap-2">
+            <button type="button" onclick="closeBadgeEditModal()" class="btn-secondary">취소</button>
+            <button type="button" id="btnEditConfirm" class="btn-primary">수정</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+var badgeCurrentPage = 1;
+var defaultEventNo = @(ViewBag.EventNo ?? 0);
+
+$(function () {
+    loadBadgeList(1);
+
+    // 전체 체크박스
+    $('#checkAll').on('change', function () {
+        $('.badge-check').prop('checked', $(this).is(':checked'));
+        toggleDeleteBtn();
+    });
+
+    $(document).on('change', '.badge-check', function () {
+        toggleDeleteBtn();
+    });
+
+    $('#btnAddBadge').on('click', function () {
+        openBadgeRegisterModal();
+    });
+
+    $('#btnDeleteSelected').on('click', function () {
+        var seqs = [];
+        $('.badge-check:checked').each(function () { seqs.push($(this).val()); });
+        if (seqs.length === 0) { BO.toast('삭제할 배지를 선택하세요.', 'info'); return; }
+        BO.confirm(seqs.length + '개 배지를 삭제하시겠습니까?', function () {
+            $.ajax({
+                url: '/api/Reward/BadgeDelete',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ Seqs: seqs }),
+                success: function () {
+                    BO.toast('삭제되었습니다.', 'success');
+                    loadBadgeList(badgeCurrentPage);
+                },
+                error: function () { BO.toast('삭제에 실패했습니다.', 'error'); }
+            });
+        });
+    });
+
+    // 배지 등록 확인
+    $('#btnRegisterConfirm').on('click', function () {
+        var name = $('#regBadgeName').val().trim();
+        if (!name) { BO.toast('배지명을 입력하세요.', 'info'); return; }
+        var data = {
+            Event_No:           defaultEventNo,
+            Reward_Code:        $('#regRewardCode').val().trim(),
+            Reward_Type:        $('#regRewardType').val(),
+            Reward_Name:        name,
+            Reward_Description: $('#regDescription').val().trim(),
+            Reward_Message:     $('#regMessage').val().trim(),
+            Reward_Value:       $('#regRewardValue').val() ? parseInt($('#regRewardValue').val()) : null,
+            Use_YN:             $('#regUseYn').is(':checked')
+        };
+        $.ajax({
+            url: '/api/Reward/BadgeRegister',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function () {
+                BO.toast('등록되었습니다.', 'success');
+                closeBadgeRegisterModal();
+                loadBadgeList(1);
+            },
+            error: function () { BO.toast('등록에 실패했습니다.', 'error'); }
+        });
+    });
+
+    // 배지 수정 확인
+    $('#btnEditConfirm').on('click', function () {
+        var name = $('#editBadgeName').val().trim();
+        if (!name) { BO.toast('배지명을 입력하세요.', 'info'); return; }
+        var data = {
+            Seq:                parseInt($('#editSeq').val()),
+            Reward_Name:        name,
+            Reward_Description: $('#editDescription').val().trim(),
+            Reward_Message:     $('#editMessage').val().trim(),
+            Reward_Value:       $('#editRewardValue').val() ? parseInt($('#editRewardValue').val()) : null,
+            Use_YN:             $('#editUseYn').is(':checked')
+        };
+        $.ajax({
+            url: '/api/Reward/BadgeUpdate',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function () {
+                BO.toast('수정되었습니다.', 'success');
+                closeBadgeEditModal();
+                loadBadgeList(badgeCurrentPage);
+            },
+            error: function () { BO.toast('수정에 실패했습니다.', 'error'); }
+        });
+    });
+});
+
+function toggleDeleteBtn() {
+    var cnt = $('.badge-check:checked').length;
+    $('#btnDeleteSelected').toggleClass('hidden', cnt === 0);
+}
+
+function loadBadgeList(page) {
+    badgeCurrentPage = page;
+    $('#badgeTableBody').html('<tr><td colspan="12" class="py-8 text-gray-400">불러오는 중...</td></tr>');
+    $.getJSON('/api/Reward/BadgeList', { Event_No: defaultEventNo, page: page, pageSize: 20 }, function (res) {
+        $('#totalCountDisplay').text((res.TotalCount || 0).toLocaleString());
+        var rows = '';
+        if (!res.List || res.List.length === 0) {
+            rows = '<tr><td colspan="12" class="py-8 text-gray-400">등록된 배지가 없습니다.</td></tr>';
+        } else {
+            var sn = (res.TotalCount || 0) - ((page - 1) * 20);
+            $.each(res.List, function (i, d) {
+                rows += '<tr>' +
+                    '<td><input type="checkbox" class="badge-check w-4 h-4 rounded border-gray-300 text-blue-600" value="' + d.Seq + '" /></td>' +
+                    '<td>' + (sn - i) + '</td>' +
+                    '<td class="font-mono text-xs">' + (d.Reward_Code || '-') + '</td>' +
+                    '<td class="text-left max-w-xs truncate" title="' + (d.Reward_Name || '') + '">' + (d.Reward_Name || '-') + '</td>' +
+                    '<td>' + rewardTypeBadge(d.Reward_Type) + '</td>' +
+                    '<td class="text-left text-xs text-gray-500 max-w-xs truncate">' + (d.Reward_Description || '-') + '</td>' +
+                    '<td class="text-left text-xs text-gray-500 max-w-xs truncate">' + (d.Reward_Message || '-') + '</td>' +
+                    '<td>' + (d.Reward_Value != null ? BO.numFormat(d.Reward_Value) + '원' : '-') + '</td>' +
+                    '<td>' + (d.Use_YN ? '<span class="badge-green">사용</span>' : '<span class="badge-gray">미사용</span>') + '</td>' +
+                    '<td>' + BO.dateFormat(d.Regist_Datetime) + '</td>' +
+                    '<td>' + (d.Update_Datetime ? BO.dateFormat(d.Update_Datetime) : '-') + '</td>' +
+                    '<td><button type="button" class="text-blue-600 hover:underline text-xs" onclick="openBadgeEditModal(' + JSON.stringify(d) + ')">수정</button></td>' +
+                    '</tr>';
+            });
+        }
+        $('#badgeTableBody').html(rows);
+        renderPagination(res.TotalCount || 0, page, '#badgePagination', loadBadgeList);
+    });
+}
+
+function rewardTypeBadge(type) {
+    if (type === 'BADGE') return '<span class="badge-blue">BADGE</span>';
+    if (type === 'GIFT') return '<span class="badge-yellow">GIFT</span>';
+    return type || '-';
+}
+
+function openBadgeRegisterModal() {
+    $('#regBadgeName, #regRewardCode, #regDescription, #regMessage, #regRewardValue').val('');
+    $('#regRewardType').val('BADGE');
+    $('#regUseYn').prop('checked', true);
+    $('#badgeRegisterModal').removeClass('hidden');
+}
+
+function closeBadgeRegisterModal() {
+    $('#badgeRegisterModal').addClass('hidden');
+}
+
+function openBadgeEditModal(d) {
+    $('#editSeq').val(d.Seq);
+    $('#editRewardCode').val(d.Reward_Code || '');
+    $('#editBadgeName').val(d.Reward_Name || '');
+    $('#editDescription').val(d.Reward_Description || '');
+    $('#editMessage').val(d.Reward_Message || '');
+    $('#editRewardValue').val(d.Reward_Value != null ? d.Reward_Value : '');
+    $('#editUseYn').prop('checked', d.Use_YN);
+    $('#badgeEditModal').removeClass('hidden');
+}
+
+function closeBadgeEditModal() {
+    $('#badgeEditModal').addClass('hidden');
+}
+
+function renderPagination(totalCount, currentPage, containerId, callback) {
+    var pageSize = 20, totalPages = Math.ceil(totalCount / pageSize);
+    var html = '<div class="flex items-center justify-between mt-3 flex-wrap gap-2">' +
+        '<div class="text-sm text-gray-500">총 <span class="font-semibold text-gray-700">' + totalCount.toLocaleString() + '</span>건 | 현재 페이지 : <span class="font-semibold">' + currentPage + ' / ' + (totalPages||1) + '</span></div>';
+    if (totalPages > 1) {
+        html += '<nav class="flex items-center gap-1 text-sm">';
+        var blockSize = 10, blockStart = Math.floor((currentPage-1)/blockSize)*blockSize+1, blockEnd = Math.min(blockStart+blockSize-1, totalPages);
+        if (blockStart > 1) { html += '<a href="#" class="pag-btn px-2 py-1 rounded border text-gray-600 hover:bg-gray-100" data-page="1">&laquo;</a><a href="#" class="pag-btn px-2 py-1 rounded border text-gray-600 hover:bg-gray-100" data-page="'+(blockStart-1)+'">&lt;</a>'; }
+        for (var p = blockStart; p <= blockEnd; p++) {
+            if (p === currentPage) html += '<span class="px-3 py-1 rounded border border-blue-500 bg-blue-500 text-white font-semibold">'+p+'</span>';
+            else html += '<a href="#" class="pag-btn px-3 py-1 rounded border text-gray-600 hover:bg-gray-100" data-page="'+p+'">'+p+'</a>';
+        }
+        if (blockEnd < totalPages) { html += '<a href="#" class="pag-btn px-2 py-1 rounded border text-gray-600 hover:bg-gray-100" data-page="'+(blockEnd+1)+'">&gt;</a><a href="#" class="pag-btn px-2 py-1 rounded border text-gray-600 hover:bg-gray-100" data-page="'+totalPages+'">&raquo;</a>'; }
+        html += '</nav>';
+    }
+    html += '</div>';
+    $(containerId).html(html);
+    $(containerId).off('click', '.pag-btn').on('click', '.pag-btn', function(e){ e.preventDefault(); callback(parseInt($(this).data('page'))); });
+}
+</script>
+}
