@@ -1,0 +1,62 @@
+@{
+    ViewData["Title"] = "코스별 기부 현황";
+}
+@section Styles {
+  <style>
+    .top-bar-admin { font-size:13px; color:#475569; font-weight:500; }
+    .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .update-info { font-size:14px; color:#64748b; }
+    .grid-4col { grid-template-columns:repeat(4,1fr); margin-bottom:24px; }
+    .sv-danger { color:#c62828; }
+    .sv-blue { color:#1565c0; }
+    .sv-success { color:#2e7d32; }
+    .sv-orange { color:#e65100; }
+    .card-header-title { font-size:13px; font-weight:600; color:#374151; }
+    .card-header-text { font-size:13px; color:#64748b; }
+    .table-wrap { overflow-x:auto; }
+  </style>
+}
+
+<div class="main-wrap">
+  <div class="top-bar">
+    <div class="breadcrumb">리딩런 &gt; <strong>코스별 기부 현황</strong></div>
+    <div class="top-bar-admin">관리자</div>
+  </div>
+  <div class="content-wrap">
+
+    <div class="page-header">
+      <h1 class="page-title">코스별 기부 현황</h1>
+      <div class="update-info">정보 업데이트일 : <strong id="valUpdateDt">-</strong> 기준</div>
+    </div>
+
+    <div class="section-title">전체 기부 현황</div>
+    <div class="grid-stat grid-4col">
+      <div class="stat-card"><div class="stat-label">총 전체 기부 금액</div><div class="stat-value sv-danger"><span id="valTotalDonation">-</span></div><div class="stat-unit">원</div></div>
+      <div class="stat-card"><div class="stat-label">스타터 기부</div><div class="stat-value sv-blue"><span id="valStarterDonation">-</span></div><div class="stat-unit">원</div></div>
+      <div class="stat-card"><div class="stat-label">하프 기부</div><div class="stat-value sv-success"><span id="valHalfDonation">-</span></div><div class="stat-unit">원</div></div>
+      <div class="stat-card"><div class="stat-label">마라톤 기부</div><div class="stat-value sv-orange"><span id="valMarathonDonation">-</span></div><div class="stat-unit">원</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-title">기부 참여 회원 목록</span>
+        <span class="card-header-text">총 <strong id="totalCnt">0</strong>건</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>번호</th><th>회원 ID</th><th>코스명</th><th>완주 일시</th><th>기부 반영 일시</th></tr>
+          </thead>
+          <tbody id="donationBody"></tbody>
+        </table>
+      </div>
+      <div id="donationPag"></div>
+    </div>
+
+  </div>
+</div>
+
+@section Scripts {
+  <script src="~/js/donation.js" asp-append-version="true"></script>
+  <script>loadSidebar('donation');</script>
+}

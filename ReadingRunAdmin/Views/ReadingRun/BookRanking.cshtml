@@ -1,0 +1,82 @@
+@{
+    ViewData["Title"] = "리딩런 도서순위";
+}
+@section Styles {
+  <style>
+    .top-bar-admin { font-size:13px; color:#475569; font-weight:500; }
+    .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .update-info { font-size:14px; color:#64748b; }
+    .w-120 { width:120px; }
+    .w-150 { width:150px; }
+    .w-200 { width:200px; }
+    .btn-group { display:flex; gap:6px; align-items:flex-end; }
+    .warning-banner { display:flex; align-items:flex-start; gap:6px; font-size:14px; color:#92400e; background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:10px 14px; margin-bottom:16px; }
+    .warning-icon { margin-top:1px; }
+    .card-header-text { font-size:13px; color:#475569; }
+    .table-wrap { overflow-x:auto; }
+    .th-rank { width:60px; }
+    .rank-1 { color:#dc2626; font-weight:700; font-size:16px; }
+    .rank-2 { color:#ea580c; font-weight:700; font-size:15px; }
+    .rank-3 { color:#d97706; font-weight:700; font-size:15px; }
+    .text-bold { font-weight:600; }
+  </style>
+}
+
+<div class="main-wrap">
+  <div class="top-bar">
+    <div class="breadcrumb">도서순위 &gt; <strong>리딩런 도서순위</strong></div>
+    <div class="top-bar-admin">관리자</div>
+  </div>
+  <div class="content-wrap">
+
+    <div class="page-header">
+      <h1 class="page-title">리딩런 도서순위</h1>
+      <div class="update-info">정보 업데이트일 : <strong>2026-04-11 09:00</strong> 기준</div>
+    </div>
+
+    <div class="search-box">
+      <div><label class="form-label">기준일</label>
+        <input type="date" id="fDate" class="form-input w-150" value="2026-04-11"/>
+      </div>
+      <div><label class="form-label">코스</label>
+        <select id="fCourse" class="form-select w-120">
+          <option value="">전체</option><option>Starter</option><option>Half</option><option>Marathon</option>
+        </select>
+      </div>
+      <div><label class="form-label">도서명 / 상품번호</label>
+        <input type="text" id="fKeyword" class="form-input w-200" placeholder="도서명 또는 상품번호"/>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="doSearch()">검색</button>
+        <button class="btn btn-secondary" onclick="doReset()">초기화</button>
+        <button class="btn btn-success" onclick="BO.toast('엑셀 다운로드 요청되었습니다.','success')">↓ 엑셀 다운로드</button>
+      </div>
+    </div>
+
+    <div class="warning-banner">
+      <span class="warning-icon">⚠</span>
+      <span>도서 선택 횟수가 많은 순서대로 순위가 표시됩니다. 선택 횟수가 동일한 경우 등록일시가 이른 도서가 높은 순위로 표시됩니다.</span>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-text">총 <strong id="totalCnt">0</strong>건</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th class="th-rank">순위</th><th>도서 상품번호</th><th>도서명</th><th>코스</th><th>선택 횟수</th><th>최초 등록일</th></tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div id="pagination"></div>
+    </div>
+
+  </div>
+</div>
+
+@section Scripts {
+  <script src="~/js/book-ranking.js" asp-append-version="true"></script>
+  <script>loadSidebar('book-ranking');</script>
+}
