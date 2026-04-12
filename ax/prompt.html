@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI 프롬프트 통합 라이브러리</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --bg: #09090b;
+            --bg-gradient: radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.08), transparent 25%);
+            --surface: rgba(24, 24, 27, 0.6);
+            --surface-hover: rgba(39, 39, 42, 0.8);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(56, 189, 248, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: 0 0 20px rgba(56, 189, 248, 0.4);
+            --card-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background-color: var(--bg);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .header {
+            text-align: center;
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 100px;
+            background: var(--accent);
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: -1;
+            border-radius: 50%;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 24px;
+        }
+
+        .stats-container {
+            display: inline-flex;
+            gap: 24px;
+            padding: 12px 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .controls {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: rgba(9, 9, 11, 0.85);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px 16px 14px 44px;
+            color: var(--text-main);
+            font-size: 15px;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: var(--accent-glow);
+        }
+
+        .tabs-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .tabs {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            font-size: 14px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .nav-btn.prev {
+            left: -16px;
+        }
+
+        .nav-btn.next {
+            right: -16px;
+        }
+
+        .nav-btn.show {
+            display: flex;
+        }
+
+        .tab-btn {
+            white-space: nowrap;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--text-main);
+            color: var(--bg);
+            border-color: var(--text-main);
+        }
+
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .category-header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        .cat-emoji {
+            font-size: 24px;
+        }
+
+        .cat-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .cat-count {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: var(--text-muted);
+        }
+
+        .prompt-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .prompt-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .prompt-card.highlight {
+            border-color: var(--accent);
+            box-shadow: var(--accent-glow);
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid transparent;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .prompt-card:hover .card-header::before {
+            opacity: 1;
+        }
+
+        .card-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-body {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .card-body.open {
+            height: auto;
+            opacity: 1;
+            border-top: 1px solid var(--border);
+            padding: 20px;
+        }
+
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+
+        .btn-copy {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: var(--text-main);
+            color: var(--bg);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .btn-copy:hover {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        .btn-copy.success {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translate(-50%, 20px);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--bg);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            opacity: 0.2;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 32px;
+            }
+
+            .controls {
+                position: static;
+                padding: 16px;
+                border-radius: 16px;
+            }
+
+            .prompt-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <header class="header">
+            <h1 class="title">AI 프롬프트 가이드</h1>
+            <p class="subtitle">실무에 바로 적용할 수 있는 최적화된 프롬프트 모음입니다.<br>원하는 프롬프트를 검색하고 1초만에 복사하세요.</p>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-val" id="count-categories">0</span>
+                    <span class="stat-label">카테고리</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-val" id="count-prompts">0</span>
+                    <span class="stat-label">프롬프트</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="controls">
+            <div class="search-wrapper">
+                <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" class="search-input" id="search" placeholder="보고, 마케팅, 코드리뷰 등 검색어 입력...">
+            </div>
+            <div class="tabs-wrapper">
+                <button class="nav-btn prev" id="btn-prev" aria-label="이전"><svg width="16" height="16" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                        </path>
+                    </svg></button>
+                <div class="tabs" id="tabs"></div>
+                <button class="nav-btn next" id="btn-next" aria-label="다음"><svg width="16" height="16" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg></button>
+            </div>
+        </div>
+
+        <main class="prompt-grid" id="grid"></main>
+    </div>
+
+    <div class="toast" id="toast">📋 클립보드에 복사되었습니다!</div>
+
+    <!-- Templates for DOM generation -->
+    <template id="tpl-tab">
+        <button class="tab-btn"></button>
+    </template>
+
+    <template id="tpl-category-header">
+        <div class="category-header">
+            <span class="cat-emoji"></span>
+            <span class="cat-title"></span>
+            <span class="cat-count"></span>
+        </div>
+    </template>
+
+    <template id="tpl-prompt-card">
+        <div class="prompt-card">
+            <div class="card-header">
+                <span class="card-badge"></span>
+                <h3 class="card-title"></h3>
+                <p class="card-desc"></p>
+            </div>
+            <div class="card-body">
+                <div class="code-block"></div>
+                <button class="btn-copy">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span>프롬프트 복사하기</span>
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-empty-state">
+        <div class="empty-state">
+            <svg fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            <p>검색 결과가 없습니다. 다른 키워드로 검색해보세요.</p>
+        </div>
+    </template>
+
+    <script>
+        let C = [];
+
+        let activeTab = 'all';
+
+        const grid = document.getElementById('grid');
+        const tabsContainer = document.getElementById('tabs');
+        const searchInput = document.getElementById('search');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+
+        // 마우스 휠로 탭 가로 스크롤 지원 (PC 환경)
+        tabsContainer.addEventListener('wheel', (evt) => {
+            if (evt.deltaY !== 0) {
+                evt.preventDefault();
+                tabsContainer.scrollLeft += evt.deltaY;
+            }
+        }, { passive: false });
+
+        tabsContainer.addEventListener('scroll', updateTabNav);
+        window.addEventListener('resize', updateTabNav);
+
+        btnPrev.onclick = () => tabsContainer.scrollBy({ left: -200, behavior: 'smooth' });
+        btnNext.onclick = () => tabsContainer.scrollBy({ left: 200, behavior: 'smooth' });
+
+        function updateTabNav() {
+            if (tabsContainer.scrollLeft > 0) btnPrev.classList.add('show');
+            else btnPrev.classList.remove('show');
+
+            if (tabsContainer.scrollLeft + tabsContainer.clientWidth < tabsContainer.scrollWidth - 1) btnNext.classList.add('show');
+            else btnNext.classList.remove('show');
+        }
+
+        const tplTab = document.getElementById('tpl-tab');
+        const tplCategoryHeader = document.getElementById('tpl-category-header');
+        const tplPromptCard = document.getElementById('tpl-prompt-card');
+        const tplEmptyState = document.getElementById('tpl-empty-state');
+
+        function init() {
+            $.getJSON('datas/prompt.json')
+                .done(function (data) {
+                    C = data;
+                    updateStats();
+                    renderTabs();
+                    renderGrid();
+
+                    searchInput.addEventListener('input', renderGrid);
+                    window.addEventListener('hashchange', handleHash);
+                    setTimeout(handleHash, 100);
+                })
+                .fail(function (jqxhr, textStatus, error) {
+                    console.error('Failed to load prompt.json:', textStatus, error);
+                    grid.innerHTML = '<div class="empty-state"><p>데이터를 불러오는데 실패했습니다.</p></div>';
+                });
+        }
+
+        function updateStats() {
+            document.getElementById('count-categories').textContent = C.length;
+            document.getElementById('count-prompts').textContent = C.reduce((acc, cat) => acc + cat.items.length, 0);
+        }
+
+        function handleHash() {
+            let h = location.hash.replace('#', '');
+            if (!h) {
+                const path = location.pathname.replace(/^\/|\/$/g, '').toLowerCase();
+                if (path) h = path;
+            }
+            if (!h) return;
+
+            const targetCard = document.getElementById('c_' + h);
+            if (targetCard) {
+                const body = targetCard.querySelector('.card-body');
+                if (!body.classList.contains('open')) {
+                    toggleCard(h);
+                }
+                targetCard.classList.add('highlight');
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => targetCard.classList.remove('highlight'), 3000);
+            }
+        }
+
+        function renderTabs() {
+            tabsContainer.innerHTML = '';
+
+            const allBtn = tplTab.content.cloneNode(true).querySelector('button');
+            allBtn.textContent = '전체보기';
+            if (activeTab === 'all') allBtn.classList.add('active');
+            allBtn.onclick = () => setTab('all');
+            tabsContainer.appendChild(allBtn);
+
+            C.forEach(cat => {
+                const btn = tplTab.content.cloneNode(true).querySelector('button');
+                btn.textContent = cat.emoji + ' ' + cat.name;
+                if (activeTab === cat.id) btn.classList.add('active');
+                btn.onclick = () => setTab(cat.id);
+                tabsContainer.appendChild(btn);
+            });
+
+            setTimeout(updateTabNav, 10);
+        }
+
+        function setTab(id) {
+            activeTab = id;
+            renderTabs();
+            renderGrid();
+        }
+
+        function renderGrid() {
+            const query = searchInput.value.toLowerCase().trim();
+            grid.innerHTML = '';
+            let count = 0;
+
+            C.forEach(cat => {
+                if (activeTab !== 'all' && activeTab !== cat.id) return;
+
+                const filteredItems = cat.items.filter(item => {
+                    if (!query) return true;
+                    return item.t.toLowerCase().includes(query) ||
+                        item.s.toLowerCase().includes(query) ||
+                        item.c.toLowerCase().includes(query);
+                });
+
+                if (filteredItems.length === 0) return;
+                count += filteredItems.length;
+
+                const catHeaderNode = tplCategoryHeader.content.cloneNode(true);
+                catHeaderNode.querySelector('.cat-emoji').textContent = cat.emoji;
+                catHeaderNode.querySelector('.cat-title').textContent = cat.name;
+                catHeaderNode.querySelector('.cat-count').textContent = filteredItems.length;
+                grid.appendChild(catHeaderNode);
+
+                filteredItems.forEach(item => {
+                    const cardNode = tplPromptCard.content.cloneNode(true);
+                    const cardEl = cardNode.querySelector('.prompt-card');
+                    cardEl.id = 'c_' + item.h;
+                    cardEl.style.setProperty('--color', cat.rgb);
+
+                    const badge = cardNode.querySelector('.card-badge');
+                    badge.textContent = cat.name;
+                    badge.style.background = 'rgba(' + cat.rgb + ', 0.15)';
+                    badge.style.color = 'rgb(' + cat.rgb + ')';
+                    badge.style.border = '1px solid rgba(' + cat.rgb + ', 0.3)';
+
+                    cardNode.querySelector('.card-title').textContent = item.t;
+                    cardNode.querySelector('.card-desc').textContent = item.s;
+
+                    const header = cardNode.querySelector('.card-header');
+                    header.onclick = () => toggleCard(item.h);
+
+                    const body = cardNode.querySelector('.card-body');
+                    body.id = 'b_' + item.h;
+
+                    const codeBlock = cardNode.querySelector('.code-block');
+                    codeBlock.id = 'txt_' + item.h;
+                    codeBlock.textContent = item.c;
+
+                    const btnCopy = cardNode.querySelector('.btn-copy');
+                    btnCopy.onclick = function () { copyPrompt(item.h, this); };
+
+                    grid.appendChild(cardNode);
+                });
+            });
+
+            if (count === 0) {
+                grid.appendChild(tplEmptyState.content.cloneNode(true));
+            }
+        }
+
+        function toggleCard(id) {
+            const body = document.getElementById('b_' + id);
+            if (!body) return;
+            body.classList.toggle('open');
+        }
+
+        function copyPrompt(id, btnElement) {
+            const text = document.getElementById('txt_' + id).innerText;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showCopySuccess(btnElement);
+                }).catch(err => {
+                    fallbackCopyTextToClipboard(text, btnElement);
+                });
+            } else {
+                fallbackCopyTextToClipboard(text, btnElement);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text, btnElement) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                showCopySuccess(btnElement);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function showCopySuccess(btnElement) {
+            const originalHtml = btnElement.innerHTML;
+            btnElement.classList.add('success');
+            btnElement.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg><span>복사 완료!</span>';
+
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                btnElement.classList.remove('success');
+                btnElement.innerHTML = originalHtml;
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        init();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YES24 Event Studio - jQuery Version</title>
+    <!-- Tailwind CSS CDN (부모 UI용) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        #previewIframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            display: block;
+        }
+
+        .device-container {
+            height: calc(100vh - 180px);
+            max-height: 900px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .api-key-hidden {
+            -webkit-text-security: disc;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-900 h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header
+        class="bg-white border-b px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-sm flex-shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600 p-2 rounded-xl shadow-blue-200 shadow-lg">
+                <i data-lucide="wand-2" class="text-white w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-extrabold tracking-tight text-slate-800 leading-none">
+                    YES24 <span class="text-blue-600">Event Studio</span>
+                </h1>
+                <p class="text-[10px] text-slate-400 font-medium uppercase mt-1 tracking-tighter">AI-Driven Content
+                    Generator (v1.5 Flash)</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button id="btnCopyCode"
+                class="hidden flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 border rounded-lg transition-all">
+                <i data-lucide="copy" class="w-4 h-4"></i> 코드 복사
+            </button>
+            <button id="btnGenerate"
+                class="flex items-center gap-2 px-6 py-2.5 rounded-lg font-bold text-white shadow-xl transition-all bg-blue-600 hover:bg-blue-700 active:scale-95">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span id="btnText">이벤트 초안 생성</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex flex-1 overflow-hidden">
+        <!-- Sidebar: Form -->
+        <aside class="w-[420px] bg-white border-r overflow-y-auto p-6 space-y-8 scrollbar-thin flex-shrink-0">
+            <!-- API Configuration Section -->
+            <section class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="key" class="w-4 h-4 text-amber-500"></i>
+                    <h2 class="text-xs font-bold text-slate-800 uppercase tracking-tight">API 설정</h2>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-slate-400 ml-1">Google AI Studio API Key</label>
+                    <div class="relative">
+                        <input type="password" id="iptApiKey" placeholder="API 키를 입력하세요"
+                            class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-xs font-mono" />
+                        <button id="btnToggleKey" class="absolute right-2 top-1.5 text-slate-300 hover:text-slate-500">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <p class="text-[9px] text-slate-400 leading-tight">입력한 키는 브라우저(localStorage)에만 저장됩니다.</p>
+                    <div class="mt-3">
+                        <label class="block text-[10px] font-bold text-slate-400 ml-1">모델 선택</label>
+                        <div class="flex gap-2 mt-1">
+                            <select id="selModel" class="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs outline-none" style="width: 200px">
+                                <option value="">(자동선택: 권장 모델)</option>
+                            </select>
+                            <button id="btnRefreshModels" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">모델 새로고침</button>
+                        </div>
+                        <p id="modelInfo" class="text-[9px] text-slate-400 mt-1">ListModels로 사용 가능한 모델을 불러옵니다.</p>
+                        <p id="modelMethods" class="text-[10px] text-slate-500 mt-1">지원 메서드: -</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1 h-4 bg-blue-600 rounded-full"></div>
+                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-tight">이벤트 정보 설정</h2>
+                </div>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1 ml-1">이벤트 제목</label>
+                            <input type="text" id="iptTitle" value="봄맞이 독서 대잔치"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium" />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1 ml-1">이벤트 유형</label>
+                            <select id="selType"
+                                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+                                <option value="promotion">단순 프로모션</option>
+                                <option value="season" selected>시즌/기획전</option>
+                                <option value="quiz">퀴즈/참여형</option>
+                                <option value="sale">타임세일/특가</option>
+                                <option value="new_book">신간 소개</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 mb-1 ml-1">기간</label>
+                            <input type="text" id="iptPeriod" value="2024.03.01 ~ 2024.03.31"
+                                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 mb-1 ml-1">참여 방법 & 혜택 (핵심 키워드)</label>
+                        <textarea id="txtBenefits" rows="3"
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none resize-none leading-snug">이벤트 도서 1권 이상 구매 시 자동 응모, YES포인트 2,000원 선착순 증정</textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="pt-6 border-t">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1 h-4 bg-blue-600 rounded-full"></div>
+                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-tight">비주얼 & 톤앤매너</h2>
+                </div>
+                <div id="toneButtons" class="grid grid-cols-2 gap-3">
+                    <button data-tone="modern"
+                        class="tone-btn p-3 rounded-xl border text-left transition-all bg-white border-slate-200 hover:border-slate-300">
+                        <div class="text-xs font-bold text-slate-700">고급/모던</div>
+                        <div class="text-[10px] text-slate-400 mt-1 leading-tight">minimal 스타일</div>
+                    </button>
+                    <button data-tone="bright"
+                        class="tone-btn p-3 rounded-xl border text-left transition-all bg-blue-50 border-blue-400 ring-2 ring-blue-100">
+                        <div class="text-xs font-bold text-blue-700">밝음/경쾌</div>
+                        <div class="text-[10px] text-slate-400 mt-1 leading-tight">vibrant 스타일</div>
+                    </button>
+                    <button data-tone="emotional"
+                        class="tone-btn p-3 rounded-xl border text-left transition-all bg-white border-slate-200 hover:border-slate-300">
+                        <div class="text-xs font-bold text-slate-700">감성적</div>
+                        <div class="text-[10px] text-slate-400 mt-1 leading-tight">warm 스타일</div>
+                    </button>
+                    <button data-tone="strong"
+                        class="tone-btn p-3 rounded-xl border text-left transition-all bg-white border-slate-200 hover:border-slate-300">
+                        <div class="text-xs font-bold text-slate-700">강렬함/프로모션</div>
+                        <div class="text-[10px] text-slate-400 mt-1 leading-tight">high contrast 스타일</div>
+                    </button>
+                </div>
+                <div class="mt-5 space-y-2">
+                    <label
+                        class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                        <input type="checkbox" id="chkProducts" checked class="w-4 h-4 accent-blue-600" />
+                        <span class="text-xs font-bold text-slate-600">추천 상품 노출 (AI 자동 선정 문구 포함)</span>
+                    </label>
+                    <label
+                        class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                        <input type="checkbox" id="chkCta" checked class="w-4 h-4 accent-blue-600" />
+                        <span class="text-xs font-bold text-slate-600">하단 고정 구매 유도 버튼 포함</span>
+                    </label>
+                </div>
+            </section>
+        </aside>
+
+        <!-- Main Display Area -->
+        <section class="flex-1 flex flex-col relative bg-slate-100/50">
+            <div class="bg-white border-b h-14 flex items-center justify-between px-6 shadow-sm flex-shrink-0">
+                <div class="flex bg-slate-100 p-1 rounded-lg border">
+                    <button id="tabPreview"
+                        class="flex items-center gap-2 px-5 py-1.5 rounded-md text-xs font-bold transition-all bg-white shadow-sm text-blue-600">
+                        <i data-lucide="eye" class="w-4 h-4"></i> 미리보기
+                    </button>
+                    <button id="tabCode"
+                        class="flex items-center gap-2 px-5 py-1.5 rounded-md text-xs font-bold transition-all text-slate-500 hover:text-slate-700">
+                        <i data-lucide="code" class="w-4 h-4"></i> 소스 코드
+                    </button>
+                </div>
+
+                <div id="deviceToggle" class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border">
+                    <button data-device="mobile" class="p-1.5 rounded bg-white shadow-sm text-blue-600">
+                        <i data-lucide="smartphone" class="w-4 h-4"></i>
+                    </button>
+                    <button data-device="pc" class="p-1.5 rounded text-slate-400">
+                        <i data-lucide="monitor" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="displayContent" class="flex-1 overflow-auto p-8 flex justify-center items-stretch">
+                <!-- Initial State -->
+                <div id="emptyState" class="m-auto flex flex-col items-center justify-center max-w-sm text-center">
+                    <div
+                        class="w-24 h-24 bg-white rounded-[2rem] shadow-2xl flex items-center justify-center mb-8 rotate-3 hover:rotate-0 transition-transform duration-500 border border-slate-50">
+                        <i data-lucide="sparkles" class="w-12 h-12 text-blue-100"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-3">당신의 상상을 현실로.</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-10 px-4">
+                        몇 가지 키워드만으로 풍부한 마케팅 문구와 전문적인 레이아웃이 포함된 <br /><strong>YES24 전용 이벤트 초안</strong>을 생성하세요.
+                    </p>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden m-auto flex flex-col items-center">
+                    <div class="w-20 h-20 relative mb-6">
+                        <div class="absolute inset-0 border-4 border-blue-600/10 rounded-full"></div>
+                        <div
+                            class="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin">
+                        </div>
+                        <i data-lucide="sparkles"
+                            class="w-8 h-8 text-blue-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800">AI가 문구와 디자인을 조합하고 있습니다</h3>
+                    <p class="text-slate-400 text-sm mt-2"><span id="loadingModelName">Gemini 1.5 Flash</span> 모델을 사용하여 생성 중입니다...</p>
+                </div>
+
+                <!-- Result View (Preview) -->
+                <div id="resultPreview" class="hidden w-full flex gap-8 max-w-7xl h-full items-stretch">
+                    <div id="deviceFrame"
+                        class="device-container transition-all duration-500 bg-white shadow-2xl rounded-[2.5rem] overflow-hidden border-[12px] border-slate-900 w-[400px] mx-auto flex-shrink-0">
+                        <div class="bg-slate-900 h-8 flex items-center justify-center flex-shrink-0">
+                            <div class="w-16 h-1.5 bg-slate-800 rounded-full"></div>
+                        </div>
+                        <div class="flex-1 relative overflow-hidden bg-white">
+                            <iframe id="previewIframe"></iframe>
+                        </div>
+                    </div>
+
+                    <!-- Insight Panel -->
+                    <div class="w-80 space-y-6 flex-shrink-0 overflow-y-auto pr-2 scrollbar-thin">
+                        <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
+                            <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i data-lucide="palette" class="w-4 h-4 text-purple-600"></i> AI 디자인 리포트
+                            </h3>
+                            <div id="aiReport" class="space-y-4"></div>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
+                            <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i data-lucide="layout" class="w-4 h-4 text-blue-600"></i> 섹션별 기획 의도
+                            </h3>
+                            <div id="aiSections" class="space-y-4"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result View (Code) -->
+                <div id="resultCode"
+                    class="hidden w-full max-w-5xl h-full flex flex-col shadow-2xl rounded-2xl overflow-hidden border border-slate-700">
+                    <div
+                        class="bg-slate-800 px-6 py-3 flex items-center justify-between text-slate-400 text-[11px] font-mono tracking-widest uppercase flex-shrink-0">
+                        <span>source_code.html</span>
+                    </div>
+                    <textarea id="codeArea" readonly
+                        class="flex-1 w-full bg-slate-900 text-blue-200 p-8 font-mono text-sm outline-none resize-none leading-relaxed scrollbar-thin scrollbar-thumb-slate-700"></textarea>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer
+        class="bg-white border-t px-6 py-2.5 flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest flex-shrink-0">
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div id="statusDot" class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.4)]">
+                </div>
+                <span id="statusText">Operational</span>
+            </div>
+            <span id="footerModel">Model: Gemini 1.5 Flash</span>
+        </div>
+        <div>© 2024 YES24 FE Lab</div>
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            lucide.createIcons();
+
+            // 로컬 스토리지에서 API 키 불러오기
+            const savedKey = localStorage.getItem('yes24_studio_api_key');
+            if (savedKey) {
+                $('#iptApiKey').val(savedKey);
+            }
+
+            // API 키 저장 이벤트
+            $('#iptApiKey').on('input', function () {
+                localStorage.setItem('yes24_studio_api_key', $(this).val());
+            });
+
+            // API 키 가시성 토글
+            $('#btnToggleKey').on('click', function () {
+                const ipt = $('#iptApiKey');
+                const isPassword = ipt.attr('type') === 'password';
+                ipt.attr('type', isPassword ? 'text' : 'password');
+                $(this).find('i').attr('data-lucide', isPassword ? 'eye-off' : 'eye');
+                lucide.createIcons();
+            });
+
+            // 톤 선택 이벤트
+            $('.tone-btn').on('click', function () {
+                selectedTone = $(this).data('tone');
+                $('.tone-btn').removeClass('bg-blue-50 border-blue-400 ring-2 ring-blue-100').addClass('bg-white border-slate-200 hover:border-slate-300');
+                $('.tone-btn div:first-child').removeClass('text-blue-700').addClass('text-slate-700');
+                $(this).removeClass('bg-white border-slate-200 hover:border-slate-300').addClass('bg-blue-50 border-blue-400 ring-2 ring-blue-100');
+                $(this).find('div:first-child').removeClass('text-slate-700').addClass('text-blue-700');
+            });
+
+            $('#tabPreview').on('click', () => switchView('preview'));
+            $('#tabCode').on('click', () => switchView('code'));
+
+            $('#deviceToggle button').on('click', function () {
+                currentDevice = $(this).data('device');
+                $('#deviceToggle button').removeClass('bg-white shadow-sm text-blue-600').addClass('text-slate-400');
+                $(this).removeClass('text-slate-400').addClass('bg-white shadow-sm text-blue-600');
+
+                if (currentDevice === 'mobile') {
+                    $('#deviceFrame').removeClass('w-full max-w-[1000px]').addClass('w-[400px]');
+                } else {
+                    $('#deviceFrame').removeClass('w-[400px]').addClass('w-full max-w-[1000px]');
+                }
+            });
+
+            $('#btnGenerate').on('click', generateDraft);
+
+            // 모델 목록 관련
+            $('#btnRefreshModels').on('click', function () {
+                const key = $('#iptApiKey').val().trim();
+                if (!key) { alert('API 키를 입력한 뒤 모델 새로고침을 눌러주세요.'); return; }
+                fetchAndPopulateModels(key);
+            });
+
+            // 모델 선택 시 로딩 문구 및 지원 메서드 업데이트
+            $('#selModel').on('change', function () {
+                const val = $(this).val();
+                const name = val ? val.split('/').pop() : '(자동선택: 권장 모델)';
+                $('#loadingModelName').text(name);
+                // 지원 메서드 표시
+                const m = availableModels.find(x => x.name === val);
+                if (m && Array.isArray(m.supportedMethods) && m.supportedMethods.length) {
+                    $('#modelMethods').text('지원 메서드: ' + m.supportedMethods.join(', '));
+                } else if (m) {
+                    $('#modelMethods').text('지원 메서드: (정보 없음)');
+                } else {
+                    $('#modelMethods').text('지원 메서드: 자동선택 사용 시 ListModels 참조');
+                }
+            });
+
+            // API 키 입력 후 일정 동작: 엔터로 모델 새로고침
+            $('#iptApiKey').on('keypress', function (e) { if (e.key === 'Enter') { $('#btnRefreshModels').click(); } });
+
+            $('#btnCopyCode').on('click', function () {
+                if (currentResult) {
+                    const el = document.createElement('textarea');
+                    el.value = currentResult.html;
+                    document.body.appendChild(el);
+                    el.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(el);
+                    alert('코드가 클립보드에 복사되었습니다.');
+                }
+            });
+        });
+
+        let currentResult = null;
+        let selectedTone = 'bright';
+        let currentView = 'preview';
+        let currentDevice = 'mobile';
+        let availableModels = [];
+
+        async function fetchAndPopulateModels(apiKey) {
+            const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+            try {
+                const resp = await fetch(listUrl);
+                if (!resp.ok) {
+                    const e = await resp.json().catch(() => ({}));
+                    throw new Error(e.error?.message || 'ListModels 호출 실패');
+                }
+                const json = await resp.json();
+                availableModels = Array.isArray(json.models) ? json.models : [];
+
+                const sel = $('#selModel');
+                sel.empty();
+                sel.append('<option value="">(자동선택: 권장 모델)</option>');
+                availableModels.forEach(m => {
+                    const id = (m.name || '').split('/').pop();
+                    sel.append(`<option value="${m.name}">${id}${m.description ? ' — ' + m.description : ''}</option>`);
+                });
+                $('#modelInfo').text(`사용 가능한 모델 ${availableModels.length}개 로드됨.`);
+
+                // 자동 추천 모델명을 로딩 문구에 반영
+                (function setRecommended(){
+                    if (!availableModels || availableModels.length === 0) return;
+                    let rec = availableModels.find(x => /gemini.*1\.5.*flash|gemini-1\.5-flash|gemini.*flash|gemini-1\.5/i.test(x.name || ''));
+                    if (!rec) rec = availableModels.find(x => /gemini/i.test(x.name || '')) || availableModels[0];
+                    const recName = (rec.name || '').split('/').pop();
+                    $('#loadingModelName').text(recName || '(자동선택: 권장 모델)');
+                })();
+            } catch (err) {
+                console.error(err);
+                $('#modelInfo').text('모델 목록 로드 실패: ' + err.message);
+                alert('모델 목록을 불러오지 못했습니다: ' + err.message);
+            }
+        }
+
+        async function generateDraft() {
+            const userApiKey = $('#iptApiKey').val().trim();
+            if (!userApiKey) {
+                alert('API 키를 먼저 입력해 주세요.');
+                $('#iptApiKey').focus();
+                return;
+            }
+
+                const formData = {
+                title: $('#iptTitle').val(),
+                type: $('#selType').val(),
+                period: $('#iptPeriod').val(),
+                benefits: $('#txtBenefits').val(),
+                tone: selectedTone,
+                showProducts: $('#chkProducts').is(':checked'),
+                hasCta: $('#chkCta').is(':checked')
+            };
+
+            setLoading(true);
+
+const systemPrompt = `당신은 YES24 시니어 이벤트 기획자이며, 마케팅 카피라이팅과 페이지 레이아웃 설계에 적극 개입해 실무에서 바로 활용 가능한 상세한 이벤트 페이지 초안을 생성합니다.
+
+                                                [출력 규칙]
+                                                - 반드시 하나의 유효한 JSON 객체만 출력하세요. 추가 설명 텍스트는 출력하지 마세요.
+                                                - JSON 최상위 키: sections(배열), html(문자열), meta(객체)
+
+                                                [페이지 생성 요구사항]
+                                                - 톤앤매너: ${formData.tone} (고급/모던=화이트-그레이 계열 미니멀, 밝음/경쾌=컬러풀 vibrant, 감성적=웜톤 따뜻한 느낌, 강렬함=고대비 강렬)
+                                                - 모바일 우선 레이아웃 (max-width:720px)
+                                                - CSS 클래스는 모두 evt- 접두사 사용
+                                                - 폰트: Pretendard 또는 Noto Sans KR
+
+                                                [html 필드에 반드시 포함할 섹션]
+                                                1. 히어로 섹션: 배경 그라데이션, 이벤트 제목, 각기 다른 느낌의 헤드라인 3개 (강렬, 감성, 정보전달형), 서브카피
+                                                2. 이벤트 상세 섹션: 기간/혜택을 카드 또는 아이콘 리스트로 시각화, 참여 방법 스텝(step 1~3)
+                                                3. 혜택 강조 섹션: 배경색 반전, 큰 숫자/포인트로 혜택을 임팩트 있게 표현
+                                                4. 상품 추천 섹션(showProducts가 true인 경우): 더미 상품카드 3개, hover 효과
+                                                5. CTA 섹션: 메인 버튼 1개 + 보조 버튼 1개, 클릭 유도 문구
+                                                6. 하단 고정 CTA 바(hasCta가 true인 경우): position:fixed, bottom:0
+                                                - CSS는 style 태그에 인라인 포함, 애니메이션(fade-in, slide-up) 포함
+                                                - 이미지는 picsum.photos 더미 URL 또는 CSS 그라데이션으로 대체
+
+                                                [meta 필드 구성]
+                                                - recommended_font: 권장 폰트명
+                                                - color_palette: 색상 코드 배열 5개
+                                                - marketing_focus: 마케팅 핵심 전략 한 줄 요약
+                                                - seo: title, description, keywords 배열
+
+                                                [sections 필드 구성]
+                                                - 각 섹션별 title, ai_comment(기획 의도 한 줄)을 배열로 반환`;
+
+            const userPrompt = `다음 기획안 데이터를 바탕으로 YES24 이벤트 페이지 초안(JSON)을 작성해줘: ${JSON.stringify(formData)}`;
+
+            try {
+                // 먼저 ListModels로 사용 가능한 모델을 조회하고, 적절한 모델과 메서드를 선택합니다.
+                // 모델을 UI에서 선택했으면 그 값을 사용하고, 아니면 availableModels 또는 ListModels로 선택
+                let models = availableModels;
+                if (!Array.isArray(models) || models.length === 0) {
+                    const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${userApiKey}`;
+                    const listResp = await fetch(listUrl);
+                    if (!listResp.ok) {
+                        const errData = await listResp.json().catch(() => ({}));
+                        throw new Error(errData.error?.message || 'ListModels 호출 실패');
+                    }
+                    const listJson = await listResp.json();
+                    models = Array.isArray(listJson.models) ? listJson.models : [];
+                    availableModels = models;
+                }
+
+                if (models.length === 0) {
+                    throw new Error('사용 가능한 모델이 없습니다. API 키와 권한을 확인하세요.');
+                }
+
+                // 모델 선택 우선순위: UI 선택 > gemini(1.5/flash) > gemini > 첫번째
+                function pickModel(models) {
+                    const selVal = $('#selModel').val();
+                    if (selVal) {
+                        const m = models.find(x => x.name === selVal);
+                        if (m) return m;
+                    }
+                    let m = models.find(x => /gemini.*1\.5.*flash|gemini-1\.5-flash|gemini.*flash|gemini-1\.5/i.test(x.name || ''));
+                    if (!m) m = models.find(x => /gemini/i.test(x.name || ''));
+                    return m || models[0];
+                }
+
+                const picked = pickModel(models);
+                const modelId = (picked.name || '').split('/').pop();
+
+                // 로딩 상태 문구에 선택된 모델명 반영
+                try { $('#loadingModelName').text(modelId); } catch (e) {}
+
+                // 선택된 모델의 supportedMethods가 있으면 UI에 표시
+                try {
+                    if (Array.isArray(picked.supportedMethods) && picked.supportedMethods.length) {
+                        $('#modelMethods').text('지원 메서드: ' + picked.supportedMethods.join(', '));
+                    } else {
+                        $('#modelMethods').text('지원 메서드: (정보 없음)');
+                    }
+                } catch (e) {}
+
+                // 모델이 지원하는 메서드가 명시되어 있으면 그 중 generate 관련 메서드를 선택
+                let method = 'generateContent';
+                if (Array.isArray(picked.supportedMethods)) {
+                    const candidate = picked.supportedMethods.find(s => /generateContent|generateText|generateMessage|generate/i.test(s));
+                    if (candidate) method = candidate;
+                    else method = picked.supportedMethods[0];
+                }
+
+                // 업데이트: 선택된 모델명을 푸터에 표시
+                try { document.querySelector('#footerModel').textContent = 'Model: ' + modelId; } catch (e) {}
+
+                const genUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:${method}?key=${userApiKey}`;
+                const response = await fetch(genUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userPrompt }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            temperature: 0.9,
+                            maxOutputTokens: 8192,
+                            candidateCount: 1
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    // 모델이 해당 메서드를 지원하지 않을 수도 있으므로 상세 메시지에 ListModels 안내 포함
+                    throw new Error(errData.error?.message || 'API 호출 실패. 사용 가능한 모델은 ListModels 엔드포인트에서 확인하세요.');
+                }
+
+                const data = await response.json();
+                const rawText = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) || '';
+                let parsed = null;
+                try {
+                    parsed = JSON.parse(rawText);
+                } catch (e) {
+                    console.warn('JSON.parse failed on rawText, attempting extraction...', e);
+                    // 시도: 텍스트에서 첫 중괄호에서 마지막 중괄호까지 잘라 파싱 시도
+                    const start = rawText.indexOf('{');
+                    const end = rawText.lastIndexOf('}');
+                    if (start !== -1 && end !== -1 && end > start) {
+                        const sub = rawText.substring(start, end + 1);
+                        try {
+                            parsed = JSON.parse(sub);
+                        } catch (e2) {
+                            console.error('Extraction parse failed', e2, sub);
+                        }
+                    }
+                    // 만약 여전히 파싱 실패하고 출력이 HTML로 보이면 HTML로 간주
+                    if (!parsed) {
+                        const trimmed = rawText.trim();
+                        if (trimmed.startsWith('<')) {
+                            parsed = { sections: [], html: rawText, meta: {} };
+                        }
+                    }
+                }
+
+                // html_base64 필드가 있으면 디코딩해서 html로 사용 (하위 호환)
+                if (parsed && typeof parsed.html_base64 === 'string' && parsed.html_base64.trim()) {
+                    try { parsed.html = atob(parsed.html_base64); } catch (e) { console.warn('base64 decode failed', e); }
+                }
+
+                if (!parsed) {
+                    throw new Error('생성 결과를 JSON으로 파싱하지 못했습니다. 응답: ' + (rawText.slice(0, 1000) || '[empty]'));
+                }
+
+                currentResult = parsed;
+                renderResult();
+            } catch (err) {
+                console.error(err);
+                alert("생성 중 오류가 발생했습니다: " + err.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function setLoading(isLoading) {
+            if (isLoading) {
+                $('#emptyState, #resultPreview, #resultCode').hide();
+                $('#loadingState').show();
+                $('#btnGenerate').prop('disabled', true).addClass('bg-slate-400');
+                $('#statusDot').removeClass('bg-green-500').addClass('bg-amber-400 animate-pulse');
+                $('#statusText').text('AI Processing...');
+            } else {
+                $('#loadingState').hide();
+                $('#btnGenerate').prop('disabled', false).removeClass('bg-slate-400').addClass('bg-blue-600');
+                $('#statusDot').removeClass('bg-amber-400 animate-pulse').addClass('bg-green-500');
+                $('#statusText').text('Operational');
+            }
+        }
+
+        function switchView(view) {
+            currentView = view;
+            if (view === 'preview') {
+                $('#tabPreview').addClass('bg-white shadow-sm text-blue-600').removeClass('text-slate-500');
+                $('#tabCode').removeClass('bg-white shadow-sm text-blue-600').addClass('text-slate-500');
+                $('#resultCode').hide();
+                if (currentResult) $('#resultPreview').show().css('display', 'flex');
+                $('#deviceToggle').show();
+            } else {
+                $('#tabCode').addClass('bg-white shadow-sm text-blue-600').removeClass('text-slate-500');
+                $('#tabPreview').removeClass('bg-white shadow-sm text-blue-600').addClass('text-slate-500');
+                $('#resultPreview').hide();
+                if (currentResult) $('#resultCode').show().css('display', 'flex');
+                $('#deviceToggle').hide();
+            }
+        }
+
+        function renderResult() {
+            if (!currentResult) return;
+
+            const baseStyles = `
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+                <style>
+                    * { box-sizing: border-box; }
+                    body { 
+                        margin: 0; 
+                        padding: 0; 
+                        font-family: Pretendard, -apple-system, sans-serif; 
+                        -webkit-font-smoothing: antialiased;
+                        overflow-x: hidden;
+                    }
+                    img { max-width: 100%; height: auto; display: block; }
+                </style>
+            `;
+
+            let finalHtml = currentResult.html;
+            if (finalHtml.includes('<head>')) {
+                finalHtml = finalHtml.replace('<head>', '<head>' + baseStyles);
+            } else {
+                finalHtml = baseStyles + finalHtml;
+            }
+
+            const iframe = document.getElementById('previewIframe');
+            iframe.srcdoc = finalHtml;
+
+            $('#codeArea').val(currentResult.html);
+
+            const reportHtml = `
+                <div><p class="text-[10px] font-bold text-slate-400 uppercase">추천 폰트</p><p class="text-sm font-bold text-slate-700">${currentResult.meta.recommended_font || 'Pretendard'}</p></div>
+                <div><p class="text-[10px] font-bold text-slate-400 uppercase mb-2">컬러 팔레트</p><div class="flex gap-2">
+                    ${(currentResult.meta.color_palette || []).map(c => `<div class="w-8 h-8 rounded-lg border shadow-inner" style="background-color:${c}" title="${c}"></div>`).join('')}
+                </div></div>
+                <div><p class="text-[10px] font-bold text-slate-400 uppercase mb-1">마케팅 포인트</p><p class="text-xs text-slate-600 leading-relaxed italic">"${currentResult.meta.marketing_focus || '혜택 강조'}"</p></div>
+            `;
+            $('#aiReport').html(reportHtml);
+
+            const sectionsHtml = (currentResult.sections || []).map((s, idx) => `
+                <div class="group">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-[10px] font-black text-blue-600/50">0${idx + 1}</span>
+                        <p class="text-xs font-bold text-slate-700">${s.title}</p>
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-tight pl-6 group-hover:text-slate-600 transition-colors">${s.ai_comment}</p>
+                </div>
+            `).join('');
+            $('#aiSections').html(sectionsHtml);
+
+            $('#btnCopyCode').show();
+            switchView(currentView);
+        }
+    </script>
+</body>
+
+</html>
