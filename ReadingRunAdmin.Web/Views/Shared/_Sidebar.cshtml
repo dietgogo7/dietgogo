@@ -1,0 +1,37 @@
+<!-- 사이드바 -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img src="https://image.yes24.com/sysimage/renew/gnb/logoN4.svg" alt="YES24"/>
+    <div class="sidebar-logo-text">
+      Reading Run
+      <span class="sidebar-logo-sub">BackOffice</span>
+    </div>
+  </div>
+  <nav>
+    <div class="lnb-section">리딩런</div>
+    <a class="lnb-item" href="@Url.Action("Dashboard","ReadingRun")" data-page="dashboard">
+      <i class="bi bi-bar-chart-line lnb-icon"></i>누적 통계 (대시보드)
+    </a>
+    <a class="lnb-item" href="@Url.Action("CourseStatus","ReadingRun")" data-page="course-status">
+      <i class="bi bi-layers lnb-icon"></i>코스별 현황
+    </a>
+    <a class="lnb-item" href="@Url.Action("Donation","ReadingRun")" data-page="donation">
+      <i class="bi bi-heart lnb-icon"></i>코스별 기부 현황
+    </a>
+    <div class="lnb-section">회원관리</div>
+    <a class="lnb-item" href="@Url.Action("MemberList","ReadingRun")" data-page="member-list">
+      <i class="bi bi-people lnb-icon"></i>리딩런 회원관리
+    </a>
+    <div class="lnb-section">리워드관리</div>
+    <a class="lnb-item" href="@Url.Action("BadgeList","ReadingRun")" data-page="badge-list">
+      <i class="bi bi-award lnb-icon"></i>배지 관리
+    </a>
+    <a class="lnb-item" href="@Url.Action("BadgeStats","ReadingRun")" data-page="badge-stats">
+      <i class="bi bi-graph-up lnb-icon"></i>배지 획득 통계
+    </a>
+    <div class="lnb-section">도서순위</div>
+    <a class="lnb-item" href="@Url.Action("BookRanking","ReadingRun")" data-page="book-ranking">
+      <i class="bi bi-book lnb-icon"></i>리딩런 도서순위
+    </a>
+  </nav>
+</aside>
