@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PD 미팅 밀도 버블차트</title>
+    <meta name="description" content="MD × 날짜 기반 미팅 집중도 버블차트 · 번아웃 위험 조기 감지">
+    <link rel="stylesheet" href="css/adminv2.css">
+    <link rel="stylesheet" href="css/pd-heatmap.css">
+</head>
+<body>
+<div class="admin-layout" id="app-layout">
+
+    <!-- 사이드바 (팝업 모드에서는 숨김) -->
+    <aside class="sidebar" id="sidebar">
+        <div id="sidebar-content"></div>
+    </aside>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content" id="main-content">
+
+        <!-- 팝업 전용 헤더 (팝업 모드에서만 표시) -->
+        <div class="popup-topbar" id="popup-topbar" style="display:none;">
+            <div class="popup-topbar-title">
+                <span class="popup-topbar-icon">📊</span>
+                <span>PD 미팅 밀도 버블차트</span>
+            </div>
+            <div class="popup-topbar-desc">세로축: MD &nbsp;·&nbsp; 가로축: 날짜 &nbsp;·&nbsp; 버블 크기 = 미팅 건수</div>
+            <button class="popup-close-btn" onclick="window.close()" title="창 닫기">✕ 닫기</button>
+        </div>
+
+        <!-- 페이지 헤더 (일반 모드) -->
+        <div class="hm-page-header" id="normal-header">
+            <div>
+                <div class="hm-page-title">📊 PD 미팅 밀도 버블차트</div>
+                <div class="hm-page-desc">세로축: MD &nbsp;·&nbsp; 가로축: 날짜 &nbsp;·&nbsp; 버블 크기 = 미팅 건수 &nbsp;·&nbsp; 클릭 시 상세 확인</div>
+            </div>
+        </div>
+
+        <!-- 날짜 내비게이션 -->
+        <div class="hm-nav-row">
+            <button class="hm-nav-btn" id="hm-btn-prev" title="이전 주">‹</button>
+            <span class="hm-week-label" id="hm-week-label">로딩 중...</span>
+            <button class="hm-nav-btn" id="hm-btn-next" title="다음 주">›</button>
+            <button class="hm-today-btn" id="hm-btn-today">현재 기간</button>
+        </div>
+
+        <!-- 필터 -->
+        <div class="hm-filter-row">
+            <div class="hm-filter-group">
+                <label class="hm-filter-label">MD 필터</label>
+                <select class="hm-filter-select" id="hm-pd-filter">
+                    <option value="all">전체 MD</option>
+                </select>
+            </div>
+            <div class="hm-filter-group">
+                <label class="hm-filter-label">예약 상태</label>
+                <select class="hm-filter-select" id="hm-status-filter">
+                    <option value="all">전체</option>
+                    <option value="APPROVED">승인</option>
+                    <option value="PENDING">대기</option>
+                    <option value="REJECTED">거절</option>
+                    <option value="CANCELLED">취소</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 버블 차트 (메인 시각화) -->
+        <div class="hm-bubble-chart-wrap">
+            <div id="hm-grid-wrap">
+                <div style="padding:60px;text-align:center;color:#94a3b8;font-size:14px;">
+                    데이터 로딩 중...
+                </div>
+            </div>
+        </div>
+
+        <!-- PD별 현황 요약 카드 -->
+        <div class="hm-summary-section">
+            <div class="hm-summary-title">
+                PD별 현황 요약
+                <span style="font-size:var(--text-sm);font-weight:500;color:var(--gray-400);">
+                    (최근 7일 기준 미니바차트)
+                </span>
+            </div>
+            <div id="hm-summary-cards"></div>
+        </div>
+
+    </main>
+</div>
+
+<!-- 툴팁 -->
+<div id="hm-tooltip"></div>
+
+<!-- 상세 슬라이드오버 -->
+<div id="hm-detail-backdrop"></div>
+<div id="hm-detail-panel">
+    <div class="hm-dp-header">
+        <div class="hm-dp-title-wrap">
+            <div class="hm-dp-title" id="hm-detail-title">MD 상세</div>
+            <div class="hm-dp-sub"   id="hm-detail-sub"></div>
+        </div>
+        <button class="hm-dp-close" id="hm-detail-close">✕</button>
+    </div>
+    <div class="hm-dp-body" id="hm-detail-body"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/pd-heatmap.js"></script>
+</body>
+</html>

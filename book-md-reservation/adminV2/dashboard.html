@@ -21,8 +21,15 @@
                     <h2>대시보드</h2>
                     <p>PD 예약 현황 및 통계를 한눈에 확인합니다.</p>
                 </div>
+                <button class="dash-tool-btn header-tool-btn" id="btn-open-bubble" onclick="openBubbleChart()">
+                    <span class="dash-tool-icon">📊</span>
+                    <span class="dash-tool-label">PD 미팅 밀도 버블차트</span>
+                    <span class="dash-tool-desc">MD × 날짜 집중도 분석</span>
+                    <span class="dash-tool-arrow">↗</span>
+                </button>
             </header>
             <div class="kpi-grid" id="kpi-grid"></div>
+
             <div class="dash-panel">
                 <div class="dash-panel-header">
                     <span class="dash-panel-title">PD별 예약 캘린더</span>
@@ -50,6 +57,26 @@
 
     <script src="js/common.js"></script>
     <script src="js/dashboard.js"></script>
+    <script>
+        /* PD 미팅 밀도 버블차트 팝업 */
+        function openBubbleChart() {
+            var url = 'pd-heatmap.html?popup=1';
+            var opts = [
+                'width=1380',
+                'height=860',
+                'left=' + Math.round((screen.width  - 1380) / 2),
+                'top='  + Math.round((screen.height - 860)  / 2),
+                'scrollbars=yes',
+                'resizable=yes',
+                'toolbar=no',
+                'menubar=no',
+                'location=no',
+                'status=no'
+            ].join(',');
+            var popup = window.open(url, 'pd-bubble-chart', opts);
+            if (popup) { popup.focus(); }
+        }
+    </script>
 </body>
 
 </html>
