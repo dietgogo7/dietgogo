@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AX 요구사항 엑셀 업로드 뷰어</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg:#f5f7fb;
+      --panel:#ffffff;
+      --line:#e3e8f2;
+      --line-strong:#cfd8e7;
+      --text:#111827;
+      --muted:#667085;
+      --subtle:#8a94a6;
+      --primary:#2558d8;
+      --primary-soft:#e9efff;
+      --green:#0f8a5f;
+      --green-soft:#e7f6ef;
+      --amber:#a56500;
+      --amber-soft:#fff1d6;
+      --red:#b42318;
+      --red-soft:#ffe9e7;
+      --purple:#6941c6;
+      --purple-soft:#f0eafd;
+      --shadow:0 12px 28px rgba(18, 38, 63, .08);
+      --radius:16px;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      background:linear-gradient(180deg,#f7f9fe 0%, #f2f5fa 100%);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo",Arial,sans-serif;
+      font-size:14px;
+      line-height:1.45;
+    }
+    .wrap { max-width:1540px; margin:0 auto; padding:22px 24px 36px; }
+    .topbar {
+      display:flex; align-items:flex-start; justify-content:space-between; gap:18px; margin-bottom:14px;
+    }
+    .title h1 { margin:0 0 6px; font-size:25px; letter-spacing:-.04em; }
+    .title p { margin:0; color:var(--muted); font-size:13px; }
+    .uploadPanel {
+      min-width:420px; background:var(--panel); border:1px solid var(--line); border-radius:18px;
+      box-shadow:var(--shadow); padding:12px; display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center;
+    }
+    .fileBox {
+      border:1px dashed var(--line-strong); border-radius:14px; padding:10px 12px; background:#fbfcff;
+    }
+    .fileBox strong { display:block; font-size:13px; margin-bottom:4px; }
+    .fileBox span { display:block; color:var(--muted); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:330px; }
+    input[type="file"] { width:100%; font-size:12px; margin-top:7px; }
+    select, input[type="search"] {
+      height:34px; border:1px solid var(--line-strong); border-radius:10px; padding:0 10px;
+      background:#fff; color:var(--text); outline:none; font-size:13px;
+    }
+    input[type="search"] { min-width:320px; }
+    select:focus, input[type="search"]:focus { border-color:#85a3ff; box-shadow:0 0 0 3px rgba(37,88,216,.10); }
+    .sheetSelect { width:150px; }
+    .statsGrid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:10px; }
+    .statCard {
+      background:var(--panel); border:1px solid var(--line); border-radius:15px; padding:13px 14px; box-shadow:0 7px 18px rgba(18,38,63,.05);
+    }
+    .statCard .label { color:var(--muted); font-size:12px; margin-bottom:4px; }
+    .statCard .value { font-size:24px; font-weight:800; letter-spacing:-.04em; }
+    .statCard .hint { color:var(--subtle); font-size:11px; margin-top:3px; }
+    .statBreakdown { display:flex; align-items:center; gap:6px; flex-wrap:wrap; min-height:34px; }
+    .resultCountChip { display:inline-flex; align-items:center; gap:5px; padding:5px 8px; border-radius:999px; background:#f3f6fb; color:#344054; font-size:12px; font-weight:800; }
+    .resultCountChip b { color:#111827; font-size:13px; }
+    .emptyStat { color:var(--subtle); font-size:13px; font-weight:700; }
+    .teamPanel {
+      background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:12px 14px; margin-bottom:10px; box-shadow:0 7px 18px rgba(18,38,63,.05);
+    }
+    .panelHead { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .panelHead strong { font-size:14px; }
+    .panelHead span { color:var(--muted); font-size:12px; }
+    .teamBars { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px 12px; }
+    .teamEmpty { grid-column:1 / -1; padding:14px 4px; color:var(--muted); font-size:13px; }
+    .teamItem { display:grid; grid-template-columns:minmax(80px,1fr) 42px; align-items:center; gap:8px; min-width:0; }
+    .teamName { font-size:12px; color:#344054; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .teamCount { font-size:12px; color:#475467; text-align:right; font-variant-numeric:tabular-nums; }
+    .barBg { grid-column:1 / -1; height:5px; background:#eef2f8; border-radius:99px; overflow:hidden; margin-top:-4px; }
+    .barFill { height:100%; background:linear-gradient(90deg,#4776e6,#7f56d9); border-radius:99px; }
+    .toolbar {
+      position:sticky; top:0; z-index:5; display:flex; justify-content:space-between; align-items:center; gap:12px;
+      background:rgba(245,247,251,.92); backdrop-filter:blur(10px); border:1px solid var(--line); border-radius:16px;
+      padding:10px; margin-bottom:10px;
+    }
+    .filters { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .viewBtns { display:flex; gap:6px; align-items:center; }
+    .btn {
+      border:1px solid var(--line-strong); background:#fff; color:#344054; height:34px; padding:0 11px; border-radius:10px;
+      font-size:12px; font-weight:700; cursor:pointer;
+    }
+    .btn:hover { background:#f8faff; }
+    .btn.primary { background:var(--primary); border-color:var(--primary); color:#fff; }
+    .btn.ghost { background:transparent; }
+    .metaText { color:var(--muted); font-size:12px; }
+    .tablePanel {
+      background:var(--panel); border:1px solid var(--line); border-radius:18px; overflow:hidden; box-shadow:var(--shadow);
+    }
+    .listHeader, .reqRow {
+      display:grid;
+      grid-template-columns: 52px minmax(270px,1.25fr) 130px minmax(230px,1fr) minmax(230px,1fr) 110px 112px 44px;
+      align-items:stretch;
+      gap:0;
+    }
+    .listHeader {
+      background:#f0f4fb; color:#475467; font-weight:800; font-size:12px; border-bottom:1px solid var(--line-strong);
+    }
+    .listHeader > div { padding:9px 10px; border-right:1px solid var(--line); }
+    .listHeader > div:last-child { border-right:none; }
+    .reqItem { border-bottom:1px solid var(--line); }
+    .reqItem:last-child { border-bottom:none; }
+    .reqRow { min-height:54px; cursor:pointer; transition:background .12s ease; }
+    .reqRow:hover { background:#fbfcff; }
+    .cell { padding:9px 10px; border-right:1px solid #edf1f7; min-width:0; display:flex; align-items:center; }
+    .cell:last-child { border-right:none; justify-content:center; }
+    .no { color:#667085; font-weight:800; font-size:12px; }
+    .titleCell { display:block; min-width:0; }
+    .taskName { font-weight:800; letter-spacing:-.03em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ownerLine { margin-top:2px; color:var(--muted); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .teamChip {
+      display:inline-flex; align-items:center; max-width:100%; padding:4px 8px; border-radius:99px; background:var(--primary-soft); color:#2046a8;
+      font-size:12px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .summaryText { color:#344054; font-size:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .sourceText { color:#475467; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .badge { display:inline-flex; align-items:center; border-radius:99px; padding:4px 8px; font-size:12px; font-weight:800; white-space:nowrap; }
+    .badge.go { background:var(--green-soft); color:var(--green); }
+    .badge.wait { background:var(--amber-soft); color:var(--amber); }
+    .badge.hold { background:var(--red-soft); color:var(--red); }
+    .badge.etc { background:#eef2f7; color:#475467; }
+    .chev { width:24px; height:24px; border-radius:8px; display:grid; place-items:center; background:#f4f7fb; color:#475467; transition:transform .12s ease; font-weight:900; }
+    .reqItem.open .chev { transform:rotate(180deg); background:var(--primary-soft); color:var(--primary); }
+    .detail { display:none; background:#fbfcff; border-top:1px solid var(--line); padding:12px 14px 14px; }
+    .reqItem.open .detail { display:block; }
+    .detailGrid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    .detailBox { background:#fff; border:1px solid var(--line); border-radius:13px; padding:11px 12px; min-height:92px; }
+    .detailBox.wide { grid-column:span 2; }
+    .detailBox.full { grid-column:1 / -1; }
+    .detailBox h3 { margin:0 0 7px; font-size:12px; color:#475467; }
+    .detailBox p { margin:0; white-space:pre-wrap; color:#1f2937; font-size:13px; }
+    .empty { padding:44px; text-align:center; color:var(--muted); }
+    .notice {
+      display:none; margin:10px 0; padding:10px 12px; border-radius:12px; border:1px solid #fedf89; background:#fffaeb; color:#7a4b00; font-size:12px;
+    }
+    .notice.show { display:block; }
+    .compact .listHeader, .compact .reqRow {
+      grid-template-columns: 48px minmax(300px,1.4fr) 128px minmax(250px,1fr) minmax(250px,1fr) 108px 108px 40px;
+    }
+    .compact .reqRow { min-height:48px; }
+    .compact .cell { padding:7px 9px; }
+    .compact .summaryText { -webkit-line-clamp:1; }
+    .compact .ownerLine { display:none; }
+    @media (max-width:1200px) {
+      .topbar { flex-direction:column; }
+      .uploadPanel { min-width:0; width:100%; }
+      .statsGrid { grid-template-columns:repeat(2,1fr); }
+      .teamBars { grid-template-columns:repeat(2,1fr); }
+      .listHeader, .reqRow, .compact .listHeader, .compact .reqRow { grid-template-columns: 46px minmax(240px,1fr) 120px minmax(200px,1fr) 110px 40px; }
+      .hide-md { display:none !important; }
+      .detailGrid { grid-template-columns:1fr; }
+      .detailBox.wide { grid-column:auto; }
+    }
+    @media (max-width:760px) {
+      .wrap { padding:14px; }
+      .toolbar { position:static; align-items:flex-start; flex-direction:column; }
+      input[type="search"] { min-width:0; width:100%; }
+      .filters, .filters select, .filters input { width:100%; }
+      .statsGrid, .teamBars { grid-template-columns:1fr; }
+      .listHeader { display:none; }
+      .reqRow, .compact .reqRow { grid-template-columns: 44px 1fr 34px; }
+      .cell { border-right:none; }
+      .mobile-hide { display:none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap compact" id="app">
+    <div class="topbar">
+      <div class="title">
+        <h1>AX 요구사항 엑셀 업로드 뷰어</h1>
+        <p>엑셀 파일을 업로드하면 첫 번째 시트 또는 선택한 시트 기준으로 요구사항 목록과 팀 통계를 다시 구성합니다.</p>
+      </div>
+      <div class="uploadPanel">
+        <div class="fileBox">
+          <strong>엑셀 파일 업로드</strong>
+          <span id="fileInfo">엑셀 파일을 업로드하면 데이터가 표시됩니다.</span>
+          <input id="fileInput" type="file" accept=".xlsx,.xls,.xlsm,.csv" />
+        </div>
+	<div>
+		<div style="margin-bottom:10px">Sheet 목록</div>
+        	<select id="sheetSelect" class="sheetSelect" title="시트 선택" disabled>
+	          <option>시트 선택</option>
+        	</select>
+	</div>
+      </div>
+    </div>
+
+    <div id="libraryNotice" class="notice">엑셀 업로드 기능을 사용하려면 SheetJS 라이브러리 로딩이 필요합니다. 인터넷이 차단된 환경에서는 사내 정적 경로에 xlsx.full.min.js를 배치한 뒤 HTML의 script 경로를 변경해 사용하세요.</div>
+
+    <section class="statsGrid">
+      <div class="statCard"><div class="label">전체 요구사항</div><div class="value" id="statTotal">0</div><div class="hint">현재 로딩된 엑셀 기준</div></div>
+      <div class="statCard"><div class="label">최종 결과별 건수</div><div class="statBreakdown" id="statResults"><span class="emptyStat">업로드 전</span></div><div class="hint">업로드된 엑셀 기준</div></div>
+      <div class="statCard"><div class="label">발의 팀 수</div><div class="value" id="statTeams">0</div><div class="hint">팀 단위 집계</div></div>
+      <div class="statCard"><div class="label">데이터소스 유형</div><div class="value" id="statSources">0</div><div class="hint">요구사항 입력 기준</div></div>
+    </section>
+
+    <section class="teamPanel">
+      <div class="panelHead"><strong>발의 팀 통계</strong><span>본부 기준은 제외하고 팀 단위로만 표시</span></div>
+      <div class="teamBars" id="teamBars"></div>
+    </section>
+
+    <section class="toolbar">
+      <div class="filters">
+        <input id="searchInput" type="search" placeholder="과제명, 현황, 개선 목표, 코멘트 검색" />
+        <select id="teamFilter"><option value="">전체 팀</option></select>
+        <select id="resultFilter"><option value="">전체 결과</option></select>
+        <select id="sortSelect">
+          <option value="noAsc">No 오름차순</option>
+          <option value="teamAsc">팀명순</option>
+          <option value="titleAsc">과제명순</option>
+        </select>
+      </div>
+      <div class="viewBtns">
+        <span class="metaText" id="viewMeta">-</span>
+        <button class="btn primary" id="expandAll" type="button">전체 펼침</button>
+        <button class="btn ghost" id="collapseAll" type="button">접기</button>
+      </div>
+    </section>
+
+    <section class="tablePanel" id="tablePanel">
+      <div class="listHeader">
+        <div>No</div>
+        <div>요구사항</div>
+        <div>발의 팀</div>
+        <div>As-Is</div>
+        <div class="hide-md">To-Be</div>
+        <div class="hide-md">데이터소스</div>
+        <div>최종 결과</div>
+        <div></div>
+      </div>
+      <div id="listBody"></div>
+    </section>
+  </div>
+
+  <script>
+    const INITIAL_DATA = [];
+
+    const FIELD_MAP = {
+      no: ['No','NO','번호'],
+      division: ['발의 본부','발의본부','본부'],
+      team: ['발의 팀','발의팀','팀','부서'],
+      owner: ['담당자','담당','요청자'],
+      title: ['과제명','요구사항','제목','업무명'],
+      asis: ['As-Is (현황 및 이슈)','As-Is','AS-IS','현황 및 이슈','현황','이슈'],
+      tobe: ['To-Be (개선 목표)','To-Be','TO-BE','개선 목표','개선목표'],
+      source: ['데이터소스','데이터 소스','Data Source'],
+      related: ['유관부서','유관 부서'],
+      devComment: ['개발 코멘트','개발코멘트','코멘트'],
+      result: ['최종 결과','최종결과','결과'],
+      axJudgement: ['ChatGPT AX 과제 판단','AX 과제 판단','AX 판단'],
+      axPlan: ['ChatGPT 진행 방식','진행 방식','진행방식']
+    };
+
+    let rawRows = [];
+    let rows = [];
+    let filteredRows = [];
+    let workbookRef = null;
+    let compact = true;
+    let opened = new Set();
+
+    const $ = (id) => document.getElementById(id);
+    const normalize = (v) => String(v ?? '').replace(/\r\n/g, '\n').trim();
+    const escapeHtml = (v) => normalize(v).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+    const textForSearch = (obj) => Object.values(obj).join(' ').toLowerCase();
+    const firstValue = (obj, keys) => {
+      for (const k of keys) {
+        if (Object.prototype.hasOwnProperty.call(obj, k) && normalize(obj[k])) return normalize(obj[k]);
+      }
+      const lowerMap = Object.fromEntries(Object.keys(obj).map(k => [k.toLowerCase().replace(/\s/g,''), k]));
+      for (const k of keys) {
+        const hit = lowerMap[k.toLowerCase().replace(/\s/g,'')];
+        if (hit && normalize(obj[hit])) return normalize(obj[hit]);
+      }
+      return '';
+    };
+
+    function standardize(row, index) {
+      const item = {
+        no: firstValue(row, FIELD_MAP.no) || String(index + 1),
+        division: firstValue(row, FIELD_MAP.division),
+        team: firstValue(row, FIELD_MAP.team) || '미지정',
+        owner: firstValue(row, FIELD_MAP.owner),
+        title: firstValue(row, FIELD_MAP.title) || '제목 없음',
+        asis: firstValue(row, FIELD_MAP.asis),
+        tobe: firstValue(row, FIELD_MAP.tobe),
+        source: firstValue(row, FIELD_MAP.source),
+        related: firstValue(row, FIELD_MAP.related),
+        devComment: firstValue(row, FIELD_MAP.devComment),
+        result: firstValue(row, FIELD_MAP.result),
+        axJudgement: firstValue(row, FIELD_MAP.axJudgement),
+        axPlan: firstValue(row, FIELD_MAP.axPlan),
+        original: row
+      };
+      item.searchText = textForSearch(item);
+      return item;
+    }
+
+    function countBy(list, getter) {
+      const map = new Map();
+      list.forEach(row => {
+        const key = normalize(getter(row)) || '미지정';
+        map.set(key, (map.get(key) || 0) + 1);
+      });
+      return [...map.entries()].sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ko'));
+    }
+
+    function uniqueSorted(list, getter) {
+      return [...new Set(list.map(getter).map(normalize).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
+    }
+
+    function initData(data, sourceName='기본 데이터') {
+      rawRows = data.filter(r => Object.values(r).some(v => normalize(v)));
+      rows = rawRows.map(standardize);
+      opened.clear();
+      populateFilters();
+      applyFilters();
+      $('fileInfo').textContent = rows.length
+        ? `${sourceName} · ${rows.length.toLocaleString('ko-KR')}건`
+        : (sourceName || '엑셀 파일을 업로드하면 데이터가 표시됩니다.');
+    }
+
+    function populateFilters() {
+      const currentTeam = $('teamFilter').value;
+      const currentResult = $('resultFilter').value;
+      const teams = uniqueSorted(rows, r => r.team);
+      const results = uniqueSorted(rows, r => r.result);
+      $('teamFilter').innerHTML = '<option value="">전체 팀</option>' + teams.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+      $('resultFilter').innerHTML = '<option value="">전체 결과</option>' + results.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+      if (teams.includes(currentTeam)) $('teamFilter').value = currentTeam;
+      if (results.includes(currentResult)) $('resultFilter').value = currentResult;
+    }
+
+    function resultBadgeClass(value) {
+      const v = normalize(value);
+      if (v.includes('진행') && !v.includes('진행안함')) return 'go';
+      if (v.includes('대기') || v.includes('재 검토') || v.includes('재검토')) return 'wait';
+      if (v.includes('보류') || v.includes('진행안함')) return 'hold';
+      return 'etc';
+    }
+
+    function applyFilters() {
+      const q = $('searchInput').value.trim().toLowerCase();
+      const team = $('teamFilter').value;
+      const result = $('resultFilter').value;
+      filteredRows = rows.filter(row => {
+        if (q && !row.searchText.includes(q)) return false;
+        if (team && row.team !== team) return false;
+        if (result && row.result !== result) return false;
+        return true;
+      });
+      const sort = $('sortSelect').value;
+      filteredRows.sort((a,b) => {
+        if (sort === 'teamAsc') return a.team.localeCompare(b.team,'ko') || Number(a.no)-Number(b.no);
+        if (sort === 'titleAsc') return a.title.localeCompare(b.title,'ko') || Number(a.no)-Number(b.no);
+        const na = parseFloat(String(a.no).replace(/[^0-9.]/g,''));
+        const nb = parseFloat(String(b.no).replace(/[^0-9.]/g,''));
+        return (isNaN(na)?999999:na) - (isNaN(nb)?999999:nb);
+      });
+      renderStats();
+      renderList();
+    }
+
+    function renderStats() {
+      const teams = countBy(rows, r => r.team);
+      const sources = uniqueSorted(rows, r => r.source);
+      const results = countBy(rows, r => r.result);
+      $('statTotal').textContent = rows.length.toLocaleString('ko-KR');
+      $('statResults').innerHTML = results.length
+        ? results.map(([result,count]) => `<span class="resultCountChip"><span>${escapeHtml(result)}</span><b>${count}</b></span>`).join('')
+        : '<span class="emptyStat">업로드 전</span>';
+      $('statTeams').textContent = teams.length.toLocaleString('ko-KR');
+      $('statSources').textContent = sources.length.toLocaleString('ko-KR');
+      $('viewMeta').textContent = rows.length
+        ? `${filteredRows.length.toLocaleString('ko-KR')} / ${rows.length.toLocaleString('ko-KR')}건 표시`
+        : '엑셀 파일을 업로드하세요';
+      if (!teams.length) {
+        $('teamBars').innerHTML = '<div class="teamEmpty">엑셀 업로드 후 팀별 통계가 표시됩니다.</div>';
+        return;
+      }
+      const max = Math.max(1, ...teams.map(t => t[1]));
+      $('teamBars').innerHTML = teams.map(([team,count]) => `
+        <div class="teamItem" title="${escapeHtml(team)} ${count}건">
+          <div class="teamName">${escapeHtml(team)}</div>
+          <div class="teamCount">${count}</div>
+          <div class="barBg"><div class="barFill" style="width:${Math.round(count / max * 100)}%"></div></div>
+        </div>
+      `).join('');
+    }
+
+    function renderList() {
+      const body = $('listBody');
+      if (!filteredRows.length) {
+        body.innerHTML = rows.length
+          ? '<div class="empty">표시할 요구사항이 없습니다. 검색어 또는 필터를 변경하세요.</div>'
+          : '<div class="empty">엑셀 파일을 업로드하면 요구사항 목록이 표시됩니다.</div>';
+        return;
+      }
+      body.innerHTML = filteredRows.map(row => {
+        const id = String(row.no || row.title);
+        const isOpen = opened.has(id);
+        return `
+          <article class="reqItem ${isOpen ? 'open' : ''}" data-id="${escapeHtml(id)}">
+            <div class="reqRow" role="button" tabindex="0" aria-expanded="${isOpen}">
+              <div class="cell no">${escapeHtml(row.no)}</div>
+              <div class="cell titleCell">
+                <div class="taskName" title="${escapeHtml(row.title)}">${escapeHtml(row.title)}</div>
+                <div class="ownerLine">${escapeHtml(row.owner || '담당자 미기재')} · ${escapeHtml(row.related || '유관부서 미기재')}</div>
+              </div>
+              <div class="cell"><span class="teamChip" title="${escapeHtml(row.team)}">${escapeHtml(row.team)}</span></div>
+              <div class="cell"><div class="summaryText" title="${escapeHtml(row.asis)}">${escapeHtml(row.asis || '-')}</div></div>
+              <div class="cell hide-md"><div class="summaryText" title="${escapeHtml(row.tobe)}">${escapeHtml(row.tobe || '-')}</div></div>
+              <div class="cell hide-md"><div class="sourceText" title="${escapeHtml(row.source)}">${escapeHtml(row.source || '-')}</div></div>
+              <div class="cell mobile-hide"><span class="badge ${resultBadgeClass(row.result)}">${escapeHtml(row.result || '미정')}</span></div>
+              <div class="cell"><span class="chev">⌄</span></div>
+            </div>
+            <div class="detail">
+              <div class="detailGrid">
+                <div class="detailBox"><h3>As-Is / 현황 및 이슈</h3><p>${escapeHtml(row.asis || '-')}</p></div>
+                <div class="detailBox"><h3>To-Be / 개선 목표</h3><p>${escapeHtml(row.tobe || '-')}</p></div>
+                <div class="detailBox"><h3>기본 정보</h3><p>발의 팀: ${escapeHtml(row.team)}
+담당자: ${escapeHtml(row.owner || '-')}
+데이터소스: ${escapeHtml(row.source || '-')}
+유관부서: ${escapeHtml(row.related || '-')}
+최종 결과: ${escapeHtml(row.result || '-')}</p></div>
+                <div class="detailBox wide"><h3>개발 코멘트</h3><p>${escapeHtml(row.devComment || '-')}</p></div>
+                <div class="detailBox"><h3>AX 과제 판단</h3><p>${escapeHtml(row.axJudgement || '-')}</p></div>
+                <div class="detailBox full"><h3>진행 방식</h3><p>${escapeHtml(row.axPlan || '-')}</p></div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function objectRowsFromSheet(sheet) {
+      const table = XLSX.utils.sheet_to_json(sheet, { header:1, defval:'' });
+      const headerIndex = table.findIndex(row => row.some(cell => normalize(cell) === '과제명' || normalize(cell) === 'No' || normalize(cell) === '발의 팀'));
+      const start = headerIndex >= 0 ? headerIndex : 0;
+      const headers = table[start].map(h => normalize(h));
+      return table.slice(start + 1).map(row => {
+        const obj = {};
+        headers.forEach((h, i) => { if (h) obj[h] = normalize(row[i]); });
+        return obj;
+      }).filter(obj => Object.values(obj).some(v => normalize(v)));
+    }
+
+    function loadSheet(sheetName, sourceName) {
+      if (!workbookRef) return;
+      const sheet = workbookRef.Sheets[sheetName];
+      const data = objectRowsFromSheet(sheet);
+      initData(data, `${sourceName} / ${sheetName}`);
+    }
+
+    $('fileInput').addEventListener('change', async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      if (!window.XLSX) {
+        $('libraryNotice').classList.add('show');
+        return;
+      }
+      const buffer = await file.arrayBuffer();
+      workbookRef = XLSX.read(buffer, { type:'array' });
+      const names = workbookRef.SheetNames || [];
+      $('sheetSelect').disabled = names.length <= 1;
+      $('sheetSelect').innerHTML = names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+      const preferred = names.includes('전체목록') ? '전체목록' : names[0];
+      $('sheetSelect').value = preferred;
+      loadSheet(preferred, file.name);
+    });
+
+    $('sheetSelect').addEventListener('change', () => {
+      const file = $('fileInput').files && $('fileInput').files[0];
+      loadSheet($('sheetSelect').value, file ? file.name : '업로드 파일');
+    });
+
+    ['searchInput','teamFilter','resultFilter','sortSelect'].forEach(id => $(id).addEventListener('input', applyFilters));
+
+    $('listBody').addEventListener('click', (e) => {
+      const item = e.target.closest('.reqItem');
+      if (!item) return;
+      const id = item.dataset.id;
+      if (opened.has(id)) opened.delete(id); else opened.add(id);
+      item.classList.toggle('open');
+      const row = item.querySelector('.reqRow');
+      row && row.setAttribute('aria-expanded', item.classList.contains('open'));
+    });
+
+    $('expandAll').addEventListener('click', () => {
+      filteredRows.forEach(row => opened.add(String(row.no || row.title)));
+      renderList();
+    });
+    $('collapseAll').addEventListener('click', () => { opened.clear(); renderList(); });
+    
+
+    compact = !compact;
+    $('app').classList.toggle('compact', compact);
+
+
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!window.XLSX) $('libraryNotice').classList.add('show');
+      initData([], '엑셀 파일을 업로드하면 데이터가 표시됩니다.');
+    });
+  </script>
+</body>
+</html>
