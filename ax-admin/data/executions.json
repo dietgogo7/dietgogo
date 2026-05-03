@@ -1,0 +1,12 @@
+[
+  { "id": "e001", "reportId": "r001", "reportName": "구매 실적 리포트",    "executedBy": "홍길동", "executedAt": "2025-06-01 09:30:12", "status": "성공", "duration": "2.3s" },
+  { "id": "e002", "reportId": "r003", "reportName": "마케팅 성과 리포트",  "executedBy": "김명희", "executedAt": "2025-05-31 18:45:36", "status": "성공", "duration": "1.8s" },
+  { "id": "e003", "reportId": "r002", "reportName": "공급사 성과 분석",    "executedBy": "이철수", "executedAt": "2025-05-31 09:10:01", "status": "성공", "duration": "3.1s" },
+  { "id": "e004", "reportId": "r007", "reportName": "매출 추이 리포트",    "executedBy": "박민수", "executedAt": "2025-05-30 17:22:44", "status": "성공", "duration": "2.7s" },
+  { "id": "e005", "reportId": "r004", "reportName": "재무 손익 리포트",    "executedBy": "최지훈", "executedAt": "2025-05-30 09:05:33", "status": "실패", "duration": "-"   },
+  { "id": "e006", "reportId": "r001", "reportName": "구매 실적 리포트",    "executedBy": "홍길동", "executedAt": "2025-05-29 14:22:10", "status": "성공", "duration": "2.1s" },
+  { "id": "e007", "reportId": "r005", "reportName": "고객 세분화 분석",    "executedBy": "정유나", "executedAt": "2025-05-29 11:05:44", "status": "성공", "duration": "4.2s" },
+  { "id": "e008", "reportId": "r006", "reportName": "재고 보유 현황 리포트","executedBy": "정호진", "executedAt": "2025-05-28 10:30:22", "status": "성공", "duration": "1.5s" },
+  { "id": "e009", "reportId": "r008", "reportName": "원가 분석 리포트",    "executedBy": "이동훈", "executedAt": "2025-05-27 16:44:09", "status": "성공", "duration": "3.8s" },
+  { "id": "e010", "reportId": "r003", "reportName": "마케팅 성과 리포트",  "executedBy": "박선영", "executedAt": "2025-05-27 09:12:55", "status": "실패", "duration": "-"   }
+]

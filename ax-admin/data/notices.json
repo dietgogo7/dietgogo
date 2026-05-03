@@ -1,0 +1,7 @@
+[
+  { "id": "n001", "title": "5월 정기 점검 안내 (5/19 22:00~24:00)", "date": "2025-05-12", "isNew": true,  "isRead": false },
+  { "id": "n002", "title": "신규 리포트 카탈로그 업데이트 안내",       "date": "2025-05-08", "isNew": false, "isRead": false },
+  { "id": "n003", "title": "스케줄 서버 점검 안내 (5/14)",             "date": "2025-05-07", "isNew": false, "isRead": true  },
+  { "id": "n004", "title": "대량 데이터 다운로드 시 유의사항 안내",    "date": "2025-04-28", "isNew": false, "isRead": true  },
+  { "id": "n005", "title": "권한 신청 프로세스 변경 안내",             "date": "2025-04-21", "isNew": false, "isRead": true  }
+]

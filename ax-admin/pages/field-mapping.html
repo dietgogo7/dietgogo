@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>필드 매핑 - AX Data Admin</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/pages/field-mapping.css">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside id="layout-sidebar"></aside>
+  <div class="main-area">
+    <div id="layout-header"></div>
+    <main class="page-content">
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">필드 매핑 및 마스킹 설정</div>
+          <div class="page-desc">DB/API 결과 필드를 화면 컬럼으로 매핑하고 마스킹 정책을 정의하는 화면</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-outline" id="btnCancelMap">취소</button>
+          <button class="btn btn-outline" id="btnSaveMap"><i class="bi bi-save"></i> 저장</button>
+          <button class="btn btn-primary" id="btnSaveTest"><i class="bi bi-play-fill"></i> 저장 후 테스트</button>
+          <button class="btn btn-ghost"><i class="bi bi-question-circle"></i> 도움말</button>
+        </div>
+      </div>
+
+      <!-- Report selector -->
+      <div class="mapping-header">
+        <span class="fw-600" style="white-space:nowrap">리포트 관리</span>
+        <select class="form-control" id="reportSelector"></select>
+        <span class="text-sm text-muted ms-auto" id="fieldCountLabel"></span>
+      </div>
+
+      <div class="mapping-layout">
+
+        <!-- Mapping Table -->
+        <div class="card">
+          <div class="table-wrap">
+            <table class="table mapping-table" id="mappingTable">
+              <thead>
+                <tr>
+                  <th>소스 필드명<br><span style="font-weight:400;font-size:11px;color:var(--text-muted)">(DB/API)</span></th>
+                  <th>화면 컬럼명<br><span style="font-weight:400;font-size:11px;color:var(--text-muted)">(노출 필드)</span></th>
+                  <th>데이터 타입</th>
+                  <th class="center">화면표시 <i class="bi bi-info-circle" title="화면에 표시할 필드 여부"></i></th>
+                  <th class="center">엑셀포함 <i class="bi bi-info-circle"></i></th>
+                  <th>정렬</th>
+                  <th class="center">검색</th>
+                  <th class="center">마스킹</th>
+                  <th>마스킹 유형</th>
+                  <th>미리보기 <i class="bi bi-info-circle"></i></th>
+                </tr>
+              </thead>
+              <tbody id="mappingTbody">
+                <tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text-muted)">로딩 중...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Preview table -->
+          <div class="card-body preview-table-section">
+            <div class="preview-table-title">미리보기 (선택행 예시)</div>
+            <div class="table-wrap">
+              <table class="table" id="previewTable" style="font-size:12.5px">
+                <thead id="previewThead"></thead>
+                <tbody id="previewTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Masking Rules Panel -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title"><i class="bi bi-shield-check" style="color:var(--primary)"></i> 마스킹 규칙 설정</span>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">정책 템플릿</label>
+              <select class="form-control form-control-sm">
+                <option>기본 개인정보 보호 정책</option>
+                <option>금융 정보 보호 정책</option>
+                <option>사용자 정의</option>
+              </select>
+            </div>
+            <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin:12px 0 8px">마스킹 룰</div>
+            <div id="maskRuleList">
+              <div class="mask-rule-item">
+                <div>
+                  <div class="mask-rule-name">이름 마스킹</div>
+                  <div class="mask-rule-desc">성·마지막 1글자 제외</div>
+                </div>
+                <i class="bi bi-pencil edit-icon"></i>
+              </div>
+              <div class="mask-rule-item">
+                <div>
+                  <div class="mask-rule-name">이메일 마스킹</div>
+                  <div class="mask-rule-desc">ID: 첫 2글자 + *** 도메인 전체 노출</div>
+                </div>
+                <i class="bi bi-pencil edit-icon"></i>
+              </div>
+              <div class="mask-rule-item">
+                <div>
+                  <div class="mask-rule-name">연락처 마스킹</div>
+                  <div class="mask-rule-desc">가운데 4자리 마스킹</div>
+                </div>
+                <i class="bi bi-pencil edit-icon"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="../assets/js/layout.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/pages/field-mapping.js"></script>
+<script>
+  AXLayout.init({
+    activeMenu: 'field-mapping',
+    breadcrumb: [{ label: '홈', href: 'home.html' }, { label: '필드 매핑' }]
+  });
+  FieldMappingPage.init();
+</script>
+</body>
+</html>

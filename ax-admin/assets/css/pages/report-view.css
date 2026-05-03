@@ -1,0 +1,109 @@
+.report-view-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 16px;
+  align-items: start;
+}
+
+/* Action buttons */
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.action-bar .page-title { flex: 1; }
+
+/* Filter panel */
+.filter-panel {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+.filter-panel .btn { align-self: end; }
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.stat-mini {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.stat-mini-icon { font-size: 20px; color: var(--primary); }
+.stat-mini-label { font-size: 11.5px; color: var(--text-muted); }
+.stat-mini-value { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+
+/* Right panel */
+.right-panel { display: flex; flex-direction: column; gap: 16px; }
+
+.setting-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border-light); font-size: 12.5px; }
+.setting-row:last-child { border-bottom: none; }
+.setting-row .label { color: var(--text-muted); }
+.setting-row .value { color: var(--text-primary); font-weight: 500; text-align: right; max-width: 160px; }
+
+.exec-history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 12.5px;
+}
+.exec-history-item:last-child { border-bottom: none; }
+.exec-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.exec-dot.success { background: var(--success); }
+.exec-dot.fail    { background: var(--danger); }
+.exec-by { color: var(--text-muted); font-size: 11.5px; }
+
+/* Kimi modal */
+.kimi-modal .modal { max-width: 760px; }
+.kimi-insight-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 16px 0; }
+.kimi-insight-card { background: var(--primary-light); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
+.kimi-insight-value { font-size: 18px; font-weight: 700; color: var(--primary); }
+.kimi-insight-label { font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+.kimi-insight-sub   { font-size: 11px; color: var(--success); margin-top: 2px; }
+
+.kimi-section-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px; }
+
+.kimi-chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.kimi-chart-box { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; }
+.kimi-chart-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+
+/* Simple donut placeholder */
+.donut-chart { display: flex; align-items: center; gap: 16px; }
+.donut-circle { width: 80px; height: 80px; flex-shrink: 0; position: relative; }
+.donut-circle svg { transform: rotate(-90deg); }
+.donut-legend { display: flex; flex-direction: column; gap: 6px; font-size: 11.5px; }
+.donut-legend-item { display: flex; align-items: center; gap: 6px; }
+.donut-color { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* Simple line chart placeholder */
+.line-chart-placeholder { height: 80px; background: linear-gradient(135deg,#eff6ff,#dbeafe); border-radius: 4px; display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:12px; }
+
+.kimi-alert { background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 12px; }
+.kimi-alert-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: #92400e; margin-bottom: 6px; }
+.kimi-alert-item:last-child { margin-bottom: 0; }
+.kimi-alert-item i { color: var(--warning); margin-top: 1px; flex-shrink: 0; }
+
+.kimi-footer-note { font-size: 11.5px; color: var(--text-muted); margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+@media (max-width: 1100px) {
+  .report-view-layout { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+}

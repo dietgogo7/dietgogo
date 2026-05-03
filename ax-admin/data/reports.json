@@ -1,0 +1,82 @@
+[
+  {
+    "id": "r001", "name": "구매 실적 리포트",
+    "menuPath": "리포트 > 구매 실적 리포트",
+    "dataSource": "DW_PURCHASE", "cycle": "일간",
+    "owner": "김민지", "lastModified": "2025-05-20 14:32",
+    "deptId": "dept-001", "teamId": "team-001",
+    "useSchedule": true, "status": "active"
+  },
+  {
+    "id": "r002", "name": "공급사 성과 분석",
+    "menuPath": "리포트 > 공급사 성과 분석",
+    "dataSource": "DW_SUPPLIER", "cycle": "주간",
+    "owner": "이동훈", "lastModified": "2025-05-19 10:15",
+    "deptId": "dept-001", "teamId": "team-002",
+    "useSchedule": false, "status": "active"
+  },
+  {
+    "id": "r003", "name": "마케팅 성과 리포트",
+    "menuPath": "마케팅 > 마케팅 성과 리포트",
+    "dataSource": "DW_MARKETING", "cycle": "월간",
+    "owner": "박선영", "lastModified": "2025-05-18 09:47",
+    "deptId": "dept-001", "teamId": "team-003",
+    "useSchedule": true, "status": "active"
+  },
+  {
+    "id": "r004", "name": "재무 손익 리포트",
+    "menuPath": "리포트 > 매출관리 > 재무 손익 리포트",
+    "dataSource": "DW_FINANCE", "cycle": "주간",
+    "owner": "최현식", "lastModified": "2025-05-17 16:22",
+    "deptId": "dept-002", "teamId": "team-005",
+    "useSchedule": true, "status": "active"
+  },
+  {
+    "id": "r005", "name": "고객 세분화 분석 리포트",
+    "menuPath": "마케팅 > 고객 세분화 분석 리포트",
+    "dataSource": "DW_CUSTOMER", "cycle": "월간",
+    "owner": "정유나", "lastModified": "2025-05-16 11:08",
+    "deptId": "dept-003", "teamId": "team-007",
+    "useSchedule": false, "status": "active"
+  },
+  {
+    "id": "r006", "name": "재고 보유 현황 리포트",
+    "menuPath": "물류 > 재고 보유 현황 리포트",
+    "dataSource": "DW_INVENTORY", "cycle": "일간",
+    "owner": "정호진", "lastModified": "2025-05-15 08:55",
+    "deptId": "dept-004", "teamId": "team-009",
+    "useSchedule": true, "status": "active"
+  },
+  {
+    "id": "r007", "name": "매출 추이 리포트",
+    "menuPath": "리포트 > 매출관리 > 매출 추이 리포트",
+    "dataSource": "DW_SALES", "cycle": "일간",
+    "owner": "박선영", "lastModified": "2025-05-14 14:22",
+    "deptId": "dept-001", "teamId": "team-003",
+    "useSchedule": true, "status": "active"
+  },
+  {
+    "id": "r008", "name": "원가 분석 리포트",
+    "menuPath": "리포트 > 원가 분석 리포트",
+    "dataSource": "DW_COST", "cycle": "주간",
+    "owner": "이동훈", "lastModified": "2025-05-13 17:05",
+    "deptId": "dept-001", "teamId": "team-002",
+    "useSchedule": false, "status": "active"
+  },
+  {
+    "id": "r009", "name": "예산 vs 실적 리포트",
+    "menuPath": "리포트 > 예산 vs 실적 리포트",
+    "dataSource": "DW_BUDGET", "cycle": "월간",
+    "owner": "최현식", "lastModified": "2025-05-13 14:22",
+    "deptId": "dept-002", "teamId": "team-005",
+    "useSchedule": false, "status": "inactive"
+  },
+  {
+    "id": "r010", "name": "물류 비용 현황",
+    "menuPath": "물류 > 물류 비용 현황",
+    "dataSource": "DW_LOGISTICS", "cycle": "주간",
+    "owner": "정호진", "lastModified": "2025-05-13 11:03",
+    "deptId": "dept-004", "teamId": "team-009",
+    "useSchedule": true, "status": "active"
+  }
+]

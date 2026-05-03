@@ -1,0 +1,10 @@
+{
+  "m001":   { "경영지원본부": true,  "마케팅팀": true,  "영업1팀": true,  "영업2팀": false, "데이터전략팀": true,  "재무팀": false, "인사팀": false },
+  "m001-1": { "경영지원본부": true,  "마케팅팀": false, "영업1팀": true,  "영업2팀": false, "데이터전략팀": true,  "재무팀": false, "인사팀": false },
+  "m001-2": { "경영지원본부": true,  "마케팅팀": false, "영업1팀": true,  "영업2팀": true,  "데이터전략팀": true,  "재무팀": true,  "인사팀": false },
+  "m001-3": { "경영지원본부": true,  "마케팅팀": true,  "영업1팀": true,  "영업2팀": false, "데이터전략팀": true,  "재무팀": true,  "인사팀": false },
+  "m002":   { "경영지원본부": false, "마케팅팀": true,  "영업1팀": true,  "영업2팀": true,  "데이터전략팀": true,  "재무팀": false, "인사팀": false },
+  "m002-1": { "경영지원본부": false, "마케팅팀": true,  "영업1팀": false, "영업2팀": false, "데이터전략팀": true,  "재무팀": false, "인사팀": false },
+  "m003":   { "경영지원본부": false, "마케팅팀": false, "영업1팀": false, "영업2팀": false, "데이터전략팀": true,  "재무팀": false, "인사팀": false },
+  "m003-1": { "경영지원본부": false, "마케팅팀": false, "영업1팀": false, "영업2팀": false, "데이터전략팀": true,  "재무팀": false, "인사팀": true  }
+}

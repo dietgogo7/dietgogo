@@ -1,0 +1,96 @@
+[
+  {
+    "id": "m001", "parentId": null, "type": "folder", "name": "리포트",
+    "order": 1, "useYn": true, "icon": "journal-richtext",
+    "children": [
+      {
+        "id": "m001-1", "parentId": "m001", "type": "report", "name": "구매 실적 리포트",
+        "order": 1, "useYn": true,
+        "menuPath": "리포트 > 구매 실적 리포트",
+        "dataSourceType": "SP", "spName": "SP_PURCHASE_RESULT_V1", "apiPath": "",
+        "cycle": "일간", "owner": "김민지", "lastModified": "2025-05-20 14:32",
+        "useVisualization": true, "useSchedule": true, "useExcel": true,
+        "description": "일별 구매 실적을 분석하는 리포트입니다.",
+        "dataSource": "DW_PURCHASE"
+      },
+      {
+        "id": "m001-2", "parentId": "m001", "type": "report", "name": "공급사 성과 분석",
+        "order": 2, "useYn": true,
+        "menuPath": "리포트 > 공급사 성과 분석",
+        "dataSourceType": "API", "spName": "", "apiPath": "/api/v1/reports/supplier-analysis",
+        "cycle": "주간", "owner": "이동훈", "lastModified": "2025-05-19 10:15",
+        "useVisualization": true, "useSchedule": false, "useExcel": true,
+        "description": "공급사별 성과를 분석합니다.",
+        "dataSource": "DW_SUPPLIER"
+      },
+      {
+        "id": "m001-3", "parentId": "m001", "type": "folder", "name": "매출관리",
+        "order": 3, "useYn": true,
+        "children": [
+          {
+            "id": "m001-3-1", "parentId": "m001-3", "type": "report", "name": "매출 추이 리포트",
+            "order": 1, "useYn": true,
+            "menuPath": "리포트 > 매출관리 > 매출 추이 리포트",
+            "dataSourceType": "SP", "spName": "SP_SALES_TREND_V2", "apiPath": "",
+            "cycle": "일간", "owner": "박선영", "lastModified": "2025-05-18 09:47",
+            "useVisualization": true, "useSchedule": true, "useExcel": true,
+            "description": "기간별 매출 추이를 시각화합니다.",
+            "dataSource": "DW_SALES"
+          },
+          {
+            "id": "m001-3-2", "parentId": "m001-3", "type": "report", "name": "재무 손익 리포트",
+            "order": 2, "useYn": true,
+            "menuPath": "리포트 > 매출관리 > 재무 손익 리포트",
+            "dataSourceType": "SP", "spName": "SP_PROFIT_ANALYSIS_V1", "apiPath": "",
+            "cycle": "주간", "owner": "최현식", "lastModified": "2025-05-17 16:22",
+            "useVisualization": false, "useSchedule": true, "useExcel": true,
+            "description": "재무 손익을 분석합니다.",
+            "dataSource": "DW_FINANCE"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "m002", "parentId": null, "type": "folder", "name": "마케팅",
+    "order": 2, "useYn": true, "icon": "graph-up",
+    "children": [
+      {
+        "id": "m002-1", "parentId": "m002", "type": "report", "name": "마케팅 성과 리포트",
+        "order": 1, "useYn": true,
+        "menuPath": "마케팅 > 마케팅 성과 리포트",
+        "dataSourceType": "SP", "spName": "SP_MARKETING_RESULT_V1", "apiPath": "",
+        "cycle": "월간", "owner": "박선영", "lastModified": "2025-05-18 09:47",
+        "useVisualization": true, "useSchedule": true, "useExcel": true,
+        "description": "마케팅 캠페인 성과를 분석합니다.",
+        "dataSource": "DW_MARKETING"
+      },
+      {
+        "id": "m002-2", "parentId": "m002", "type": "report", "name": "고객 세분화 분석 리포트",
+        "order": 2, "useYn": true,
+        "menuPath": "마케팅 > 고객 세분화 분석 리포트",
+        "dataSourceType": "API", "spName": "", "apiPath": "/api/v1/reports/customer-segment",
+        "cycle": "월간", "owner": "정유나", "lastModified": "2025-05-16 11:08",
+        "useVisualization": true, "useSchedule": false, "useExcel": true,
+        "description": "고객 세분화를 분석합니다.",
+        "dataSource": "DW_CUSTOMER"
+      }
+    ]
+  },
+  {
+    "id": "m003", "parentId": null, "type": "folder", "name": "물류",
+    "order": 3, "useYn": true, "icon": "truck",
+    "children": [
+      {
+        "id": "m003-1", "parentId": "m003", "type": "report", "name": "재고 보유 현황 리포트",
+        "order": 1, "useYn": true,
+        "menuPath": "물류 > 재고 보유 현황 리포트",
+        "dataSourceType": "SP", "spName": "SP_INVENTORY_STATUS_V1", "apiPath": "",
+        "cycle": "일간", "owner": "정호진", "lastModified": "2025-05-15 08:55",
+        "useVisualization": false, "useSchedule": true, "useExcel": true,
+        "description": "재고 현황을 조회합니다.",
+        "dataSource": "DW_INVENTORY"
+      }
+    ]
+  }
+]

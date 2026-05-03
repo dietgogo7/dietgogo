@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AX Data Admin — 로그인</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      background: #F2F3F7;
+    }
+
+    /* ===== Left Panel ===== */
+    .login-left {
+      flex: 1;
+      background: linear-gradient(135deg, #1C3FAA 0%, #3699FF 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-left::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: rgba(255,255,255,.04);
+      border-radius: 50%;
+      top: -120px; right: -120px;
+    }
+    .login-left::after {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      background: rgba(255,255,255,.06);
+      border-radius: 50%;
+      bottom: -80px; left: -80px;
+    }
+    .login-left-content { position: relative; z-index: 1; max-width: 440px; }
+
+    .login-brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    .logo-box {
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,.2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 900; color: #fff;
+      backdrop-filter: blur(8px);
+    }
+    .logo-name { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.3px; }
+
+    .login-tagline {
+      font-size: 34px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+      letter-spacing: -.5px;
+      margin-bottom: 20px;
+    }
+    .login-tagline span { color: rgba(255,255,255,.6); }
+    .login-desc {
+      font-size: 14.5px;
+      color: rgba(255,255,255,.7);
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .login-features { display: flex; flex-direction: column; gap: 14px; }
+    .login-feature {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 13.5px; color: rgba(255,255,255,.85);
+    }
+    .login-feature-icon {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,.15);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: #fff; flex-shrink: 0;
+    }
+
+    /* ===== Right Panel (Login Form) ===== */
+    .login-right {
+      width: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 56px;
+      background: #fff;
+    }
+    .login-form-wrap { width: 100%; }
+
+    .login-form-header { margin-bottom: 36px; }
+    .login-form-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1e293b;
+      letter-spacing: -.4px;
+      margin-bottom: 6px;
+    }
+    .login-form-sub { font-size: 13.5px; color: #7E8299; }
+
+    /* Form */
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #3F4254;
+      margin-bottom: 8px;
+      letter-spacing: .02em;
+    }
+    .input-wrap {
+      position: relative;
+    }
+    .input-wrap .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #B5B5C3;
+      font-size: 16px;
+    }
+    .input-wrap input {
+      width: 100%;
+      padding: 11px 14px 11px 42px;
+      font-size: 13.5px;
+      border: 1.5px solid #EBEDF3;
+      border-radius: 8px;
+      color: #3F4254;
+      outline: none;
+      background: #FAFAFA;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+    .input-wrap input:focus {
+      border-color: #3699FF;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(54,153,255,.15);
+    }
+    .input-wrap input::placeholder { color: #B5B5C3; }
+
+    .form-options {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .remember-label {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 13px; color: #7E8299; cursor: pointer;
+    }
+    .remember-label input { accent-color: #3699FF; width:15px; height:15px; }
+    .forgot-link { font-size: 13px; color: #3699FF; font-weight: 500; }
+    .forgot-link:hover { text-decoration: underline; }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: #3699FF;
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background .15s, box-shadow .15s;
+      letter-spacing: .02em;
+    }
+    .btn-login:hover { background: #187DE4; box-shadow: 0 6px 20px rgba(54,153,255,.35); }
+
+    .login-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0; font-size: 12.5px; color: #B5B5C3;
+    }
+    .login-divider::before,
+    .login-divider::after { content:''; flex:1; height:1px; background: #EBEDF3; }
+
+    .login-note {
+      margin-top: 24px;
+      padding: 14px 16px;
+      background: #F0F7FF;
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: #3699FF;
+      line-height: 1.6;
+      border: 1px solid #BFDBFE;
+    }
+    .login-note strong { display: block; margin-bottom: 2px; font-size: 12px; color: #1D4ED8; }
+
+    .login-footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: #B5B5C3;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .login-left { display: none; }
+      .login-right { width: 100%; padding: 40px 32px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Left Panel -->
+  <div class="login-left">
+    <div class="login-left-content">
+      <div class="login-brand-logo">
+        <div class="logo-box">AX</div>
+        <span class="logo-name">AX Data Admin</span>
+      </div>
+      <div class="login-tagline">
+        데이터 기반의<br>
+        <span>스마트한 의사결정</span>
+      </div>
+      <p class="login-desc">
+        AX Data Admin은 리포트 조회·스케줄·권한 관리를 하나의 플랫폼에서
+        처리할 수 있는 내부 데이터 관리 시스템입니다.
+      </p>
+      <div class="login-features">
+        <div class="login-feature">
+          <div class="login-feature-icon"><i class="bi bi-bar-chart-fill"></i></div>
+          SP/API 기반 리포트 조회 및 엑셀 다운로드
+        </div>
+        <div class="login-feature">
+          <div class="login-feature-icon"><i class="bi bi-shield-lock-fill"></i></div>
+          부서별 메뉴 권한 및 필드 마스킹 관리
+        </div>
+        <div class="login-feature">
+          <div class="login-feature-icon"><i class="bi bi-calendar-event-fill"></i></div>
+          스케줄 발송 및 Kimi 2.6 AI 시각화
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="login-right">
+    <div class="login-form-wrap">
+      <div class="login-form-header">
+        <div class="login-form-title">로그인</div>
+        <p class="login-form-sub">내부 계정으로 로그인하세요.</p>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label">이메일</label>
+          <div class="input-wrap">
+            <i class="bi bi-person-fill input-icon"></i>
+            <input type="email" id="loginId" value="admin@axdata.com" placeholder="이메일을 입력하세요" autocomplete="username">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호</label>
+          <div class="input-wrap">
+            <i class="bi bi-lock-fill input-icon"></i>
+            <input type="password" id="loginPw" value="admin1234" placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label class="remember-label">
+            <input type="checkbox" checked> 로그인 상태 유지
+          </label>
+          <a href="#" class="forgot-link">비밀번호 찾기</a>
+        </div>
+
+        <button type="submit" class="btn-login">
+          <i class="bi bi-box-arrow-in-right"></i>
+          로그인
+        </button>
+      </form>
+
+      <div class="login-note">
+        <strong>프로토타입 테스트 계정</strong>
+        ID: admin@axdata.com &nbsp;/&nbsp; PW: admin1234
+      </div>
+
+      <div class="login-footer">© 2025 AX Data Admin — Internal Use Only</div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script>
+    $('#loginForm').on('submit', function(e) {
+      e.preventDefault();
+      const id = $('#loginId').val().trim();
+      const pw = $('#loginPw').val().trim();
+      if (id === 'admin@axdata.com' && pw === 'admin1234') {
+        window.location.href = 'pages/home.html';
+      } else {
+        $('#loginId').closest('.input-wrap').find('input').css('border-color','#F64E60');
+        setTimeout(() => $('#loginId').closest('.input-wrap').find('input').css('border-color',''), 2000);
+        alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+    });
+  </script>
+</body>
+</html>

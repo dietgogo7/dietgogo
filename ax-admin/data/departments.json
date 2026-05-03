@@ -1,0 +1,32 @@
+[
+  {
+    "id": "dept-001", "name": "도시사업본부", "parentId": null,
+    "children": [
+      { "id": "team-001", "name": "구매기획팀", "parentId": "dept-001" },
+      { "id": "team-002", "name": "영업관리팀", "parentId": "dept-001" },
+      { "id": "team-003", "name": "마케팅팀",   "parentId": "dept-001" }
+    ]
+  },
+  {
+    "id": "dept-002", "name": "경영지원본부", "parentId": null,
+    "children": [
+      { "id": "team-004", "name": "인사팀",   "parentId": "dept-002" },
+      { "id": "team-005", "name": "재무팀",   "parentId": "dept-002" },
+      { "id": "team-006", "name": "총무팀",   "parentId": "dept-002" }
+    ]
+  },
+  {
+    "id": "dept-003", "name": "IT본부", "parentId": null,
+    "children": [
+      { "id": "team-007", "name": "데이터전략팀", "parentId": "dept-003" },
+      { "id": "team-008", "name": "시스템개발팀", "parentId": "dept-003" }
+    ]
+  },
+  {
+    "id": "dept-004", "name": "품질분부", "parentId": null,
+    "children": [
+      { "id": "team-009", "name": "품질관리팀", "parentId": "dept-004" },
+      { "id": "team-010", "name": "고객서비스팀","parentId": "dept-004" }
+    ]
+  }
+]

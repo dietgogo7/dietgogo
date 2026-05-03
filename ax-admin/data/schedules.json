@@ -1,0 +1,72 @@
+[
+  {
+    "id": "s001", "name": "주간 매출 분석 리포트", "reportId": "r007",
+    "reportName": "매출 추이 리포트",
+    "cycle": "매주", "dayOfWeek": "수", "sendTime": "09:00",
+    "nextSendAt": "2025-05-21 (수) 09:00",
+    "recipients": ["jihoon.kim@axdata.com", "younghee.lee@axdata.com", "soyeon.park@axdata.com"],
+    "recipientCount": 12,
+    "attachType": ["Excel", "PDF"],
+    "includeAISummary": true,
+    "autoDateRange": "최근 7일 (전일 기준)",
+    "status": "정상",
+    "lastRun": "2025-05-14 09:01",
+    "emailSubject": "[AX Data] 주간 매출 분석 리포트 {{start_date}} ~ {{end_date}}"
+  },
+  {
+    "id": "s002", "name": "일간 경영 리포트", "reportId": "r001",
+    "reportName": "구매 실적 리포트",
+    "cycle": "매일", "dayOfWeek": null, "sendTime": "08:00",
+    "nextSendAt": "2025-05-31 (토) 09:00",
+    "recipients": ["hong@axdata.com", "kim@axdata.com"],
+    "recipientCount": 15,
+    "attachType": ["Excel"],
+    "includeAISummary": false,
+    "autoDateRange": "전일",
+    "status": "정상",
+    "lastRun": "2025-04-30 09:00",
+    "emailSubject": "[AX Data] 일간 경영 리포트 {{date}}"
+  },
+  {
+    "id": "s003", "name": "일일 운영 현황 리포트", "reportId": "r006",
+    "reportName": "재고 보유 현황 리포트",
+    "cycle": "매일", "dayOfWeek": null, "sendTime": "09:00",
+    "nextSendAt": "2025-05-15 (목) 09:00",
+    "recipients": ["jho@axdata.com"],
+    "recipientCount": 8,
+    "attachType": ["PDF"],
+    "includeAISummary": false,
+    "autoDateRange": "전일",
+    "status": "정상",
+    "lastRun": "2025-05-15 09:00",
+    "emailSubject": "[AX Data] 일일 운영 현황 {{date}}"
+  },
+  {
+    "id": "s004", "name": "제품별 재고 현황 리포트", "reportId": "r006",
+    "reportName": "재고 보유 현황 리포트",
+    "cycle": "매주", "dayOfWeek": "월", "sendTime": "08:30",
+    "nextSendAt": "2025-05-19 (월) 08:30",
+    "recipients": ["park@axdata.com", "jung@axdata.com"],
+    "recipientCount": 6,
+    "attachType": ["Excel"],
+    "includeAISummary": true,
+    "autoDateRange": "최근 7일",
+    "status": "경고",
+    "lastRun": "2025-05-12 08:31",
+    "emailSubject": "[AX Data] 제품별 재고 현황 {{start_date}}~{{end_date}}"
+  },
+  {
+    "id": "s005", "name": "프로젝트 진척도 리포트", "reportId": "r008",
+    "reportName": "원가 분석 리포트",
+    "cycle": "매월", "dayOfWeek": null, "sendTime": "10:00",
+    "nextSendAt": "2025-05-31 (토) 10:00",
+    "recipients": ["choi@axdata.com"],
+    "recipientCount": 10,
+    "attachType": ["Excel", "PDF"],
+    "includeAISummary": true,
+    "autoDateRange": "당월",
+    "status": "정상",
+    "lastRun": "2025-04-30 10:02",
+    "emailSubject": "[AX Data] 프로젝트 진척도 리포트 {{month}}"
+  }
+]

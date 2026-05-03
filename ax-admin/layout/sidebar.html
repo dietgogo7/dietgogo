@@ -1,0 +1,67 @@
+<!--
+  sidebar.html — 사이드바 구조 참조 파일
+  실제 런타임 주입은 assets/js/layout.js (AXLayout.init)이 담당합니다.
+  추후 서버 렌더링 또는 template engine 전환 시 이 파일을 기준으로 작업하세요.
+-->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <span class="brand-icon">◈</span>
+    <span class="brand-text">AX Data Admin</span>
+  </div>
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li class="nav-item active">
+        <a href="home.html" class="nav-link">
+          <i class="bi bi-house-fill"></i>
+          <span>홈</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="report-catalog.html" class="nav-link">
+          <i class="bi bi-journal-richtext"></i>
+          <span>리포트 카탈로그</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="report-view.html" class="nav-link">
+          <i class="bi bi-bar-chart-fill"></i>
+          <span>리포트 조회</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="menu-manage.html" class="nav-link">
+          <i class="bi bi-grid-fill"></i>
+          <span>메뉴 관리</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="permission.html" class="nav-link">
+          <i class="bi bi-shield-lock-fill"></i>
+          <span>권한 관리</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="schedule.html" class="nav-link">
+          <i class="bi bi-calendar-event-fill"></i>
+          <span>스케줄 리포트</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="field-mapping.html" class="nav-link">
+          <i class="bi bi-table"></i>
+          <span>필드 매핑</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="sidebar-footer">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="../index.html" class="nav-link">
+          <i class="bi bi-box-arrow-left"></i>
+          <span>로그아웃</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

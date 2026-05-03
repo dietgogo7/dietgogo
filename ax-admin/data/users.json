@@ -1,0 +1,9 @@
+[
+  { "id": "u001", "name": "홍길동", "email": "hong@axdata.com", "deptId": "dept-001", "teamId": "team-001", "role": "admin",  "useYn": true },
+  { "id": "u002", "name": "김민지", "email": "kim@axdata.com",  "deptId": "dept-001", "teamId": "team-001", "role": "user",   "useYn": true },
+  { "id": "u003", "name": "이동훈", "email": "lee@axdata.com",  "deptId": "dept-001", "teamId": "team-002", "role": "user",   "useYn": true },
+  { "id": "u004", "name": "박선영", "email": "park@axdata.com", "deptId": "dept-001", "teamId": "team-003", "role": "user",   "useYn": true },
+  { "id": "u005", "name": "최현식", "email": "choi@axdata.com", "deptId": "dept-002", "teamId": "team-005", "role": "user",   "useYn": true },
+  { "id": "u006", "name": "정유나", "email": "jung@axdata.com", "deptId": "dept-003", "teamId": "team-007", "role": "user",   "useYn": true },
+  { "id": "u007", "name": "정호진", "email": "jho@axdata.com",  "deptId": "dept-004", "teamId": "team-009", "role": "user",   "useYn": false }
+]

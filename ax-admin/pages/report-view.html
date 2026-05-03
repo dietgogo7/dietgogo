@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>리포트 조회 - AX Data Admin</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/pages/report-view.css">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside id="layout-sidebar"></aside>
+  <div class="main-area">
+    <div id="layout-header"></div>
+    <main class="page-content">
+
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <div>
+          <div class="page-title">리포트 조회</div>
+          <div class="page-desc">SP/API 결과를 조회하고 엑셀·시각화·스케줄 기능을 실행합니다.</div>
+        </div>
+        <button class="btn btn-primary" id="btnRun"><i class="bi bi-play-fill"></i> 조회 실행</button>
+        <button class="btn btn-outline" id="btnExcel"><i class="bi bi-file-earmark-excel" style="color:#217346"></i> 엑셀 다운로드</button>
+        <button class="btn btn-outline" id="btnKimi"><i class="bi bi-stars" style="color:#8b5cf6"></i> 시각화</button>
+        <button class="btn btn-outline" id="btnSchedule"><i class="bi bi-calendar-plus"></i> 스케줄 설정</button>
+      </div>
+
+      <!-- Filter Panel -->
+      <div class="filter-panel">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">기간</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <input type="date" class="form-control" id="dateFrom" style="width:140px">
+            <span style="color:var(--text-muted)">~</span>
+            <input type="date" class="form-control" id="dateTo" style="width:140px">
+          </div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">집계 기준</label>
+          <select class="form-control" id="filterAgg">
+            <option>일</option><option>주</option><option>월</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">카테고리</label>
+          <select class="form-control" id="filterCategory">
+            <option value="">전체</option>
+            <option>의류</option><option>잡화</option><option>뷰티</option><option>식품</option><option>전자</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">채널</label>
+          <select class="form-control" id="filterChannel">
+            <option value="">전체</option><option>온라인</option><option>오프라인</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">상태</label>
+          <select class="form-control" id="filterStatus">
+            <option value="">전체</option><option>정상</option><option>경고</option>
+          </select>
+        </div>
+        <button class="btn btn-outline" id="btnAddFilter"><i class="bi bi-plus"></i> 필터 추가</button>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-mini">
+          <i class="bi bi-list-ol stat-mini-icon"></i>
+          <div>
+            <div class="stat-mini-label">총 건수</div>
+            <div class="stat-mini-value" id="totalCount">-</div>
+          </div>
+        </div>
+        <div class="stat-mini">
+          <i class="bi bi-currency-won stat-mini-icon"></i>
+          <div>
+            <div class="stat-mini-label">총 매출액</div>
+            <div class="stat-mini-value" id="totalSales">-</div>
+          </div>
+        </div>
+        <div class="stat-mini">
+          <i class="bi bi-tag stat-mini-icon"></i>
+          <div>
+            <div class="stat-mini-label">평균 단가</div>
+            <div class="stat-mini-value" id="avgPrice">-</div>
+          </div>
+        </div>
+        <div class="stat-mini">
+          <i class="bi bi-clock stat-mini-icon"></i>
+          <div>
+            <div class="stat-mini-label">조회 시간</div>
+            <div class="stat-mini-value" id="queryTime">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="report-view-layout">
+
+        <!-- Data Table -->
+        <div class="card">
+          <div class="table-wrap">
+            <table class="table" id="reportTable">
+              <thead>
+                <tr>
+                  <th>일자</th><th>카테고리</th><th>채널</th>
+                  <th>상품코드</th><th>상품명</th><th>주문건수</th>
+                  <th class="right">수량</th><th class="right">매출액(원)</th>
+                  <th class="right">할인액(원)</th><th class="right">순매출액(원)</th>
+                  <th class="right">평균단가(원)</th><th class="center">상태</th>
+                </tr>
+              </thead>
+              <tbody id="reportTbody">
+                <tr><td colspan="12" style="text-align:center;padding:60px;color:var(--text-muted)">
+                  <i class="bi bi-play-circle" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>
+                  조회 실행 버튼을 클릭하세요.
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span class="text-sm text-muted" id="tableFooterCount"></span>
+            <div class="pagination" id="reportPagination"></div>
+          </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+
+          <!-- Current Settings -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">현재 설정</span>
+              <button class="btn btn-ghost btn-sm" id="btnResetSetting">초기화</button>
+            </div>
+            <div class="card-body" style="padding:12px 16px">
+              <div class="setting-row"><span class="label">기간</span><span class="value" id="settingPeriod">-</span></div>
+              <div class="setting-row"><span class="label">집계 기준</span><span class="value" id="settingAgg">-</span></div>
+              <div class="setting-row"><span class="label">카테고리</span><span class="value" id="settingCategory">전체</span></div>
+              <div class="setting-row"><span class="label">채널</span><span class="value" id="settingChannel">전체</span></div>
+              <div class="setting-row"><span class="label">상태</span><span class="value" id="settingStatus">전체</span></div>
+              <div class="setting-row"><span class="label">필터</span><span class="value" id="settingFilter">없음</span></div>
+            </div>
+          </div>
+
+          <!-- Exec History -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">최근 실행 이력</span>
+              <a href="#" class="more-link" style="font-size:12px">더보기 <i class="bi bi-chevron-right"></i></a>
+            </div>
+            <div class="card-body" style="padding:8px 16px" id="execHistPanel">
+              <div class="text-muted text-sm" style="padding:16px 0;text-align:center">로딩 중...</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Kimi 2.6 Modal -->
+<div class="modal-overlay kimi-modal" id="kimiModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title"><i class="bi bi-stars" style="color:#8b5cf6;margin-right:6px"></i>매출 현황 리포트 - 요약 시각화</span>
+      <button class="modal-close"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:4px"><strong style="color:var(--text-primary)">요약</strong></p>
+      <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:16px;margin-bottom:0">
+        <li>전체 매출은 125.8억원이며, 전년 대비 12.4% 증가했습니다.</li>
+        <li>프리미엄 제품군이 전체 매출의 48.3%로 가장 높았고, 지역은 서울이 28.6%를 차지했습니다.</li>
+        <li>전년동월 대비 6.2% 성장 추세이며, 가전/생활(24.7%), 지역(13.1%)이 상승했습니다.</li>
+        <li>5월 넷째 주(5/19~5/25)에 매출이 가장 높게 나타났습니다.</li>
+      </ul>
+
+      <div class="kimi-section-title">주요 인사이트</div>
+      <div class="kimi-insight-cards">
+        <div class="kimi-insight-card">
+          <div class="kimi-insight-value">125.8억</div>
+          <div class="kimi-insight-label">전체 매출</div>
+          <div class="kimi-insight-sub">▲ 12.4% 전년 대비</div>
+        </div>
+        <div class="kimi-insight-card">
+          <div class="kimi-insight-value">38.6%</div>
+          <div class="kimi-insight-label">서울 지역 매출</div>
+          <div class="kimi-insight-sub">전체 대비</div>
+        </div>
+        <div class="kimi-insight-card">
+          <div class="kimi-insight-value">62.3%</div>
+          <div class="kimi-insight-label">전년동월 비율</div>
+          <div class="kimi-insight-sub">전체 대비</div>
+        </div>
+        <div class="kimi-insight-card">
+          <div class="kimi-insight-value">5/19~5/25</div>
+          <div class="kimi-insight-label">최고 매출 주간</div>
+          <div class="kimi-insight-sub">주간 기준</div>
+        </div>
+      </div>
+
+      <div class="kimi-section-title">차트 요약</div>
+      <div class="kimi-chart-row">
+        <div class="kimi-chart-box">
+          <div class="kimi-chart-label">제품군별 매출 비중</div>
+          <div class="donut-chart">
+            <div class="donut-circle">
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="30" fill="none" stroke="#e2e8f0" stroke-width="14"/>
+                <circle cx="40" cy="40" r="30" fill="none" stroke="#2563eb" stroke-width="14"
+                  stroke-dasharray="91 97" stroke-dashoffset="0"/>
+                <circle cx="40" cy="40" r="30" fill="none" stroke="#60a5fa" stroke-width="14"
+                  stroke-dasharray="47 141" stroke-dashoffset="-91"/>
+                <circle cx="40" cy="40" r="30" fill="none" stroke="#93c5fd" stroke-width="14"
+                  stroke-dasharray="29 159" stroke-dashoffset="-138"/>
+              </svg>
+            </div>
+            <div class="donut-legend">
+              <div class="donut-legend-item"><div class="donut-color" style="background:#2563eb"></div>프리미엄 48.3%</div>
+              <div class="donut-legend-item"><div class="donut-color" style="background:#60a5fa"></div>가전/생활 24.7%</div>
+              <div class="donut-legend-item"><div class="donut-color" style="background:#93c5fd"></div>보급형 15.3%</div>
+              <div class="donut-legend-item"><div class="donut-color" style="background:#bfdbfe"></div>기타 11.7%</div>
+            </div>
+          </div>
+        </div>
+        <div class="kimi-chart-box">
+          <div class="kimi-chart-label">주간 매출 추이 (억원)</div>
+          <div class="line-chart-placeholder"><i class="bi bi-graph-up" style="font-size:28px;opacity:.5"></i></div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:6px;text-align:right">최고 19.6억 (5/19~5/25)</div>
+        </div>
+      </div>
+
+      <div class="kimi-section-title" style="color:var(--warning)">경고 / 이상징후</div>
+      <div class="kimi-alert">
+        <div class="kimi-alert-item"><i class="bi bi-exclamation-triangle-fill"></i>부산 지역 매출이 전년 대비 -18.7%로 급감했습니다.</div>
+        <div class="kimi-alert-item"><i class="bi bi-exclamation-triangle-fill"></i>5/19~5/25 주간 보급형 매출이 전주 대비 -24.1% 감소했습니다.</div>
+      </div>
+
+      <p class="kimi-footer-note">※ 본 시각화는 조회 결과와 구조화된 JSON 메이터를 기반으로 Kimi 2.6 모델이 생성하였습니다.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline modal-close">닫기</button>
+      <button class="btn btn-outline"><i class="bi bi-download"></i> 다운로드</button>
+      <button class="btn btn-primary" id="btnRerun"><i class="bi bi-arrow-clockwise"></i> 다시 조회</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="../assets/js/layout.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/pages/report-view.js"></script>
+<script>
+  AXLayout.init({
+    activeMenu: 'report-view',
+    breadcrumb: [{ label: '홈', href: 'home.html' }, { label: '리포트 조회' }]
+  });
+  ReportViewPage.init();
+</script>
+</body>
+</html>

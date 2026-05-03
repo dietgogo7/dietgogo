@@ -1,0 +1,47 @@
+.permission-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.dept-table th, .dept-table td { vertical-align: middle; }
+.dept-table .dept-name { font-weight: 500; }
+
+.permission-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+.summary-box {
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.summary-box-icon { font-size: 22px; }
+.summary-box-label { font-size: 12px; color: var(--text-muted); }
+.summary-box-value { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+.summary-box-sub   { font-size: 11.5px; color: var(--text-secondary); }
+
+.info-note {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: #1d4ed8;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px;
+}
+.info-note i { margin-top: 1px; flex-shrink: 0; }
+
+@media (max-width: 900px) {
+  .permission-layout { grid-template-columns: 1fr; }
+}

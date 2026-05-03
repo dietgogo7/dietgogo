@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스케줄 리포트 - AX Data Admin</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/pages/schedule.css">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside id="layout-sidebar"></aside>
+  <div class="main-area">
+    <div id="layout-header"></div>
+    <main class="page-content">
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">스케줄 리포트</div>
+          <div class="page-desc">정해진 시점에 리포트를 자동 실행하고 수신자에게 메일로 발송하는 화면</div>
+        </div>
+        <button class="btn btn-primary" id="btnAddSchedule"><i class="bi bi-plus-lg"></i> 스케줄 등록</button>
+      </div>
+
+      <div class="schedule-layout">
+
+        <!-- Left: List -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">스케줄 목록</span>
+            </div>
+            <div class="card-body" style="padding:16px">
+              <div class="schedule-list-header">
+                <div class="input-group">
+                  <span class="input-group-icon"><i class="bi bi-search"></i></span>
+                  <input type="text" class="form-control" id="scheduleSearch" placeholder="스케줄명 검색">
+                </div>
+                <select class="form-control" id="scheduleStatusFilter" style="width:120px">
+                  <option value="">상태 전체</option>
+                  <option>정상</option><option>경고</option><option>중지</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="table" id="scheduleTable">
+                <thead>
+                  <tr>
+                    <th>스케줄명</th>
+                    <th>발송 주기</th>
+                    <th>다음 발송 예정</th>
+                    <th class="center">수신자</th>
+                    <th class="center">상태</th>
+                    <th>최근 실행</th>
+                  </tr>
+                </thead>
+                <tbody id="scheduleTbody">
+                  <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">로딩 중...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span class="text-sm text-muted" id="scheduleCountLabel"></span>
+              <div class="pagination" id="schedulePagination"></div>
+            </div>
+          </div>
+
+          <!-- Recent Send History -->
+          <div class="card" style="margin-top:16px">
+            <div class="card-header">
+              <span class="card-title">최근 발송 이력</span>
+            </div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>발송 일시</th><th>스케줄명</th><th>대상 리포트</th>
+                    <th class="center">수신자</th><th class="center">성공</th>
+                    <th class="center">실패</th><th class="center">상태</th>
+                    <th>첨부 파일</th>
+                  </tr>
+                </thead>
+                <tbody id="sendHistTbody">
+                  <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text-muted)">로딩 중...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Detail Form -->
+        <div class="card" id="scheduleDetailCard">
+          <div class="card-header">
+            <span class="card-title">스케줄 상세</span>
+          </div>
+          <div class="card-body">
+            <div class="detail-empty" id="detailEmpty">
+              <i class="bi bi-calendar2-event"></i>
+              <p>스케줄을 선택하거나 신규 등록하세요.</p>
+            </div>
+            <div id="detailForm" style="display:none" class="detail-form">
+              <div class="form-group" style="margin:0">
+                <label class="form-label">스케줄명 <span class="required">*</span></label>
+                <input type="text" class="form-control" id="fSchedName">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">대상 리포트 <span class="required">*</span></label>
+                <select class="form-control" id="fSchedReport"></select>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">발송 주기 <span class="required">*</span></label>
+                <div style="display:flex;gap:16px;flex-wrap:wrap;padding:6px 0">
+                  <label class="radio-label" style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                    <input type="radio" name="cycle" value="매일">매일</label>
+                  <label class="radio-label" style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                    <input type="radio" name="cycle" value="매주" checked>매주</label>
+                  <label class="radio-label" style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                    <input type="radio" name="cycle" value="매월">매월</label>
+                  <label class="radio-label" style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                    <input type="radio" name="cycle" value="분기">분기</label>
+                </div>
+              </div>
+              <div class="form-group" style="margin:0" id="dayOfWeekGroup">
+                <label class="form-label">발송 요일 <span class="required">*</span></label>
+                <div class="day-btn-group">
+                  <button class="day-btn" data-day="월">월</button>
+                  <button class="day-btn" data-day="화">화</button>
+                  <button class="day-btn active" data-day="수">수</button>
+                  <button class="day-btn" data-day="목">목</button>
+                  <button class="day-btn" data-day="금">금</button>
+                  <button class="day-btn" data-day="토">토</button>
+                  <button class="day-btn" data-day="일">일</button>
+                </div>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">발송 시간 <span class="required">*</span></label>
+                <input type="time" class="form-control" id="fSendTime" value="09:00" style="width:120px">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">조회 기간 자동 계산</label>
+                <select class="form-control" id="fDateRange">
+                  <option>최근 7일 (전일 기준)</option>
+                  <option>전일</option>
+                  <option>당월</option>
+                  <option>전월</option>
+                  <option>최근 30일</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">첨부 형식 <span class="required">*</span></label>
+                <div class="attach-btn-group">
+                  <button class="attach-btn active" data-type="Excel"><i class="bi bi-file-earmark-excel" style="color:#217346"></i> Excel</button>
+                  <button class="attach-btn active" data-type="PDF"><i class="bi bi-file-earmark-pdf" style="color:#e53e3e"></i> PDF</button>
+                  <button class="attach-btn" data-type="CSV"><i class="bi bi-filetype-csv"></i> CSV</button>
+                </div>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+                  AI 요약 포함
+                  <label class="toggle-switch"><input type="checkbox" id="fAiSummary" checked><span class="toggle-slider"></span></label>
+                </label>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">메일 제목 <span class="required">*</span></label>
+                <input type="text" class="form-control" id="fEmailSubject" placeholder="[AX Data] 리포트명 {{start_date}} ~ {{end_date}}">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">수신자 <span class="required">*</span></label>
+                <div class="recipient-tags" id="recipientTags"></div>
+                <div style="display:flex;gap:6px;margin-top:6px">
+                  <input type="email" class="form-control form-control-sm" id="recipientInput" placeholder="이메일 추가">
+                  <button class="btn btn-outline btn-sm" id="btnAddRecipient"><i class="bi bi-plus"></i></button>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;justify-content:flex-end">
+                <button class="btn btn-outline" id="btnCancelSched">취소</button>
+                <button class="btn btn-primary" id="btnSaveSched"><i class="bi bi-save"></i> 저장</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="../assets/js/layout.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/js/pages/schedule.js"></script>
+<script>
+  AXLayout.init({
+    activeMenu: 'schedule',
+    breadcrumb: [{ label: '홈', href: 'home.html' }, { label: '스케줄 리포트' }]
+  });
+  SchedulePage.init();
+</script>
+</body>
+</html>
