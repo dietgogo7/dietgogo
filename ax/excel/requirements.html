@@ -404,7 +404,7 @@
     .listHeader,
     .reqRow {
       display: grid;
-      grid-template-columns: 52px minmax(270px, 1.25fr) 130px minmax(230px, 1fr) minmax(230px, 1fr) 110px 112px 44px;
+      grid-template-columns: 52px minmax(270px, 1.25fr) 130px minmax(230px, 1fr) minmax(230px, 1fr) minmax(140px, 1fr) 112px 44px;
       align-items: stretch;
       gap: 0;
     }
@@ -689,9 +689,165 @@
       display: block;
     }
 
+    /* ===== 과제 분류 패널 ===== */
+    .taskCategoryPanel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 16px 14px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .taskCategoryPanel .panelHead {
+      margin-bottom: 10px;
+    }
+
+    .taskCategoryPanel .panelHead strong {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .taskCategoryPanel .panelHead span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .taskCategoryGrid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .taskCategoryCard {
+      border-radius: 8px;
+      padding: 10px 12px 11px;
+      border: 1px solid var(--line);
+      background: #fafbfd;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow .15s ease, transform .15s ease;
+    }
+
+    .taskCategoryCard:hover {
+      box-shadow: 0 6px 20px rgba(0,0,0,.08);
+      transform: translateY(-1px);
+    }
+
+    /* 왼쪽 컬러 액센트 바 */
+    .taskCategoryCard::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      border-radius: 10px 0 0 10px;
+    }
+
+    /* 상태별 색상 */
+    .taskCategoryCard.ready     { background: #f0fdf8; border-color: #a7f3d0; }
+    .taskCategoryCard.ready::before  { background: #059669; }
+
+    .taskCategoryCard.pending   { background: #fffbf0; border-color: #fde68a; }
+    .taskCategoryCard.pending::before { background: #d97706; }
+
+    .taskCategoryCard.review    { background: #f5f3ff; border-color: #ddd6fe; }
+    .taskCategoryCard.review::before  { background: #7c3aed; }
+
+    .taskCategoryCard.info      { background: #f0f9ff; border-color: #bae6fd; }
+    .taskCategoryCard.info::before    { background: #0284c7; }
+
+    /* 카드 헤더 */
+    .taskCardHead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .taskCardNum {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(0,0,0,.06);
+      color: inherit;
+      flex-shrink: 0;
+    }
+
+    .taskCardStatus {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .taskCardStatus.s-ready   { background: #d1fae5; color: #065f46; }
+    .taskCardStatus.s-pending { background: #fef3c7; color: #92400e; }
+    .taskCardStatus.s-review  { background: #ede9fe; color: #5b21b6; }
+    .taskCardStatus.s-info    { background: #e0f2fe; color: #0369a1; }
+
+    .taskCardTitle {
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 3px;
+      line-height: 1.3;
+    }
+
+    .taskCardDesc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .taskCardPre {
+      margin-top: 6px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      background: rgba(0,0,0,.04);
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .taskCardPre strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 2px;
+      color: var(--subtle);
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width:1200px) {
+      .taskCategoryGrid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width:760px) {
+      .taskCategoryGrid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
     .compact .listHeader,
     .compact .reqRow {
-      grid-template-columns: 48px minmax(300px, 1.4fr) 128px minmax(250px, 1fr) minmax(250px, 1fr) 108px 108px 40px;
+      grid-template-columns: 48px minmax(300px, 1.4fr) 128px minmax(250px, 1fr) minmax(250px, 1fr) minmax(140px, 1fr) 108px 40px;
     }
 
     .compact .reqRow {
@@ -819,6 +975,7 @@
 
     <div id="libraryNotice" class="notice">엑셀 업로드 기능을 사용하려면 SheetJS 라이브러리 로딩이 필요합니다. 인터넷이 차단된 환경에서는 사내 정적 경로에
       xlsx.full.min.js를 배치한 뒤 HTML의 script 경로를 변경해 사용하세요.</div>
+    <div id="uploadError" style="display:none;margin:10px 0;padding:10px 14px;border-radius:12px;border:1px solid #fca5a5;background:#fff1f2;color:#991b1b;font-size:13px;line-height:1.6;"></div>
 
     <section class="statsGrid">
       <div class="statCard">
@@ -848,11 +1005,109 @@
       <div class="teamBars" id="teamBars"></div>
     </section>
 
+    <!-- 과제 분류 현황 패널 -->
+    <section class="taskCategoryPanel">
+      <div class="panelHead">
+        <strong>AX 과제 분류 현황</strong>
+        <span>진행 단계 및 선행 조건 기준 분류</span>
+      </div>
+      <div class="taskCategoryGrid">
+
+        <!-- 1. 매출 관련 데이터 추출 및 레포팅 -->
+        <div class="taskCategoryCard ready">
+          <div class="taskCardHead">
+            <span class="taskCardNum">1</span>
+            <span class="taskCardStatus s-ready">✅ 진행 가능</span>
+          </div>
+          <div class="taskCardTitle">매출 데이터 추출 &amp; 레포팅</div>
+          <div class="taskCardDesc">주기적인 매출 관련 데이터를 자동으로 추출·집계하고 정형화된 리포트를 생성합니다. 메일 알림 기능을 포함하여 담당자에게 자동 발송합니다.</div>
+          <div class="taskCardPre">
+            <strong>포함 기능</strong>
+            데이터 자동 추출 · 리포트 생성 · 이메일 알림 발송
+          </div>
+        </div>
+
+        <!-- 2. 모니터링 과제 -->
+        <div class="taskCategoryCard ready">
+          <div class="taskCardHead">
+            <span class="taskCardNum">2</span>
+            <span class="taskCardStatus s-ready">✅ 진행 가능</span>
+          </div>
+          <div class="taskCardTitle">데이터 모니터링 &amp; 알람</div>
+          <div class="taskCardDesc">주기적으로 데이터를 모니터링하여 임계값 초과 등 특이사항 발생 시 담당자에게 즉시 알람을 발송합니다.</div>
+          <div class="taskCardPre">
+            <strong>포함 기능</strong>
+            주기적 모니터링 스케줄 · 이상 감지 기준 설정 · 알람 발송(메일/메신저)
+          </div>
+        </div>
+
+        <!-- 3. 트래픽 데이터 가공 -->
+        <div class="taskCategoryCard pending">
+          <div class="taskCardHead">
+            <span class="taskCardNum">3</span>
+            <span class="taskCardStatus s-pending">⏳ 선행 조건 필요</span>
+          </div>
+          <div class="taskCardTitle">GA4 트래픽 데이터 가공</div>
+          <div class="taskCardDesc">GA4에서 제공하는 유입 트래픽, 클릭 빈도, 스크롤 깊이, 이탈률 등의 정보를 활용한 개발 과제입니다.</div>
+          <div class="taskCardPre">
+            <strong>선행 조건</strong>
+            GA4 데이터 정제 작업 완료 이후 개발 요청 진행 가능
+          </div>
+        </div>
+
+        <!-- 4. 크롤링 과제 -->
+        <div class="taskCategoryCard review">
+          <div class="taskCardHead">
+            <span class="taskCardNum">4</span>
+            <span class="taskCardStatus s-review">🔍 검토 중</span>
+          </div>
+          <div class="taskCardTitle">크롤링 → AI Agent 전환 검토</div>
+          <div class="taskCardDesc">기존 크롤러를 AI Agent로 대체할 수 있는지 타당성을 검토합니다. AI Agent 구동용 서버 및 운영 체계 구축이 선행되어야 합니다.</div>
+          <div class="taskCardPre">
+            <strong>선행 조건</strong>
+            AI Agent 구동 서버 및 운영 체계 구축 완료 이후 진행 가능
+          </div>
+        </div>
+
+        <!-- 5. 계약서 및 보고서 초안 생성 -->
+        <div class="taskCategoryCard pending">
+          <div class="taskCardHead">
+            <span class="taskCardNum">5</span>
+            <span class="taskCardStatus s-pending">⏳ 선행 조건 필요</span>
+          </div>
+          <div class="taskCardTitle">계약서 &amp; 보고서 초안 생성</div>
+          <div class="taskCardDesc">LLM이 기존 사내 자료를 학습하여 계약서 및 보고서 초안을 자동으로 생성하는 과제입니다.</div>
+          <div class="taskCardPre">
+            <strong>선행 조건</strong>
+            LLM의 기존 자료 학습(Fine-tuning / RAG 구성) 단계 완료 이후 진행 가능
+          </div>
+        </div>
+
+        <!-- 6. AI Chatbot -->
+        <div class="taskCategoryCard info">
+          <div class="taskCardHead">
+            <span class="taskCardNum">6</span>
+            <span class="taskCardStatus s-info">📋 중장기 검토</span>
+          </div>
+          <div class="taskCardTitle">AI Chatbot (사내 지식 센터)</div>
+          <div class="taskCardDesc">사내 지식 센터 구축 이후 AI Chatbot 도입을 검토합니다. 내부 문서 기반의 질의응답 및 업무 지원 챗봇을 목표로 합니다.</div>
+          <div class="taskCardPre">
+            <strong>선행 조건</strong>
+            사내 지식 센터(Knowledge Base) 구축 완료 이후 검토
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <section class="toolbar">
       <div class="filters">
         <input id="searchInput" type="search" placeholder="과제명, 현황, 개선 목표, 코멘트 검색" />
         <select id="teamFilter">
           <option value="">전체 팀</option>
+        </select>
+        <select id="taskTypeFilter">
+          <option value="">전체 과제구분</option>
         </select>
         <select id="resultFilter">
           <option value="">전체 결과</option>
@@ -877,7 +1132,7 @@
         <div>발의 팀</div>
         <div>As-Is</div>
         <div class="hide-md">To-Be</div>
-        <div class="hide-md">데이터소스</div>
+        <div class="hide-md">과제구분</div>
         <div>최종 결과</div>
         <div></div>
       </div>
@@ -900,6 +1155,7 @@
       related: ['유관부서', '유관 부서'],
       devComment: ['개발 코멘트', '개발코멘트', '코멘트'],
       result: ['최종 결과', '최종결과', '결과'],
+      taskType: ['과제구분', '과제 구분', '구분'],
       axJudgement: ['ChatGPT AX 과제 판단', 'AX 과제 판단', 'AX 판단'],
       axPlan: ['ChatGPT 진행 방식', '진행 방식', '진행방식']
     };
@@ -940,6 +1196,7 @@
         related: firstValue(row, FIELD_MAP.related),
         devComment: firstValue(row, FIELD_MAP.devComment),
         result: firstValue(row, FIELD_MAP.result),
+        taskType: firstValue(row, FIELD_MAP.taskType),
         axJudgement: firstValue(row, FIELD_MAP.axJudgement),
         axPlan: firstValue(row, FIELD_MAP.axPlan),
         original: row
@@ -974,12 +1231,16 @@
 
     function populateFilters() {
       const currentTeam = $('teamFilter').value;
+      const currentTaskType = $('taskTypeFilter').value;
       const currentResult = $('resultFilter').value;
       const teams = uniqueSorted(rows, r => r.team);
+      const taskTypes = uniqueSorted(rows, r => r.taskType);
       const results = uniqueSorted(rows, r => r.result);
       $('teamFilter').innerHTML = '<option value="">전체 팀</option>' + teams.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+      $('taskTypeFilter').innerHTML = '<option value="">전체 과제구분</option>' + taskTypes.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
       $('resultFilter').innerHTML = '<option value="">전체 결과</option>' + results.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
       if (teams.includes(currentTeam)) $('teamFilter').value = currentTeam;
+      if (taskTypes.includes(currentTaskType)) $('taskTypeFilter').value = currentTaskType;
       if (results.includes(currentResult)) $('resultFilter').value = currentResult;
     }
 
@@ -998,6 +1259,8 @@
       filteredRows = rows.filter(row => {
         if (q && !row.searchText.includes(q)) return false;
         if (team && row.team !== team) return false;
+        const taskType = $('taskTypeFilter').value;
+        if (taskType && row.taskType !== taskType) return false;
         if (result && row.result !== result) return false;
         return true;
       });
@@ -1078,7 +1341,7 @@
               <div class="cell"><span class="teamChip" title="${escapeHtml(row.team)}">${escapeHtml(row.team)}</span></div>
               <div class="cell"><div class="summaryText" title="${escapeHtml(row.asis)}">${escapeHtml(row.asis || '-')}</div></div>
               <div class="cell hide-md"><div class="summaryText" title="${escapeHtml(row.tobe)}">${escapeHtml(row.tobe || '-')}</div></div>
-              <div class="cell hide-md"><div class="sourceText" title="${escapeHtml(row.source)}">${escapeHtml(row.source || '-')}</div></div>
+              <div class="cell hide-md"><div class="sourceText" title="${escapeHtml(row.taskType)}">${escapeHtml(row.taskType || '-')}</div></div>
               <div class="cell mobile-hide"><span class="badge ${resultBadgeClass(row.result)}">${escapeHtml(row.result || '미정')}</span></div>
               <div class="cell"><span class="chev">⌄</span></div>
             </div>
@@ -1088,6 +1351,7 @@
                 <div class="detailBox highlight"><h3>To-Be / 개선 목표</h3><p>${escapeHtml(row.tobe || '-')}</p></div>
                 <div class="detailBox"><h3>기본 정보</h3><p>발의 팀: ${escapeHtml(row.team)}
 담당자: ${escapeHtml(row.owner || '-')}
+과제구분: ${escapeHtml(row.taskType || '-')}
 데이터소스: ${escapeHtml(row.source || '-')}
 유관부서: ${escapeHtml(row.related || '-')}
 최종 결과: ${escapeHtml(row.result || '-')}</p></div>
@@ -1127,14 +1391,33 @@
         $('libraryNotice').classList.add('show');
         return;
       }
-      const buffer = await file.arrayBuffer();
-      workbookRef = XLSX.read(buffer, { type: 'array' });
-      const names = workbookRef.SheetNames || [];
-      $('sheetSelect').disabled = names.length <= 1;
-      $('sheetSelect').innerHTML = names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
-      const preferred = names.includes('전체목록') ? '전체목록' : names[0];
-      $('sheetSelect').value = preferred;
-      loadSheet(preferred, file.name);
+      // 이전 오류 메시지 초기화
+      $('uploadError').style.display = 'none';
+      try {
+        const buffer = await file.arrayBuffer();
+        workbookRef = XLSX.read(buffer, { type: 'array' });
+        const names = workbookRef.SheetNames || [];
+        $('sheetSelect').disabled = names.length <= 1;
+        $('sheetSelect').innerHTML = names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+        const preferred = names.includes('전체목록') ? '전체목록' : names[0];
+        $('sheetSelect').value = preferred;
+        loadSheet(preferred, file.name);
+      } catch (err) {
+        // 파일 입력 초기화 (재업로드 가능하도록)
+        event.target.value = '';
+        workbookRef = null;
+        // 암호화 파일 여부 판단
+        var isEncrypted = err && (
+          String(err.message).includes('Encrypted') ||
+          String(err.message).includes('EncryptionInfo') ||
+          String(err.message).includes('password')
+        );
+        var errEl = $('uploadError');
+        errEl.textContent = isEncrypted
+          ? '⚠️ 암호(비밀번호)가 설정된 파일은 업로드할 수 없습니다. 엑셀에서 비밀번호를 해제한 후 다시 업로드해 주세요.'
+          : '⚠️ 파일을 읽는 중 오류가 발생했습니다. 손상되지 않은 .xlsx / .xls 파일인지 확인해 주세요. (' + (err.message || err) + ')';
+        errEl.style.display = 'block';
+      }
     });
 
     $('sheetSelect').addEventListener('change', () => {
@@ -1142,7 +1425,7 @@
       loadSheet($('sheetSelect').value, file ? file.name : '업로드 파일');
     });
 
-    ['searchInput', 'teamFilter', 'resultFilter', 'sortSelect'].forEach(id => $(id).addEventListener('input', applyFilters));
+    ['searchInput', 'teamFilter', 'taskTypeFilter', 'resultFilter', 'sortSelect'].forEach(id => $(id).addEventListener('input', applyFilters));
 
     // 접기/펼치기는 chev 버튼 클릭에서만 동작 (텍스트 복사 시 접히는 이슈 방지)
     $('listBody').addEventListener('click', function (e) {
