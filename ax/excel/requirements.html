@@ -1437,6 +1437,7 @@
     $('listBody').addEventListener('click', function (e) {
       var rowEl = e.target.closest('.reqRow');
       if (!rowEl) return;
+      if (e.target.closest('button, a, input, select, textarea')) return;
       var item = rowEl.closest('.reqItem');
       if (!item) return;
       var id = item.dataset.id;
