@@ -522,16 +522,16 @@
       }
 
       // DOM 헬퍼
-      function $(id) { return document.getElementById(id); }
+      function byId(id) { return document.getElementById(id); }
 
       // 파일 업로드 처리
-      $('fileInput').addEventListener('change', function (e) {
+      byId('fileInput').addEventListener('change', function (e) {
         var file = e.target.files && e.target.files[0];
         if (file) loadFile(file);
       });
 
       // 드래그 앤 드롭
-      var uploadArea = $('uploadArea');
+      var uploadArea = byId('uploadArea');
       uploadArea.addEventListener('dragover', function (e) {
         e.preventDefault();
         uploadArea.classList.add('dragover');
@@ -548,7 +548,7 @@
 
       function loadFile(file) {
         if (!window.XLSX) {
-          alert('SheetJS 라이브러리가 로딩되지 않았습니다. 인터넷 연결을 확인해 주세요.');
+          alert('SheetJS 라이브러리 로딩 실패. 페이지를 새로고침하거나 네트워크 연결을 확인해 주세요.');
           return;
         }
 
@@ -563,12 +563,12 @@
             for (var i = 0; i < names.length; i++) {
               selectHtml += '<option value="' + escapeHtml(names[i]) + '">' + escapeHtml(names[i]) + '</option>';
             }
-            $('sheetSelect').innerHTML = selectHtml;
+            byId('sheetSelect').innerHTML = selectHtml;
 
             loadSheet(names[0]);
-            $('uploadArea').style.display = 'none';
-            $('emptyState').style.display = 'none';
-            $('contentArea').style.display = 'block';
+            byId('uploadArea').style.display = 'none';
+            byId('emptyState').style.display = 'none';
+            byId('contentArea').style.display = 'block';
           } catch (err) {
             var msg = '파일을 읽는 중 오류가 발생했습니다.';
             if (err && (String(err.message).indexOf('Encrypted') >= 0 || String(err.message).indexOf('password') >= 0)) {
@@ -597,7 +597,7 @@
           }
         }
 
-        state.headers = (data[headerIdx] || []).map(function (h) { return normalize(h) || '(빈 열)'; });
+        state.headers = (data[headerIdx] || []).map(function (h, idx) { return normalize(h) || ('Column_' + (idx + 1)); });
         state.allRows = [];
 
         for (var r = headerIdx + 1; r < data.length; r++) {
@@ -615,14 +615,14 @@
         state.sortCol = -1;
         state.sortAsc = true;
         state.searchQuery = '';
-        $('searchInput').value = '';
+        byId('searchInput').value = '';
 
         updateFileInfo(sheetName);
         applyFilterAndRender();
       }
 
       function updateFileInfo(sheetName) {
-        $('fileInfo').innerHTML = '<strong>' + escapeHtml(state.fileName) + '</strong> &nbsp;·&nbsp; 시트: ' + escapeHtml(sheetName) + ' &nbsp;·&nbsp; ' + state.allRows.length.toLocaleString('ko-KR') + '행 × ' + state.headers.length + '열';
+        byId('fileInfo').innerHTML = '<strong>' + escapeHtml(state.fileName) + '</strong> &nbsp;·&nbsp; 시트: ' + escapeHtml(sheetName) + ' &nbsp;·&nbsp; ' + state.allRows.length.toLocaleString('ko-KR') + '행 × ' + state.headers.length + '열';
       }
 
       function applyFilterAndRender() {
@@ -648,9 +648,9 @@
             var va = a[col] || '';
             var vb = b[col] || '';
             // 숫자 비교 시도
-            var na = parseFloat(va.replace(/[^0-9.\-]/g, ''));
-            var nb = parseFloat(vb.replace(/[^0-9.\-]/g, ''));
-            if (!isNaN(na) && !isNaN(nb)) {
+            var na = Number(va);
+            var nb = Number(vb);
+            if (!isNaN(na) && !isNaN(nb) && va !== '' && vb !== '') {
               return asc ? na - nb : nb - na;
             }
             var cmp = va.localeCompare(vb, 'ko');
@@ -670,7 +670,7 @@
           html += '<div class="stat-chip"><span class="stat-label">검색 결과</span><span class="stat-value">' + state.filteredRows.length.toLocaleString('ko-KR') + '</span></div>';
         }
         html += '<div class="stat-chip"><span class="stat-label">시트 수</span><span class="stat-value">' + (state.workbook ? state.workbook.SheetNames.length : 0) + '</span></div>';
-        $('statsRow').innerHTML = html;
+        byId('statsRow').innerHTML = html;
       }
 
       function renderTable() {
@@ -682,7 +682,7 @@
           headHtml += '<th class="' + sortedClass + '" data-col="' + h + '">' + escapeHtml(state.headers[h]) + '<span class="sort-icon">' + icon + '</span></th>';
         }
         headHtml += '</tr>';
-        $('tableHead').innerHTML = headHtml;
+        byId('tableHead').innerHTML = headHtml;
 
         // 페이징 계산
         var pageSize = state.pageSize;
@@ -718,7 +718,7 @@
           bodyHtml = '<tr><td colspan="' + (state.headers.length + 1) + '" style="text-align:center;padding:40px;color:var(--muted);">표시할 데이터가 없습니다.</td></tr>';
         }
 
-        $('tableBody').innerHTML = bodyHtml;
+        byId('tableBody').innerHTML = bodyHtml;
       }
 
       function highlightText(text, query) {
@@ -743,15 +743,15 @@
         var total = state.filteredRows.length;
 
         if (pageSize <= 0 || total <= pageSize) {
-          $('paginationBar').style.display = 'none';
+          byId('paginationBar').style.display = 'none';
           return;
         }
 
-        $('paginationBar').style.display = 'flex';
+        byId('paginationBar').style.display = 'flex';
         var totalPages = Math.ceil(total / pageSize);
         var current = state.currentPage;
 
-        $('pageInfo').textContent = total.toLocaleString('ko-KR') + '건 중 ' + ((current - 1) * pageSize + 1) + ' ~ ' + Math.min(current * pageSize, total) + ' 표시';
+        byId('pageInfo').textContent = total.toLocaleString('ko-KR') + '건 중 ' + ((current - 1) * pageSize + 1) + ' ~ ' + Math.min(current * pageSize, total) + ' 표시';
 
         var btnsHtml = '<button data-page="prev" ' + (current <= 1 ? 'disabled' : '') + '>◀</button>';
         var startPage = Math.max(1, current - 3);
@@ -766,34 +766,34 @@
         if (endPage < totalPages) btnsHtml += '<button disabled>…</button><button data-page="' + totalPages + '">' + totalPages + '</button>';
         btnsHtml += '<button data-page="next" ' + (current >= totalPages ? 'disabled' : '') + '>▶</button>';
 
-        $('pageBtns').innerHTML = btnsHtml;
+        byId('pageBtns').innerHTML = btnsHtml;
       }
 
       // 이벤트 바인딩
-      $('sheetSelect').addEventListener('change', function () {
+      byId('sheetSelect').addEventListener('change', function () {
         loadSheet(this.value);
       });
 
-      $('searchInput').addEventListener('input', function () {
+      byId('searchInput').addEventListener('input', function () {
         state.searchQuery = this.value.trim();
         state.currentPage = 1;
         applyFilterAndRender();
       });
 
-      $('wrapToggle').addEventListener('click', function () {
+      byId('wrapToggle').addEventListener('click', function () {
         state.wrapMode = !state.wrapMode;
         this.classList.toggle('active', state.wrapMode);
         renderTable();
       });
 
-      $('pageSizeSelect').addEventListener('change', function () {
+      byId('pageSizeSelect').addEventListener('change', function () {
         state.pageSize = parseInt(this.value, 10);
         state.currentPage = 1;
         applyFilterAndRender();
       });
 
       // 헤더 클릭 정렬
-      $('tableHead').addEventListener('click', function (e) {
+      byId('tableHead').addEventListener('click', function (e) {
         var th = e.target.closest('th');
         if (!th || !th.hasAttribute('data-col')) return;
         var col = parseInt(th.getAttribute('data-col'), 10);
@@ -807,7 +807,7 @@
       });
 
       // 페이지네이션 클릭
-      $('paginationBar').addEventListener('click', function (e) {
+      byId('paginationBar').addEventListener('click', function (e) {
         var btn = e.target.closest('button');
         if (!btn || btn.disabled) return;
         var page = btn.getAttribute('data-page');
@@ -822,7 +822,7 @@
         }
         renderTable();
         renderPagination();
-        $('tableScroll').scrollTop = 0;
+        byId('tableScroll').scrollTop = 0;
       });
     })();
   </script>
