@@ -404,7 +404,7 @@
     .listHeader,
     .reqRow {
       display: grid;
-      grid-template-columns: 52px minmax(270px, 1.25fr) 130px minmax(230px, 1fr) minmax(230px, 1fr) minmax(140px, 1fr) 112px 44px;
+      grid-template-columns: 52px minmax(260px, 1.2fr) 120px 100px minmax(210px, 1fr) minmax(210px, 1fr) minmax(130px, 1fr) 112px 44px;
       align-items: stretch;
       gap: 0;
     }
@@ -847,7 +847,7 @@
 
     .compact .listHeader,
     .compact .reqRow {
-      grid-template-columns: 48px minmax(300px, 1.4fr) 128px minmax(250px, 1fr) minmax(250px, 1fr) minmax(140px, 1fr) 108px 40px;
+      grid-template-columns: 48px minmax(290px, 1.35fr) 120px 96px minmax(240px, 1fr) minmax(240px, 1fr) minmax(130px, 1fr) 108px 40px;
     }
 
     .compact .reqRow {
@@ -888,7 +888,7 @@
       .reqRow,
       .compact .listHeader,
       .compact .reqRow {
-        grid-template-columns: 46px minmax(240px, 1fr) 120px minmax(200px, 1fr) 110px 40px;
+        grid-template-columns: 46px minmax(220px, 1fr) 110px 90px minmax(190px, 1fr) 106px 40px;
       }
 
       .hide-md {
@@ -1010,96 +1010,74 @@
       <div class="panelHead">
         <strong>AX 과제 분류 현황</strong>
       </div>
-      <div>
-        <div style="font-size: 12px;margin-bottom: 10px;">
-            운영 DB 데이터를 직접 변경하는 작업은 1차 범위에서는 모두 제외 하였습니다.<br>
-            크롤링이 필요한 과제는 3개월 후 재 검토 예정 입니다. <br>
-            DT추진팀과 기존에 논의하던 과제들은 DT추진팀에서 별도 관리 예정 입니다.
-        </div>
-      </div>
       <div class="taskCategoryGrid">
-
-        <!-- 1. 매출 관련 데이터 추출 및 레포팅 -->
-        <div class="taskCategoryCard ready">
+        <!-- 1. 운영 DB 직접 변경 과제 -->
+        <div class="taskCategoryCard review">
           <div class="taskCardHead">
             <span class="taskCardNum">1</span>
-            <span class="taskCardStatus s-ready">✅ 진행 가능</span>
+            <span class="taskCardStatus s-review">🚫 1차 범위 제외</span>
           </div>
-          <div class="taskCardTitle">데이터 추출 &amp; 레포팅</div>
-          <div class="taskCardDesc">데이터 확인용 대시보드 생성 과제: 필요시 알림 기능 제공</div>
+          <div class="taskCardTitle">운영 DB 직접 변경 작업</div>
+          <div class="taskCardDesc">운영 데이터 직접 반영 성격의 작업은 현재 단계에서 안정성 이슈로 제외</div>
           <div class="taskCardPre">
-            <strong>포함 기능: rule based</strong>
-            데이터 자동 추출 · 리포트 생성 · 이메일 알림 발송
+            <strong>제약/기준</strong>
+            운영과 격리된 네트워크 환경에서 초기 조직 세팅 예정으로 1차 범위에서 제외
           </div>
         </div>
 
-        <!-- 2. 모니터링 과제 -->
-        <div class="taskCategoryCard ready">
+        <!-- 2. 외부 데이터 조사 과제 -->
+        <div class="taskCategoryCard review">
           <div class="taskCardHead">
             <span class="taskCardNum">2</span>
-            <span class="taskCardStatus s-ready">✅ 진행 가능</span>
+            <span class="taskCardStatus s-review">🔍 3개월 후 재검토</span>
           </div>
-          <div class="taskCardTitle">데이터 모니터링 &amp; 알람</div>
-          <div class="taskCardDesc">주기적으로 데이터를 모니터링하여 특이사항 발생 시 담당자에게 알람 발송.</div>
+          <div class="taskCardTitle">외부 데이터 조사 (크롤러/AI Agent)</div>
+          <div class="taskCardDesc">외부 데이터 수집 자동화 과제는 구동 서버 및 운영 체계 준비 후 진행</div>
           <div class="taskCardPre">
-            <strong>포함 기능: rule based</strong>
-            주기적 모니터링 스케줄 · 이상 감지 기준 설정 · 메일 발송
+            <strong>선행 조건</strong>
+            크롤러 또는 AI Agent 구동용 서버 구축 완료 이후 진행 가능 (3개월 후 재검토)
           </div>
         </div>
 
-        <!-- 3. 트래픽 데이터 가공 -->
+        <!-- 3. 트래픽/행동 데이터 연동 과제 -->
         <div class="taskCategoryCard pending">
           <div class="taskCardHead">
             <span class="taskCardNum">3</span>
-            <span class="taskCardStatus s-pending">⏳ GA4 과금 구조 전환 필요</span>
+            <span class="taskCardStatus s-pending">⏳ 6개월 후 재검토</span>
           </div>
-          <div class="taskCardTitle">GA4 트래픽 데이터 가공</div>
-          <div class="taskCardDesc">유입 트래픽, 클릭 빈도, 스크롤 깊이, 체류시간/이탈률 등의 정보 활용</div>
+          <div class="taskCardTitle">트래픽 및 사용자 행동 데이터 연동</div>
+          <div class="taskCardDesc">트래픽 및 사용자 행동 데이터 연동 과제는 데이터 기반 준비 완료 후 진행</div>
           <div class="taskCardPre">
             <strong>선행 조건</strong>
-            GA4 데이터 샘플링 이슈 해결 및 GTM 태그 점검 후 재 검토
+            GA4 데이터 샘플링 이슈 해소 및 데이터하우스 구축 이후 진행 가능 (6개월 후 재검토)
           </div>
         </div>
 
-        <!-- 4. 크롤링 과제 -->
-        <div class="taskCategoryCard review">
-          <div class="taskCardHead">
-            <span class="taskCardNum">4</span>
-            <span class="taskCardStatus s-review">🔍 선행 조건 필요</span>
-          </div>
-          <div class="taskCardTitle">AI Agent 개발</div>
-          <div class="taskCardDesc">기존 크롤러를 AI Agent로 대체할 수 있는지 타당성 검토</div>
-          <div class="taskCardPre">
-            <strong>선행 조건</strong>
-            AI Agent 구동 서버 및 운영 체계 구축 완료 이후 진행 가능
-          </div>
-        </div>
-
-        <!-- 5. 계약서 및 보고서 초안 생성 -->
+        <!-- 4. 문서 초안 생성 과제 -->
         <div class="taskCategoryCard pending">
           <div class="taskCardHead">
-            <span class="taskCardNum">5</span>
-            <span class="taskCardStatus s-pending">⏳ 선행 조건 필요</span>
+            <span class="taskCardNum">4</span>
+            <span class="taskCardStatus s-pending">⏳ 3개월 후 재검토</span>
           </div>
           <div class="taskCardTitle">계약서 &amp; 보고서 초안 생성</div>
           <div class="taskCardDesc">LLM이 기존 자료 학습 후 문서 초안 자동 생성 및 제안</div>
           <div class="taskCardPre">
             <strong>선행 조건</strong>
-            LLM의 기존 자료 학습(Fine-tuning / RAG 구성) 단계 완료 이후 진행 가능
+            LLM의 기존 자료 학습(Fine-tuning / RAG 구성) 단계 완료 이후 진행 가능 (3개월 후 재검토)
           </div>
         </div>
 
-        <!-- 6. AI Chatbot -->
+        <!-- 5. AI Chatbot -->
         <div class="taskCategoryCard info">
           <div class="taskCardHead">
-            <span class="taskCardNum">6</span>
-            <span class="taskCardStatus s-info">📋 장기 과제로 검토</span>
+            <span class="taskCardNum">5</span>
+            <span class="taskCardStatus s-info">📋 6개월 후 재검토</span>
           </div>
-          <div class="taskCardTitle">AI Chatbot </div>
+          <div class="taskCardTitle">AI Chatbot</div>
           <div class="taskCardDesc">내부 문서 기반의 질의응답 및 업무 지원 챗봇 개발</div>
           <div class="taskCardPre">
             <strong>선행 조건</strong>
-            사내 지식 센터(데이터하우스) 구축 및LLM의 기존 자료 학습(Fine-tuning)
+            사내 데이터하우스 구축 및 LLM의 기존 자료 학습(Fine-tuning) 완료 이후 진행 가능 (6개월 후 재검토)
           </div>
         </div>
 
@@ -1111,6 +1089,9 @@
         <input id="searchInput" type="search" placeholder="과제명, 현황, 개선 목표, 코멘트 검색" />
         <select id="teamFilter">
           <option value="">전체 팀</option>
+        </select>
+        <select id="divisionFilter">
+          <option value="">전체 본부</option>
         </select>
         <select id="taskTypeFilter">
           <option value="">전체 과제구분</option>
@@ -1136,6 +1117,7 @@
         <div>No</div>
         <div>요구사항</div>
         <div>발의 팀</div>
+        <div>현재투입공수</div>
         <div>As-Is</div>
         <div class="hide-md">To-Be</div>
         <div class="hide-md">과제구분</div>
@@ -1161,6 +1143,7 @@
       related: ['유관부서', '유관 부서'],
       devComment: ['개발 코멘트', '개발코멘트', '코멘트'],
       result: ['최종 결과', '최종결과', '결과'],
+      effort: ['현재투입공수', '현재 투입공수', '투입공수', '공수'],
       taskType: ['과제구분', '과제 구분', '구분'],
       axJudgement: ['ChatGPT AX 과제 판단', 'AX 과제 판단', 'AX 판단'],
       axPlan: ['ChatGPT 진행 방식', '진행 방식', '진행방식']
@@ -1202,6 +1185,7 @@
         related: firstValue(row, FIELD_MAP.related),
         devComment: firstValue(row, FIELD_MAP.devComment),
         result: firstValue(row, FIELD_MAP.result),
+        effort: firstValue(row, FIELD_MAP.effort),
         taskType: firstValue(row, FIELD_MAP.taskType),
         axJudgement: firstValue(row, FIELD_MAP.axJudgement),
         axPlan: firstValue(row, FIELD_MAP.axPlan),
@@ -1237,15 +1221,19 @@
 
     function populateFilters() {
       const currentTeam = $('teamFilter').value;
+      const currentDivision = $('divisionFilter').value;
       const currentTaskType = $('taskTypeFilter').value;
       const currentResult = $('resultFilter').value;
       const teams = uniqueSorted(rows, r => r.team);
+      const divisions = uniqueSorted(rows, r => r.division);
       const taskTypes = uniqueSorted(rows, r => r.taskType);
       const results = uniqueSorted(rows, r => r.result);
       $('teamFilter').innerHTML = '<option value="">전체 팀</option>' + teams.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+      $('divisionFilter').innerHTML = '<option value="">전체 본부</option>' + divisions.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
       $('taskTypeFilter').innerHTML = '<option value="">전체 과제구분</option>' + taskTypes.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
       $('resultFilter').innerHTML = '<option value="">전체 결과</option>' + results.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
       if (teams.includes(currentTeam)) $('teamFilter').value = currentTeam;
+      if (divisions.includes(currentDivision)) $('divisionFilter').value = currentDivision;
       if (taskTypes.includes(currentTaskType)) $('taskTypeFilter').value = currentTaskType;
       if (results.includes(currentResult)) $('resultFilter').value = currentResult;
     }
@@ -1261,10 +1249,12 @@
     function applyFilters() {
       const q = $('searchInput').value.trim().toLowerCase();
       const team = $('teamFilter').value;
+      const division = $('divisionFilter').value;
       const result = $('resultFilter').value;
       filteredRows = rows.filter(row => {
         if (q && !row.searchText.includes(q)) return false;
         if (team && row.team !== team) return false;
+        if (division && row.division !== division) return false;
         const taskType = $('taskTypeFilter').value;
         if (taskType && row.taskType !== taskType) return false;
         if (result && row.result !== result) return false;
@@ -1345,6 +1335,7 @@
                 <div class="ownerLine">${escapeHtml(row.owner || '담당자 미기재')} · ${escapeHtml(row.related || '유관부서 미기재')}</div>
               </div>
               <div class="cell"><span class="teamChip" title="${escapeHtml(row.team)}">${escapeHtml(row.team)}</span></div>
+              <div class="cell"><div class="sourceText" title="${escapeHtml(row.effort)}">${escapeHtml(row.effort || '-')}</div></div>
               <div class="cell"><div class="summaryText" title="${escapeHtml(row.asis)}">${escapeHtml(row.asis || '-')}</div></div>
               <div class="cell hide-md"><div class="summaryText" title="${escapeHtml(row.tobe)}">${escapeHtml(row.tobe || '-')}</div></div>
               <div class="cell hide-md"><div class="sourceText" title="${escapeHtml(row.taskType)}">${escapeHtml(row.taskType || '-')}</div></div>
@@ -1356,7 +1347,9 @@
                 <div class="detailBox highlight"><h3>As-Is / 현황 및 이슈</h3><p>${escapeHtml(row.asis || '-')}</p></div>
                 <div class="detailBox highlight"><h3>To-Be / 개선 목표</h3><p>${escapeHtml(row.tobe || '-')}</p></div>
                 <div class="detailBox"><h3>기본 정보</h3><p>발의 팀: ${escapeHtml(row.team)}
+발의 본부: ${escapeHtml(row.division || '-')}
 담당자: ${escapeHtml(row.owner || '-')}
+현재투입공수: ${escapeHtml(row.effort || '-')}
 과제구분: ${escapeHtml(row.taskType || '-')}
 데이터소스: ${escapeHtml(row.source || '-')}
 유관부서: ${escapeHtml(row.related || '-')}
@@ -1431,7 +1424,7 @@
       loadSheet($('sheetSelect').value, file ? file.name : '업로드 파일');
     });
 
-    ['searchInput', 'teamFilter', 'taskTypeFilter', 'resultFilter', 'sortSelect'].forEach(id => $(id).addEventListener('input', applyFilters));
+    ['searchInput', 'teamFilter', 'divisionFilter', 'taskTypeFilter', 'resultFilter', 'sortSelect'].forEach(id => $(id).addEventListener('input', applyFilters));
 
     // 접기/펼치기는 chev 버튼 클릭에서만 동작 (텍스트 복사 시 접히는 이슈 방지)
     $('listBody').addEventListener('click', function (e) {

@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전사 IT 과제 일정 뷰어</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #f4f6fa; color: #222; font-size: 13px; }
+
+/* Header */
+.header { background: #fff; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e5e8ef; }
+.header h1 { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+.header-right { display: flex; gap: 8px; align-items: center; }
+.btn-excel { display: flex; align-items: center; gap: 6px; background: #217346; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-weight: 600; }
+.btn-excel:hover { background: #1a5c38; }
+.btn-help { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #bbb; background: #fff; font-size: 13px; cursor: pointer; color: #666; }
+#fileInput { display: none; }
+
+/* Summary Cards */
+.summary { display: flex; gap: 16px; padding: 16px 24px; }
+.card { flex: 1; background: #fff; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); border: 1px solid #eee; }
+.card-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.card-icon.total { background: #e8f0fe; }
+.card-icon.active { background: #e8f8ef; }
+.card-icon.pending { background: #fff8e8; }
+.card-icon.done { background: #f0ecff; }
+.card-info { flex: 1; }
+.card-label { font-size: 12px; color: #888; margin-bottom: 2px; }
+.card-count { font-size: 22px; font-weight: 700; color: #222; }
+.card-count span { font-size: 14px; color: #888; font-weight: 400; }
+.card-pct { font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+.pct-active { background: #e8f8ef; color: #2dba6a; }
+.pct-pending { background: #fff3cd; color: #e6a817; }
+.pct-done { background: #ede8ff; color: #7c4dff; }
+
+/* Filter Bar */
+.filter-bar { background: #fff; padding: 10px 24px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #e5e8ef; flex-wrap: wrap; }
+.filter-group { display: flex; align-items: center; gap: 4px; }
+.filter-label { font-size: 12px; color: #666; font-weight: 600; white-space: nowrap; }
+.filter-select { border: 1px solid #dde1ea; border-radius: 6px; padding: 5px 24px 5px 8px; font-size: 12px; color: #333; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23666' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E") no-repeat right 8px center; -webkit-appearance: none; cursor: pointer; }
+.search-wrap { display: flex; align-items: center; border: 1px solid #dde1ea; border-radius: 6px; padding: 4px 8px; gap: 4px; background: #fff; }
+.search-wrap input { border: none; outline: none; font-size: 12px; width: 140px; }
+.filter-divider { width: 1px; height: 20px; background: #dde1ea; margin: 0 4px; }
+.filter-reset { border: 1px solid #dde1ea; border-radius: 6px; padding: 5px 10px; font-size: 12px; background: #fff; cursor: pointer; color: #666; }
+.filter-reset:hover { background: #f4f6fa; }
+.view-toggle { display: flex; border: 1px solid #dde1ea; border-radius: 6px; overflow: hidden; }
+.view-btn { padding: 5px 10px; font-size: 12px; border: none; background: #fff; cursor: pointer; color: #666; }
+.view-btn.active { background: #3b6ef5; color: #fff; }
+.filter-bar-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+
+/* Main Layout */
+.main { display: flex; height: calc(100vh - 170px); overflow: hidden; }
+
+/* Gantt Table */
+.gantt-wrap { flex: 1; overflow: auto; background: #fff; }
+.gantt-table { width: max-content; min-width: 100%; border-collapse: collapse; }
+.gantt-table th, .gantt-table td { border-right: 1px solid #eee; border-bottom: 1px solid #eee; }
+.gantt-head th { background: #f8f9fc; font-size: 11px; color: #888; font-weight: 600; text-align: center; white-space: nowrap; position: sticky; top: 0; z-index: 10; height: 36px; }
+.gantt-head th.col-info { text-align: left; padding: 0 8px; position: sticky; left: 0; z-index: 20; background: #f8f9fc; }
+.gantt-head-year th { background: #f0f2f8; font-size: 11px; font-weight: 700; color: #555; text-align: center; height: 24px; position: sticky; top: 0; z-index: 10; }
+
+.col-name { min-width: 220px; max-width: 260px; position: sticky; left: 0; background: #fff; z-index: 5; }
+.col-manager { min-width: 80px; max-width: 90px; }
+.col-status { min-width: 64px; }
+.col-date { min-width: 72px; }
+.col-month { min-width: 48px; width: 48px; }
+
+/* Project Row */
+.project-row td { background: #f8f9fc; font-weight: 600; cursor: pointer; }
+.project-row td:first-child { background: #f8f9fc; }
+.project-row:hover td { background: #edf2ff; }
+.project-row.selected td { background: #e8efff; }
+
+/* Org Row */
+.org-row td { background: #fff; cursor: pointer; }
+.org-row:hover td { background: #f5f8ff; }
+.org-row.selected td { background: #edf2ff; }
+
+/* Cells */
+.cell-name { padding: 6px 8px; display: flex; align-items: center; gap: 6px; }
+.cell-name .icon { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.cell-name .name-text { font-size: 12px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 190px; }
+.cell-name .org-count { font-size: 11px; color: #888; white-space: nowrap; }
+.cell-text { padding: 5px 6px; font-size: 12px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cell-date { padding: 5px 6px; font-size: 11px; color: #666; text-align: center; white-space: nowrap; }
+
+/* Status Badge */
+.badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge-active { background: #e8f8ef; color: #2dba6a; }
+.badge-pending { background: #fff3cd; color: #e6a817; }
+.badge-done { background: #e8efff; color: #5b7fee; }
+.badge-unknown { background: #f0f0f0; color: #999; }
+
+/* Priority Badge */
+.priority { display: inline-block; width: 20px; height: 20px; border-radius: 4px; font-size: 11px; font-weight: 700; text-align: center; line-height: 20px; }
+.priority-S { background: #ffeaea; color: #e53935; }
+.priority-C { background: #fff3e0; color: #f57c00; }
+.priority-H { background: #fff8e1; color: #f9a825; }
+.priority-M { background: #f3e5f5; color: #8e24aa; }
+.priority-L { background: #e3f2fd; color: #1976d2; }
+.priority-E { background: #e8f5e9; color: #388e3c; }
+.priority-X { background: #f5f5f5; color: #757575; }
+.priority-O { background: #fce4ec; color: #c2185b; }
+
+/* Gantt Bar cell */
+.gantt-cell { position: relative; height: 36px; padding: 0; }
+.gantt-bar-wrap { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; padding: 0 2px; }
+.gantt-bar { height: 14px; border-radius: 7px; position: relative; min-width: 6px; display: flex; align-items: center; overflow: hidden; }
+.gantt-bar-label { font-size: 10px; color: #fff; font-weight: 600; padding: 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: #ff4444; z-index: 3; pointer-events: none; }
+
+/* Toggle arrow */
+.toggle-btn { width: 16px; height: 16px; border: none; background: none; cursor: pointer; color: #666; font-size: 11px; flex-shrink: 0; transition: transform 0.15s; }
+.toggle-btn.collapsed { transform: rotate(-90deg); }
+
+/* Expand indent */
+.org-row .cell-name { padding-left: 28px; }
+
+/* Detail Panel */
+.detail-panel { width: 320px; flex-shrink: 0; background: #fff; border-left: 1px solid #e5e8ef; display: flex; flex-direction: column; overflow: hidden; transition: width 0.2s; }
+.detail-panel.hidden { width: 0; }
+.detail-header { padding: 14px 16px 10px; border-bottom: 1px solid #eee; }
+.detail-header h3 { font-size: 14px; font-weight: 700; color: #1a1a2e; line-height: 1.4; padding-right: 24px; }
+.detail-close { position: absolute; right: 12px; top: 12px; background: none; border: none; cursor: pointer; color: #999; font-size: 16px; }
+.detail-body { flex: 1; overflow-y: auto; padding: 14px 16px; }
+.detail-tabs { display: flex; gap: 0; border-bottom: 2px solid #eee; margin-bottom: 14px; }
+.detail-tab { padding: 6px 14px; font-size: 13px; border: none; background: none; cursor: pointer; color: #888; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.detail-tab.active { color: #3b6ef5; border-bottom-color: #3b6ef5; }
+.detail-field { display: flex; justify-content: space-between; align-items: flex-start; padding: 7px 0; border-bottom: 1px solid #f4f4f4; font-size: 12px; }
+.detail-field:last-child { border-bottom: none; }
+.detail-field-label { color: #888; flex-shrink: 0; width: 70px; }
+.detail-field-value { color: #222; font-weight: 500; text-align: right; flex: 1; word-break: break-all; }
+.detail-section-title { font-size: 12px; font-weight: 700; color: #555; margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #eee; }
+.org-table { width: 100%; border-collapse: collapse; }
+.org-table th { font-size: 11px; color: #888; font-weight: 600; padding: 4px 4px; background: #f8f9fc; text-align: left; }
+.org-table td { font-size: 11px; padding: 5px 4px; border-bottom: 1px solid #f0f0f0; }
+.org-table tr:last-child td { border-bottom: none; }
+
+/* Progress bar */
+.progress-wrap { background: #eee; border-radius: 4px; height: 8px; overflow: hidden; margin-top: 2px; }
+.progress-bar { height: 100%; border-radius: 4px; }
+
+/* Empty state */
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; color: #aaa; gap: 12px; }
+.empty-state .icon { font-size: 48px; }
+.empty-state p { font-size: 14px; }
+
+/* No data */
+.no-data { text-align: center; padding: 60px; color: #bbb; font-size: 14px; }
+
+/* Color palette for projects */
+:root {
+  --c1: #3b82f6; --c2: #10b981; --c3: #f59e0b; --c4: #8b5cf6;
+  --c5: #ef4444; --c6: #06b6d4; --c7: #f97316; --c8: #ec4899;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>전사 IT 과제 일정 뷰어</h1>
+  <div class="header-right">
+    <button class="btn-excel" onclick="document.getElementById('fileInput').click()">
+      <span>📊</span> 엑셀 업로드 ▾
+    </button>
+    <input type="file" id="fileInput" accept=".xlsx,.xls" onchange="handleFile(event)">
+    <button class="btn-help">?</button>
+  </div>
+</div>
+
+<div class="summary">
+  <div class="card">
+    <div class="card-icon total">📁</div>
+    <div class="card-info">
+      <div class="card-label">전체 과제</div>
+      <div class="card-count" id="cnt-total">0 <span>건</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-icon active">▶️</div>
+    <div class="card-info">
+      <div class="card-label">진행 중</div>
+      <div class="card-count" id="cnt-active">0 <span>건</span></div>
+    </div>
+    <div class="card-pct pct-active" id="pct-active">0%</div>
+  </div>
+  <div class="card">
+    <div class="card-icon pending">🕐</div>
+    <div class="card-info">
+      <div class="card-label">예정 과제</div>
+      <div class="card-count" id="cnt-pending">0 <span>건</span></div>
+    </div>
+    <div class="card-pct pct-pending" id="pct-pending">0%</div>
+  </div>
+  <div class="card">
+    <div class="card-icon done">✅</div>
+    <div class="card-info">
+      <div class="card-label">완료 과제</div>
+      <div class="card-count" id="cnt-done">0 <span>건</span></div>
+    </div>
+    <div class="card-pct pct-done" id="pct-done">0%</div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-group">
+    <span class="filter-label">시트</span>
+    <select class="filter-select" id="filter-sheet" onchange="onSheetChange()"></select>
+  </div>
+  <div class="filter-divider"></div>
+  <div class="filter-group">
+    <span class="filter-label">본부</span>
+    <select class="filter-select" id="filter-bubu" onchange="applyFilters()">
+      <option value="">전체</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">상태</span>
+    <select class="filter-select" id="filter-status" onchange="applyFilters()">
+      <option value="">전체</option>
+      <option value="진행 중">진행 중</option>
+      <option value="예정">예정</option>
+      <option value="완료">완료</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">우선순위</span>
+    <select class="filter-select" id="filter-priority" onchange="applyFilters()">
+      <option value="">전체</option>
+      <option value="S">S</option>
+      <option value="C">C</option>
+      <option value="H">H</option>
+      <option value="M">M</option>
+      <option value="L">L</option>
+      <option value="E">E</option>
+      <option value="O">O</option>
+    </select>
+  </div>
+  <div class="search-wrap">
+    <span>🔍</span>
+    <input type="text" id="search-input" placeholder="과제명 또는 조직명 검색" oninput="applyFilters()">
+  </div>
+  <button class="filter-reset" onclick="resetFilters()">↺ 필터 초기화</button>
+  <div class="filter-bar-right">
+    <button class="view-btn" onclick="scrollToday()">오늘</button>
+    <div class="view-toggle">
+      <button class="view-btn" id="view-week" onclick="setView('week')">주</button>
+      <button class="view-btn active" id="view-month" onclick="setView('month')">월</button>
+      <button class="view-btn" id="view-quarter" onclick="setView('quarter')">분기</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="gantt-wrap" id="gantt-wrap">
+    <div class="empty-state" id="empty-state">
+      <div class="icon">📋</div>
+      <p>우측 상단의 <strong>엑셀 업로드</strong> 버튼으로 파일을 불러오세요</p>
+    </div>
+    <table class="gantt-table" id="gantt-table" style="display:none;">
+      <thead id="gantt-head"></thead>
+      <tbody id="gantt-body"></tbody>
+    </table>
+  </div>
+  <div class="detail-panel hidden" id="detail-panel">
+    <div style="position:relative; flex:1; display:flex; flex-direction:column; overflow:hidden;">
+      <div class="detail-header" id="detail-header"></div>
+      <div class="detail-body" id="detail-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let allData = {};       // { sheetName: [projects...] }
+let currentSheet = '';
+let currentProjects = [];
+let filteredProjects = [];
+let expandedRows = new Set();
+let selectedIdx = null;
+let viewMode = 'month';
+
+const TODAY = new Date();
+TODAY.setHours(0,0,0,0);
+
+const COLORS = ['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#f97316','#ec4899','#14b8a6','#a855f7'];
+const colorMap = {};
+let colorIdx = 0;
+function getColor(key) {
+  if (!colorMap[key]) colorMap[key] = COLORS[colorIdx++ % COLORS.length];
+  return colorMap[key];
+}
+
+// ─── File Parsing ─────────────────────────────────────────────────────────────
+function handleFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+    allData = {};
+    wb.SheetNames.forEach(name => {
+      allData[name] = parseSheet(wb.Sheets[name]);
+    });
+    initSheetSelect();
+    event.target.value = '';
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseSheet(ws) {
+  const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+  const projects = [];
+  let currentProject = null;
+
+  function cellVal(r, c) {
+    const cell = ws[XLSX.utils.encode_cell({r, c})];
+    if (!cell) return null;
+    if (cell.t === 'd') return cell.v instanceof Date ? cell.v : new Date(cell.v);
+    return cell.v !== undefined ? cell.v : null;
+  }
+
+  function fmtDate(v) {
+    if (v == null) return null;
+    if (v instanceof Date && !isNaN(v)) return v.toISOString().split('T')[0];
+    if (typeof v === 'string' && v.trim() && v.trim() !== '?') return v.trim();
+    return null;
+  }
+
+  for (let r = 2; r <= range.e.r; r++) {
+    const bubu = cellVal(r, 0);
+    const team = cellVal(r, 1);
+    const name = cellVal(r, 5) || cellVal(r, 6);
+    const col7 = cellVal(r, 7);
+
+    if (bubu != null && name != null) {
+      currentProject = {
+        bubu: String(bubu).trim(),
+        team: team ? String(team).trim() : '',
+        manager: cellVal(r, 2) ? String(cellVal(r, 2)).trim() : '',
+        priority: cellVal(r, 3) ? String(cellVal(r, 3)).trim() : '',
+        ticket: cellVal(r, 4) ? String(cellVal(r, 4)).trim() : '',
+        name: String(name).trim(),
+        request: fmtDate(cellVal(r, 8)),
+        start: fmtDate(cellVal(r, 9)),
+        end: fmtDate(cellVal(r, 10)),
+        open: fmtDate(cellVal(r, 11)),
+        orgs: []
+      };
+      projects.push(currentProject);
+    } else if (currentProject && col7 != null) {
+      currentProject.orgs.push({
+        org: String(col7).trim(),
+        manager: cellVal(r, 2) ? String(cellVal(r, 2)).trim() : '',
+        ticket: cellVal(r, 4) ? String(cellVal(r, 4)).trim() : '',
+        start: fmtDate(cellVal(r, 9)),
+        end: fmtDate(cellVal(r, 10)),
+      });
+    }
+  }
+  return projects;
+}
+
+// ─── Sheet / Filter Init ──────────────────────────────────────────────────────
+function initSheetSelect() {
+  const sel = document.getElementById('filter-sheet');
+  sel.innerHTML = '';
+  Object.keys(allData).forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+  currentSheet = Object.keys(allData)[0] || '';
+  sel.value = currentSheet;
+  onSheetChange();
+}
+
+function onSheetChange() {
+  currentSheet = document.getElementById('filter-sheet').value;
+  currentProjects = allData[currentSheet] || [];
+  expandedRows = new Set();
+  selectedIdx = null;
+  hideDetail();
+  populateBubuFilter();
+  applyFilters();
+}
+
+function populateBubuFilter() {
+  const sel = document.getElementById('filter-bubu');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">전체</option>';
+  const bubus = [...new Set(currentProjects.map(p => p.bubu))].sort();
+  bubus.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b;
+    opt.textContent = b;
+    sel.appendChild(opt);
+  });
+  if (bubus.includes(prev)) sel.value = prev;
+}
+
+// ─── Status ───────────────────────────────────────────────────────────────────
+function getStatus(start, end) {
+  const s = start ? new Date(start) : null;
+  const e = end ? new Date(end) : null;
+  if (e && e < TODAY) return '완료';
+  if (s && s > TODAY) return '예정';
+  if (s && s <= TODAY) return '진행 중';
+  return '-';
+}
+
+// ─── Filters ──────────────────────────────────────────────────────────────────
+function applyFilters() {
+  const bubu = document.getElementById('filter-bubu').value;
+  const status = document.getElementById('filter-status').value;
+  const priority = document.getElementById('filter-priority').value;
+  const search = document.getElementById('search-input').value.toLowerCase().trim();
+
+  filteredProjects = currentProjects.filter(p => {
+    if (bubu && p.bubu !== bubu) return false;
+    if (priority && p.priority !== priority) return false;
+    if (status) {
+      const s = getStatus(p.start, p.end);
+      if (s !== status) return false;
+    }
+    if (search) {
+      const inName = p.name.toLowerCase().includes(search);
+      const inOrg = p.orgs.some(o => o.org.toLowerCase().includes(search));
+      const inTeam = p.team.toLowerCase().includes(search);
+      if (!inName && !inOrg && !inTeam) return false;
+    }
+    return true;
+  });
+
+  updateSummary();
+  renderGantt();
+}
+
+function resetFilters() {
+  document.getElementById('filter-bubu').value = '';
+  document.getElementById('filter-status').value = '';
+  document.getElementById('filter-priority').value = '';
+  document.getElementById('search-input').value = '';
+  applyFilters();
+}
+
+function updateSummary() {
+  const total = filteredProjects.length;
+  let active = 0, pending = 0, done = 0;
+  filteredProjects.forEach(p => {
+    const s = getStatus(p.start, p.end);
+    if (s === '진행 중') active++;
+    else if (s === '예정') pending++;
+    else if (s === '완료') done++;
+  });
+  document.getElementById('cnt-total').innerHTML = `${total} <span>건</span>`;
+  document.getElementById('cnt-active').innerHTML = `${active} <span>건</span>`;
+  document.getElementById('cnt-pending').innerHTML = `${pending} <span>건</span>`;
+  document.getElementById('cnt-done').innerHTML = `${done} <span>건</span>`;
+  const pct = n => total ? Math.round(n/total*100) + '%' : '0%';
+  document.getElementById('pct-active').textContent = pct(active);
+  document.getElementById('pct-pending').textContent = pct(pending);
+  document.getElementById('pct-done').textContent = pct(done);
+}
+
+// ─── Timeline Columns ─────────────────────────────────────────────────────────
+function buildTimeline() {
+  if (viewMode === 'month') {
+    const cols = [];
+    for (let y = 2025; y <= 2027; y++) {
+      for (let m = 0; m < 12; m++) {
+        cols.push({ date: new Date(y, m, 1), label: `${m+1}월`, year: y });
+      }
+    }
+    return cols;
+  }
+  if (viewMode === 'quarter') {
+    const cols = [];
+    for (let y = 2025; y <= 2027; y++) {
+      for (let q = 1; q <= 4; q++) {
+        cols.push({ date: new Date(y, (q-1)*3, 1), label: `Q${q}`, year: y, isQuarter: true, months: 3 });
+      }
+    }
+    return cols;
+  }
+  // week
+  const cols = [];
+  const start = new Date(2026, 0, 1);
+  const end = new Date(2026, 11, 31);
+  let cur = new Date(start);
+  while (cur <= end) {
+    cols.push({ date: new Date(cur), label: `${cur.getMonth()+1}/${cur.getDate()}`, year: cur.getFullYear() });
+    cur.setDate(cur.getDate() + 7);
+  }
+  return cols;
+}
+
+// ─── Gantt Bar Calculation ────────────────────────────────────────────────────
+function barCalc(startStr, endStr, cols) {
+  if (!startStr) return null;
+  const s = new Date(startStr);
+  const e = endStr ? new Date(endStr) : new Date(s.getFullYear(), s.getMonth()+3, 1);
+
+  const firstCol = cols[0].date;
+  const lastColDate = cols[cols.length-1].date;
+  const lastCol = viewMode === 'quarter'
+    ? new Date(lastColDate.getFullYear(), lastColDate.getMonth()+3, 1)
+    : new Date(lastColDate.getFullYear(), lastColDate.getMonth()+1, 1);
+  const totalMs = lastCol - firstCol;
+
+  const startOffset = Math.max(0, (s - firstCol) / totalMs);
+  const endOffset = Math.min(1, (e - firstCol) / totalMs);
+  if (endOffset <= startOffset) return null;
+  return { left: startOffset * 100, width: (endOffset - startOffset) * 100 };
+}
+
+function todayOffset(cols) {
+  const firstCol = cols[0].date;
+  const lastColDate = cols[cols.length-1].date;
+  const lastCol = viewMode === 'quarter'
+    ? new Date(lastColDate.getFullYear(), lastColDate.getMonth()+3, 1)
+    : new Date(lastColDate.getFullYear(), lastColDate.getMonth()+1, 1);
+  const totalMs = lastCol - firstCol;
+  const off = (TODAY - firstCol) / totalMs;
+  return off >= 0 && off <= 1 ? off * 100 : null;
+}
+
+// ─── Render Gantt ─────────────────────────────────────────────────────────────
+function renderGantt() {
+  const table = document.getElementById('gantt-table');
+  const emptyState = document.getElementById('empty-state');
+
+  if (!filteredProjects.length && !currentProjects.length) {
+    table.style.display = 'none';
+    emptyState.style.display = 'flex';
+    return;
+  }
+  table.style.display = '';
+  emptyState.style.display = 'none';
+
+  const cols = buildTimeline();
+  const ganttWidth = cols.length * (viewMode === 'week' ? 40 : viewMode === 'quarter' ? 80 : 48);
+
+  // Group columns by year
+  const yearGroups = {};
+  cols.forEach(c => {
+    if (!yearGroups[c.year]) yearGroups[c.year] = 0;
+    yearGroups[c.year]++;
+  });
+
+  // Head
+  const head = document.getElementById('gantt-head');
+  head.innerHTML = '';
+
+  // Year row
+  const yearRow = document.createElement('tr');
+  yearRow.className = 'gantt-head-year';
+  yearRow.innerHTML = `
+    <th class="col-info" colspan="5" style="border-right:1px solid #ddd;"></th>
+    <th colspan="${cols.length}" style="padding:0;border:none;">
+      <div style="position:relative;width:${ganttWidth}px;height:24px;overflow:hidden;">
+        ${Object.entries(yearGroups).map(([y, cnt]) => {
+          const leftPct = cols.findIndex(c=>c.year==y) / cols.length * 100;
+          const widthPct = cnt / cols.length * 100;
+          return `<div style="position:absolute;left:${leftPct}%;width:${widthPct}%;text-align:center;border-right:1px solid #ddd;height:100%;line-height:24px;">${y}</div>`;
+        }).join('')}
+      </div>
+    </th>`;
+  head.appendChild(yearRow);
+
+  // Month row
+  const monthRow = document.createElement('tr');
+  monthRow.className = 'gantt-head';
+  monthRow.innerHTML = `
+    <th class="col-info col-name" style="top:24px;">과제 / 조직</th>
+    <th class="col-info col-manager" style="top:24px;">담당자</th>
+    <th class="col-info col-status" style="top:24px;">상태</th>
+    <th class="col-info col-date" style="top:24px;">시작일</th>
+    <th class="col-info col-date" style="top:24px;border-right:2px solid #ccc;">종료일</th>
+  `;
+  const colW = viewMode === 'week' ? 40 : viewMode === 'quarter' ? 80 : 48;
+  const todayOff = todayOffset(cols);
+
+  // Gantt header cell (single spanning)
+  const ganttHeaderCell = document.createElement('th');
+  ganttHeaderCell.colSpan = cols.length;
+  ganttHeaderCell.style = `padding:0;top:24px;`;
+  const headerInner = document.createElement('div');
+  headerInner.style = `position:relative;width:${ganttWidth}px;height:36px;overflow:hidden;display:flex;`;
+  cols.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.style = `width:${colW}px;flex-shrink:0;text-align:center;border-right:1px solid #eee;line-height:36px;font-size:11px;color:#888;`;
+    div.textContent = c.label;
+    headerInner.appendChild(div);
+  });
+  if (todayOff !== null) {
+    const tl = document.createElement('div');
+    tl.className = 'today-line';
+    tl.style.left = `${todayOff}%`;
+    headerInner.appendChild(tl);
+  }
+  ganttHeaderCell.appendChild(headerInner);
+  monthRow.appendChild(ganttHeaderCell);
+  head.appendChild(monthRow);
+
+  // Body
+  const tbody = document.getElementById('gantt-body');
+  tbody.innerHTML = '';
+
+  if (!filteredProjects.length) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="${5 + cols.length}" class="no-data">필터 조건에 맞는 과제가 없습니다</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+
+  filteredProjects.forEach((p, pi) => {
+    const status = getStatus(p.start, p.end);
+    const color = getColor(p.bubu + p.name);
+    const expanded = expandedRows.has(pi);
+    const hasOrgs = p.orgs && p.orgs.length > 0;
+
+    // Project row
+    const tr = document.createElement('tr');
+    tr.className = 'project-row' + (selectedIdx === `p${pi}` ? ' selected' : '');
+    tr.onclick = () => selectProject(pi, p);
+
+    // Name cell
+    const nameCell = document.createElement('td');
+    nameCell.className = 'col-name';
+    nameCell.innerHTML = `
+      <div class="cell-name">
+        ${hasOrgs ? `<button class="toggle-btn ${expanded?'':'collapsed'}" onclick="event.stopPropagation();toggleRow(${pi})" title="펼치기/접기">▾</button>` : '<span style="width:16px;flex-shrink:0;"></span>'}
+        <div class="icon" style="background:${color}22;color:${color};">📋</div>
+        <div>
+          <div class="name-text" title="${p.name}">${p.name}</div>
+          ${hasOrgs ? `<div class="org-count" style="color:${color};">${p.orgs.length}개 조직</div>` : ''}
+        </div>
+      </div>`;
+    tr.appendChild(nameCell);
+
+    // Manager
+    const mgrCell = document.createElement('td');
+    mgrCell.className = 'cell-text';
+    mgrCell.textContent = p.manager || '-';
+    mgrCell.title = p.manager || '';
+    tr.appendChild(mgrCell);
+
+    // Status
+    const stCell = document.createElement('td');
+    stCell.style.textAlign = 'center';
+    const stClass = status === '진행 중' ? 'badge-active' : status === '예정' ? 'badge-pending' : status === '완료' ? 'badge-done' : 'badge-unknown';
+    stCell.innerHTML = `<span class="badge ${stClass}">${status}</span>`;
+    tr.appendChild(stCell);
+
+    // Start
+    const startCell = document.createElement('td');
+    startCell.className = 'cell-date';
+    startCell.textContent = p.start ? p.start.slice(5).replace('-','.') : '-';
+    tr.appendChild(startCell);
+
+    // End
+    const endCell = document.createElement('td');
+    endCell.className = 'cell-date';
+    endCell.style.borderRight = '2px solid #ccc';
+    endCell.textContent = p.end ? p.end.slice(5).replace('-','.') : '-';
+    tr.appendChild(endCell);
+
+    // Gantt bar cell
+    const ganttCell = document.createElement('td');
+    ganttCell.colSpan = cols.length;
+    ganttCell.className = 'gantt-cell';
+    ganttCell.style.padding = '0';
+    const ganttInner = document.createElement('div');
+    ganttInner.style = `position:relative;width:${ganttWidth}px;height:36px;`;
+
+    const bar = barCalc(p.start, p.end, cols);
+    if (bar) {
+      const barEl = document.createElement('div');
+      barEl.style = `position:absolute;top:50%;transform:translateY(-50%);left:${bar.left}%;width:${bar.width}%;height:14px;border-radius:7px;background:${color};display:flex;align-items:center;overflow:hidden;`;
+      if (bar.width > 3) barEl.innerHTML = `<span style="font-size:10px;color:#fff;font-weight:600;padding:0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">전체</span>`;
+      ganttInner.appendChild(barEl);
+    }
+    if (todayOff !== null) {
+      const tl = document.createElement('div');
+      tl.className = 'today-line';
+      tl.style.left = `${todayOff}%`;
+      ganttInner.appendChild(tl);
+    }
+    ganttCell.appendChild(ganttInner);
+    tr.appendChild(ganttCell);
+    tbody.appendChild(tr);
+
+    // Org rows
+    if (hasOrgs && expanded) {
+      const orgColors = ['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#f97316','#ec4899'];
+      p.orgs.forEach((org, oi) => {
+        const orgColor = orgColors[oi % orgColors.length];
+        const orgStatus = getStatus(org.start, org.end);
+        const otr = document.createElement('tr');
+        otr.className = 'org-row' + (selectedIdx === `o${pi}-${oi}` ? ' selected' : '');
+        otr.onclick = () => selectOrg(pi, oi, p, org);
+
+        const onameCell = document.createElement('td');
+        onameCell.className = 'col-name';
+        onameCell.innerHTML = `
+          <div class="cell-name" style="padding-left:28px;">
+            <div style="width:3px;height:20px;border-radius:2px;background:${orgColor};flex-shrink:0;"></div>
+            <div class="name-text" style="font-weight:400;">${org.org}</div>
+          </div>`;
+        otr.appendChild(onameCell);
+
+        const omgrCell = document.createElement('td');
+        omgrCell.className = 'cell-text';
+        omgrCell.style.color = '#666';
+        omgrCell.textContent = org.manager || '-';
+        omgrCell.title = org.manager || '';
+        otr.appendChild(omgrCell);
+
+        const ostCell = document.createElement('td');
+        ostCell.style.textAlign = 'center';
+        const ostClass = orgStatus === '진행 중' ? 'badge-active' : orgStatus === '예정' ? 'badge-pending' : orgStatus === '완료' ? 'badge-done' : 'badge-unknown';
+        ostCell.innerHTML = `<span class="badge ${ostClass}" style="font-size:10px;">${orgStatus}</span>`;
+        otr.appendChild(ostCell);
+
+        const ostartCell = document.createElement('td');
+        ostartCell.className = 'cell-date';
+        ostartCell.style.color = '#888';
+        ostartCell.textContent = org.start ? org.start.slice(5).replace('-','.') : '-';
+        otr.appendChild(ostartCell);
+
+        const oendCell = document.createElement('td');
+        oendCell.className = 'cell-date';
+        oendCell.style.cssText = 'border-right:2px solid #ccc;color:#888;';
+        oendCell.textContent = org.end ? org.end.slice(5).replace('-','.') : '-';
+        otr.appendChild(oendCell);
+
+        const oganttCell = document.createElement('td');
+        oganttCell.colSpan = cols.length;
+        oganttCell.className = 'gantt-cell';
+        oganttCell.style.padding = '0';
+        const oganttInner = document.createElement('div');
+        oganttInner.style = `position:relative;width:${ganttWidth}px;height:36px;`;
+
+        const obar = barCalc(org.start, org.end, cols);
+        if (obar) {
+          const obarEl = document.createElement('div');
+          obarEl.style = `position:absolute;top:50%;transform:translateY(-50%);left:${obar.left}%;width:${obar.width}%;height:10px;border-radius:5px;background:${orgColor};`;
+          oganttInner.appendChild(obarEl);
+        }
+        if (todayOff !== null) {
+          const tl = document.createElement('div');
+          tl.className = 'today-line';
+          tl.style.left = `${todayOff}%`;
+          oganttInner.appendChild(tl);
+        }
+        oganttCell.appendChild(oganttInner);
+        otr.appendChild(oganttCell);
+        tbody.appendChild(otr);
+      });
+    }
+  });
+
+  // Scroll to today
+  requestAnimationFrame(() => scrollToday());
+}
+
+// ─── Row Toggle ───────────────────────────────────────────────────────────────
+function toggleRow(pi) {
+  if (expandedRows.has(pi)) expandedRows.delete(pi);
+  else expandedRows.add(pi);
+  renderGantt();
+}
+
+// ─── Selection / Detail ───────────────────────────────────────────────────────
+function selectProject(pi, p) {
+  selectedIdx = `p${pi}`;
+  showDetail(p, null);
+  renderGantt();
+}
+
+function selectOrg(pi, oi, p, org) {
+  selectedIdx = `o${pi}-${oi}`;
+  showDetail(p, org);
+  renderGantt();
+}
+
+function showDetail(p, org) {
+  const panel = document.getElementById('detail-panel');
+  panel.classList.remove('hidden');
+
+  const header = document.getElementById('detail-header');
+  const status = getStatus(p.start, p.end);
+  const stClass = status === '진행 중' ? 'badge-active' : status === '예정' ? 'badge-pending' : status === '완료' ? 'badge-done' : 'badge-unknown';
+  const prioClass = `priority-${p.priority}`;
+
+  header.innerHTML = `
+    <button class="detail-close" onclick="hideDetail()">✕</button>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+      <span class="badge ${stClass}">${status}</span>
+      <span class="priority ${prioClass}">${p.priority}</span>
+    </div>
+    <h3>${org ? org.org + ' — ' + p.name : p.name}</h3>
+  `;
+
+  const body = document.getElementById('detail-body');
+  body.innerHTML = `
+    <div class="detail-tabs">
+      <button class="detail-tab active">개요</button>
+    </div>
+    <div class="detail-field"><span class="detail-field-label">과제명</span><span class="detail-field-value">${p.name}</span></div>
+    <div class="detail-field"><span class="detail-field-label">본부</span><span class="detail-field-value">${p.bubu}</span></div>
+    <div class="detail-field"><span class="detail-field-label">팀/파트</span><span class="detail-field-value">${p.team || '-'}</span></div>
+    <div class="detail-field"><span class="detail-field-label">담당자</span><span class="detail-field-value">${p.manager || '-'}</span></div>
+    <div class="detail-field"><span class="detail-field-label">우선순위</span><span class="detail-field-value"><span class="priority ${prioClass}">${p.priority}</span></span></div>
+    <div class="detail-field"><span class="detail-field-label">티켓</span><span class="detail-field-value">${p.ticket || '-'}</span></div>
+    <div class="detail-field"><span class="detail-field-label">전체 기간</span><span class="detail-field-value">${p.start||'미정'} ~ ${p.end||'미정'}</span></div>
+    <div class="detail-field"><span class="detail-field-label">요청일</span><span class="detail-field-value">${p.request||'-'}</span></div>
+    <div class="detail-field"><span class="detail-field-label">오픈예정</span><span class="detail-field-value">${p.open||'-'}</span></div>
+    ${org ? `
+    <div class="detail-section-title">선택 조직 정보</div>
+    <div class="detail-field"><span class="detail-field-label">조직</span><span class="detail-field-value">${org.org}</span></div>
+    <div class="detail-field"><span class="detail-field-label">담당자</span><span class="detail-field-value">${org.manager||'-'}</span></div>
+    <div class="detail-field"><span class="detail-field-label">일정</span><span class="detail-field-value">${org.start||'미정'} ~ ${org.end||'미정'}</span></div>
+    ` : ''}
+    ${p.orgs && p.orgs.length > 0 ? `
+    <div class="detail-section-title">조직별 일정</div>
+    <table class="org-table">
+      <tr><th>조직</th><th>담당자</th><th>상태</th><th>기간</th></tr>
+      ${p.orgs.map((o, i) => {
+        const os = getStatus(o.start, o.end);
+        const osc = os === '진행 중' ? 'badge-active' : os === '예정' ? 'badge-pending' : os === '완료' ? 'badge-done' : 'badge-unknown';
+        return `<tr>
+          <td style="font-weight:600;">${o.org}</td>
+          <td style="color:#666;">${o.manager||'-'}</td>
+          <td><span class="badge ${osc}" style="font-size:10px;">${os}</span></td>
+          <td style="color:#888;">${o.start?o.start.slice(5).replace('-','.'):'?'} ~ ${o.end?o.end.slice(5).replace('-','.'):'?'}</td>
+        </tr>`;
+      }).join('')}
+    </table>` : ''}
+  `;
+}
+
+function hideDetail() {
+  document.getElementById('detail-panel').classList.add('hidden');
+  selectedIdx = null;
+  renderGantt();
+}
+
+// ─── View / Scroll ────────────────────────────────────────────────────────────
+function setView(mode) {
+  viewMode = mode;
+  ['week','month','quarter'].forEach(v => {
+    document.getElementById(`view-${v}`).classList.toggle('active', v === mode);
+  });
+  renderGantt();
+}
+
+function scrollToday() {
+  const wrap = document.getElementById('gantt-wrap');
+  const cols = buildTimeline();
+  const todayOff = todayOffset(cols);
+  if (todayOff === null) return;
+  const colW = viewMode === 'week' ? 40 : viewMode === 'quarter' ? 80 : 48;
+  const ganttWidth = cols.length * colW;
+  const infoWidth = 5 * 80; // approx
+  const scrollX = (todayOff / 100) * ganttWidth - wrap.clientWidth / 2 + infoWidth;
+  wrap.scrollLeft = Math.max(0, scrollX);
+}
+</script>
+</body>
+</html>
