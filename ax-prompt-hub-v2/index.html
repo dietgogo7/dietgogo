@@ -761,7 +761,7 @@ DB 종류: [MySQL / PostgreSQL / BigQuery 등]
         { label:'총 복사 횟수',  value:totalCopies,    unit:'회', color:'text-violet-600', bg:'bg-violet-50', icon:'📋' },
       ];
       return (
-        <div className="max-w-5xl mx-auto">
+        <div className="mx-auto">
           {/* Hero */}
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900 mb-1">AX Prompt Hub</h1>
@@ -853,7 +853,7 @@ DB 종류: [MySQL / PostgreSQL / BigQuery 등]
       }, [prompts, filterCat, search, sortBy]);
 
       return (
-        <div className="max-w-5xl mx-auto">
+        <div className="mx-auto">
           {/* Header */}
           <div className="mb-5">
             <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-1">
@@ -947,7 +947,7 @@ DB 종류: [MySQL / PostgreSQL / BigQuery 등]
         setCommentError('');
       };
       return (
-        <div className="max-w-5xl mx-auto">
+        <div className="mx-auto">
           {/* Breadcrumb */}
           <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-4">
             <button onClick={() => nav('list')} className="hover:text-indigo-600 flex items-center gap-1">
@@ -1358,7 +1358,7 @@ DB 종류: [MySQL / PostgreSQL / BigQuery 등]
         : favs;
 
       return (
-        <div className="max-w-5xl mx-auto">
+        <div className="mx-auto">
           <div className="mb-5">
             <h1 className="text-xl font-bold text-gray-900">즐겨찾기</h1>
             <p className="text-sm text-gray-500 mt-0.5">자주 사용하는 프롬프트를 즐겨찾기에서 바로 확인하세요</p>
@@ -1430,7 +1430,7 @@ DB 종류: [MySQL / PostgreSQL / BigQuery 등]
         : mine;
 
       return (
-        <div className="max-w-5xl mx-auto">
+        <div className="mx-auto">
           <div className="flex items-start justify-between mb-5">
             <div>
               <h1 className="text-xl font-bold text-gray-900">내 프롬프트</h1>
