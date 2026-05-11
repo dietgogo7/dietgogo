@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>상품 정보 -> 콘텐츠 패키지 생성기</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="page-header">
+        <div>
+          <div class="title-row">
+            <h1>상품 정보 → 콘텐츠 패키지 생성기</h1>
+            <span class="pilot-badge">LLM Pilot</span>
+          </div>
+          <p>상품번호를 입력하면 상품 정보를 조회하고, LLM이 여러 콘텐츠를 자동 생성합니다.</p>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <div class="left-column">
+          <section class="panel lookup-panel" aria-labelledby="lookup-title">
+            <div class="panel-heading">
+              <span class="step">1</span>
+              <h2 id="lookup-title">상품 조회</h2>
+            </div>
+            <form class="lookup-form" id="lookupForm">
+              <label for="productNumber">상품번호</label>
+              <input id="productNumber" name="productNumber" value="9791168122231" autocomplete="off" />
+              <button class="primary-button" type="submit">상품 정보 불러오기</button>
+              <button class="secondary-button" type="button" id="resetButton">상품 비우기</button>
+            </form>
+            <div class="api-status" id="apiStatus">
+              <span class="status-dot"></span>
+              YES24 API 연동
+            </div>
+          </section>
+
+          <section class="panel product-panel" aria-labelledby="product-title">
+            <div class="panel-heading">
+              <span class="step">2</span>
+              <h2 id="product-title">상품 정보</h2>
+            </div>
+            <div class="product-grid">
+              <div class="book-cover" aria-label="도서 표지">
+                <div class="cover-art">
+                  <span>불편한<br />편의점 2</span>
+                </div>
+              </div>
+              <dl class="product-meta">
+                <div>
+                  <dt>상품명</dt>
+                  <dd id="bookTitle">불편한 편의점 2 (양장)</dd>
+                </div>
+                <div>
+                  <dt>저자 및 역자</dt>
+                  <dd id="bookAuthor">김호연</dd>
+                </div>
+                <div>
+                  <dt>출판사</dt>
+                  <dd id="bookPublisher">나무옆의자</dd>
+                </div>
+                <div>
+                  <dt>카테고리</dt>
+                  <dd id="bookCategory">국내도서 &gt; 소설/시/희곡 &gt; 한국소설</dd>
+                </div>
+              </dl>
+              <div class="product-summary">
+                <div class="price-row">
+                  <span>가격</span>
+                  <strong id="bookPrice">15,800원</strong>
+                </div>
+                <p id="bookIntro">
+                  더 진해진 웃음과 감동으로 돌아온 '불편한 편의점' 두 번째 이야기. 서울역 노숙인
+                  독고에서 다시 시작되는 따뜻한 인연과 성장의 기록.
+                </p>
+              </div>
+            </div>
+            <div class="tag-list" id="tagList"></div>
+            <div class="source-data">
+              <article>
+                <h3>책 소개</h3>
+                <p id="bookDescription">
+                  서로 다른 사연을 가진 사람들이 편의점에서 만나며 작은 위로를 얻는 휴먼 소설입니다.
+                </p>
+              </article>
+              <article>
+                <h3>상세 내용</h3>
+                <p id="bookDetails">
+                  서울의 작은 편의점을 배경으로 사람들의 관계와 성장을 따라갑니다.
+                </p>
+              </article>
+              <article>
+                <h3>목차</h3>
+                <p id="bookToc">프롤로그 · ALWAYS · 홍금보 씨 · 홈리스 · 에필로그</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel settings-panel" aria-labelledby="settings-title">
+            <div class="panel-heading">
+              <span class="step">3</span>
+              <h2 id="settings-title">콘텐츠 생성 설정</h2>
+            </div>
+            <div class="settings-grid">
+              <div class="setting-row content-types">
+                <span class="setting-label">콘텐츠 유형</span>
+                <div class="type-options">
+                  <label><input type="checkbox" value="oneLine" checked /> 한 줄 소개</label>
+                  <label><input type="checkbox" value="recommend" checked /> 추천 대상</label>
+                  <label><input type="checkbox" value="push" checked /> 푸시 문구</label>
+                  <label><input type="checkbox" value="sns" checked /> SNS 문구</label>
+                  <label><input type="checkbox" value="summary" checked /> 상세페이지 요약</label>
+                  <label><input type="checkbox" value="faq" /> 광고 카피</label>
+                </div>
+              </div>
+              <div class="setting-row">
+                <span class="setting-label">톤(말투)</span>
+                <div class="segmented-control" role="group" aria-label="톤 선택">
+                  <button type="button">공식</button>
+                  <button type="button" class="active">친근</button>
+                  <button type="button">판매형</button>
+                </div>
+              </div>
+              <div class="setting-row select-row">
+                <label for="promptTemplate">프롬프트 템플릿</label>
+                <select id="promptTemplate">
+                  <option>Prompt Hub 템플릿 - 도서 마케팅 (기본)</option>
+                  <option>신간 런칭 캠페인</option>
+                  <option>서점 MD 추천형</option>
+                </select>
+                <label for="modelSelect">모델</label>
+                <select id="modelSelect">
+                  <option>GPT-4o (사내 프록시)</option>
+                  <option>GPT-4.1 mini</option>
+                  <option>Claude Sonnet</option>
+                </select>
+              </div>
+            </div>
+            <div class="generate-cta">
+              <button class="generate-button" type="button" id="generateButton">
+                <span class="gen-icon">✦</span> LLM 콘텐츠 생성 시작
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <aside class="right-column">
+          <section class="panel progress-panel" aria-labelledby="progress-title">
+            <div class="panel-heading">
+              <span class="step">4</span>
+              <h2 id="progress-title">진행 상태</h2>
+            </div>
+            <ol class="progress-steps" id="progressSteps">
+              <li class="done"><span>✓</span><strong>상품 조회</strong><small>완료</small></li>
+              <li class="active"><span>2</span><strong>프롬프트 적용</strong><small>진행 중</small></li>
+              <li><span>3</span><strong>LLM 생성</strong><small>대기</small></li>
+              <li><span>4</span><strong>결과 저장</strong><small>대기</small></li>
+            </ol>
+            <div class="progress-message" id="progressMessage">
+              <span class="spinner"></span>
+              <p><strong>프롬프트를 구성하고 있습니다.</strong> 선택한 상품으로 최적의 템플릿을 준비 중이에요.</p>
+            </div>
+          </section>
+
+          <section class="panel flow-panel" aria-labelledby="flow-title">
+            <h2 id="flow-title">활용 흐름</h2>
+            <div class="flow-line">
+              <div><span>⌕</span><strong>상품번호 입력</strong><small>상품 정보 자동 조회</small></div>
+              <b>→</b>
+              <div><span>☷</span><strong>콘텐츠 유형 설정</strong><small>프롬프트 자동 구성</small></div>
+              <b>→</b>
+              <div><span>✦</span><strong>LLM 생성</strong><small>다양한 콘텐츠 생성</small></div>
+              <b>→</b>
+              <div><span>⇩</span><strong>결과 저장/활용</strong><small>복사 및 내보내기</small></div>
+            </div>
+          </section>
+        </aside>
+      </section>
+
+      <section class="panel results-panel" aria-labelledby="results-title">
+        <div class="results-header">
+          <div class="panel-heading">
+            <span class="step">5</span>
+            <h2 id="results-title">생성 결과</h2>
+          </div>
+          <div class="result-actions">
+            <button class="ghost-button" type="button">전체 복사</button>
+            <button class="primary-button compact" type="button">모두 저장</button>
+          </div>
+        </div>
+        <div class="result-grid" id="resultGrid"></div>
+      </section>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

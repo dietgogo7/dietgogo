@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AX Prompt Hub</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', 'Segoe UI', sans-serif; background: #f5f6fa; }
+    .line-clamp-1 { overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:1; }
+    .line-clamp-2 { overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+    .line-clamp-3 { overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; }
+    .prompt-body { white-space: pre-wrap; word-break: break-word; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.7; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    .fade-in { animation: fadeIn 0.15s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .slide-up { animation: slideUp 0.2s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .nav-item { transition: all 0.15s ease; }
+    .card-hover { transition: box-shadow 0.2s ease, transform 0.2s ease; }
+    .card-hover:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.10); transform: translateY(-1px); }
+    .btn-transition { transition: all 0.15s ease; }
+  </style>
+</head>
+<body>
+  <div id="root" style="height:100vh;overflow:hidden;"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+    /* ===================== CONSTANTS ===================== */
+    const CURRENT_USER = { id: 'user-001', name: '홍길동', department: '전략기획팀' };
+
+    const CATEGORIES = ['전체','문서 작성','요약','분석','기획','개발','고객 응대','번역/교정','회의','교육','리서치','기타'];
+
+    const CAT_STYLE = {
+      '문서 작성': { pill:'bg-blue-50 text-blue-600 border border-blue-200', dot:'bg-blue-500' },
+      '요약':      { pill:'bg-emerald-50 text-emerald-600 border border-emerald-200', dot:'bg-emerald-500' },
+      '분석':      { pill:'bg-orange-50 text-orange-600 border border-orange-200', dot:'bg-orange-500' },
+      '기획':      { pill:'bg-pink-50 text-pink-600 border border-pink-200', dot:'bg-pink-500' },
+      '개발':      { pill:'bg-cyan-50 text-cyan-700 border border-cyan-200', dot:'bg-cyan-500' },
+      '고객 응대': { pill:'bg-yellow-50 text-yellow-700 border border-yellow-200', dot:'bg-yellow-400' },
+      '번역/교정': { pill:'bg-teal-50 text-teal-600 border border-teal-200', dot:'bg-teal-500' },
+      '회의':      { pill:'bg-violet-50 text-violet-600 border border-violet-200', dot:'bg-violet-500' },
+      '교육':      { pill:'bg-red-50 text-red-600 border border-red-200', dot:'bg-red-500' },
+      '리서치':    { pill:'bg-indigo-50 text-indigo-600 border border-indigo-200', dot:'bg-indigo-500' },
+      '기타':      { pill:'bg-gray-100 text-gray-600 border border-gray-200', dot:'bg-gray-400' },
+    };
+
+    const CAT_ICON = {
+      '문서 작성':'📄','요약':'📝','분석':'📊','기획':'💡','개발':'💻',
+      '고객 응대':'🎧','번역/교정':'✏️','회의':'🤝','교육':'📚','리서치':'🔍','기타':'📌',
+    };
+
+    /* ===================== INITIAL DATA (mirrors data/prompts.json) ===================== */
+    const INITIAL_PROMPTS = [
+      {
+        id:'p-001', title:'임원 보고서 초안 작성 프롬프트',
+        description:'핵심 이슈를 기반으로 임원 보고서 초안을 작성합니다.',
+        category:'문서 작성', tags:['보고서','임원보고','기획'],
+        authorId:'user-001', authorName:'홍길동',
+        createdAt:'2026-05-11', updatedAt:'2026-05-11',
+        views:128, copies:42, likes:16, isLiked:true, isFavorited:false,
+        promptBody:`당신은 전략기획 담당자입니다.
+아래 내용을 기반으로 임원 보고서 초안을 작성해주세요.
+
+입력 정보:
+- 보고 목적: [입력하세요]
+- 핵심 이슈: [입력하세요]
+- 의사결정 필요 사항: [입력하세요]
+- 현황 데이터: [입력하세요]
+
+출력 형식:
+1. 배경 및 현황 (3~5줄)
+2. 주요 이슈 (불릿 형태)
+3. 검토 의견 (찬성/반대 논거 포함)
+4. 의사결정 요청 사항 (선택지 제시)
+5. 기대 효과 및 리스크
+
+작성 시 임원 관점에서 핵심만 간결하게 정리하고, 수치와 근거를 포함해주세요.`,
+        howToUse:'보고 목적, 핵심 이슈, 의사결정 필요 사항을 상세히 입력한 뒤 사용합니다. 현황 데이터가 있으면 함께 제공하면 품질이 높아집니다.',
+        exampleInput:'보고 목적: 신규 CRM 시스템 도입 검토\n핵심 이슈: 현재 영업팀 고객 데이터가 분산 관리되어 업무 비효율 발생\n의사결정 사항: 도입 여부 및 예산 승인',
+        exampleOutput:'1. 배경: 영업팀 고객 데이터가 Excel, 이메일 등 5개 채널에 분산...\n2. 주요 이슈: 데이터 중복 입력으로 월 40시간 낭비...',
+        comments:[
+          {id:'c-001',authorId:'user-002',authorName:'김철수',content:'실제 사용해보니 보고서 품질이 훨씬 좋아졌어요. 강력 추천합니다!',createdAt:'2026-05-10'},
+          {id:'c-002',authorId:'user-003',authorName:'이영희',content:'의사결정 요청 사항 부분이 특히 도움이 됩니다.',createdAt:'2026-05-09'},
+          {id:'c-003',authorId:'user-001',authorName:'홍길동',content:'현황 데이터를 구체적으로 넣을수록 더 좋은 결과가 나옵니다.',createdAt:'2026-05-08'},
+        ],
+      },
+      {
+        id:'p-002', title:'긴 문서 핵심 요약 프롬프트',
+        description:'보고서, 기사, 연구자료 등 긴 문서를 목적에 맞게 요약합니다.',
+        category:'요약', tags:['요약','문서','정리'],
+        authorId:'user-002', authorName:'김철수',
+        createdAt:'2026-05-10', updatedAt:'2026-05-10',
+        views:95, copies:31, likes:12, isLiked:false, isFavorited:true,
+        promptBody:`아래 문서를 다음 기준으로 요약해주세요.
+
+[문서 내용 붙여넣기]
+
+요약 기준:
+- 핵심 주제: 1~2문장으로
+- 주요 내용: 3~5개 불릿 포인트
+- 결론 및 시사점: 2~3문장
+- 추가 확인 필요 사항: 있을 경우 명시
+
+요약 시 원문의 수치, 사실, 출처는 보존해주세요.
+전문 용어는 그대로 사용하되 필요시 간략한 설명을 추가하세요.`,
+        howToUse:"문서 전체를 붙여넣고 실행합니다. 필요시 '대상 독자: 임원진' 등 추가 조건을 입력하면 더욱 적합한 요약이 생성됩니다.",
+        exampleInput:'[리포트 본문 전체 텍스트]',
+        exampleOutput:'핵심 주제: 2026년 국내 AI 시장은 전년 대비 34% 성장하며...',
+        comments:[{id:'c-004',authorId:'user-001',authorName:'홍길동',content:'긴 보고서 요약할 때 정말 유용합니다. 감사합니다!',createdAt:'2026-05-09'}],
+      },
+      {
+        id:'p-003', title:'VOC 이슈 분류 및 개선안 도출 프롬프트',
+        description:'고객 VOC 데이터를 이슈별로 분류하고 개선 방향을 제안합니다.',
+        category:'분석', tags:['VOC','고객분석','개선'],
+        authorId:'user-003', authorName:'이영희',
+        createdAt:'2026-05-09', updatedAt:'2026-05-09',
+        views:76, copies:28, likes:18, isLiked:false, isFavorited:false,
+        promptBody:`아래 고객 VOC 데이터를 분석해주세요.
+
+[VOC 데이터 입력]
+
+분석 항목:
+1. 이슈 분류 (제품/서비스/배송/CS 등 카테고리별)
+2. 빈도 분석 (어떤 이슈가 가장 많은지)
+3. 감성 분석 (긍정/부정/중립 비율)
+4. 핵심 불만 사항 Top 3
+5. 개선 방향 제안 (각 이슈별 우선순위와 함께)
+
+분류 결과는 표 형식으로 제공해주세요.`,
+        howToUse:'VOC 원문 또는 정리된 텍스트를 붙여넣어 사용합니다. 월별 데이터를 넣으면 추이 분석도 가능합니다.',
+        exampleInput:'배송이 너무 늦어요. 3일 기다렸어요.\n앱이 자꾸 튕겨요. 업데이트 해주세요.\n고객센터 연결이 너무 어렵습니다.',
+        exampleOutput:'이슈 분류:\n- 배송: 32% (불만 86건)\n- 앱 안정성: 28% (불만 75건)',
+        comments:[],
+      },
+      {
+        id:'p-004', title:'신규 서비스 기획안 구조화 프롬프트',
+        description:'아이디어를 체계적인 서비스 기획안으로 구조화합니다.',
+        category:'기획', tags:['기획','서비스기획','아이디어'],
+        authorId:'user-004', authorName:'박지민',
+        createdAt:'2026-05-08', updatedAt:'2026-05-08',
+        views:112, copies:38, likes:21, isLiked:true, isFavorited:true,
+        promptBody:`아래 서비스 아이디어를 체계적인 기획안으로 발전시켜주세요.
+
+서비스 아이디어: [입력하세요]
+
+기획안 구성:
+1. 서비스 개요 (목적, 타겟, 핵심 가치)
+2. 문제 정의 (현재 고객 페인포인트)
+3. 해결 방안 (핵심 기능 3~5가지)
+4. 비즈니스 모델 (수익 구조)
+5. 경쟁사 분석 (주요 경쟁자 및 차별점)
+6. MVP 범위 (초기 출시 기능)
+7. 성공 지표 (KPI 제안)
+8. 리스크 및 대응 방안`,
+        howToUse:'서비스 아이디어를 1~3줄로 입력하면 됩니다. 타겟 사용자나 시장 정보가 있으면 함께 제공하세요.',
+        exampleInput:'사내 회의록을 자동으로 요약하고 액션아이템을 추적하는 서비스. 타겟: B2B 중소기업',
+        exampleOutput:'1. 서비스 개요: MeetingAI는 회의 생산성 향상을 위한 AI 자동화 솔루션...',
+        comments:[
+          {id:'c-005',authorId:'user-002',authorName:'김철수',content:'기획 회의에서 바로 써봤는데 훨씬 체계적인 결과물이 나왔어요!',createdAt:'2026-05-07'},
+          {id:'c-006',authorId:'user-003',authorName:'이영희',content:'경쟁사 분석 파트가 특히 유용합니다.',createdAt:'2026-05-06'},
+        ],
+      },
+      {
+        id:'p-005', title:'코드 리뷰 체크리스트 생성 프롬프트',
+        description:'코드 리뷰 시 확인해야 할 항목을 자동으로 생성합니다.',
+        category:'개발', tags:['코드리뷰','PR','개발'],
+        authorId:'user-001', authorName:'홍길동',
+        createdAt:'2026-05-07', updatedAt:'2026-05-08',
+        views:89, copies:45, likes:24, isLiked:false, isFavorited:false,
+        promptBody:`아래 코드를 리뷰하고 체크리스트 형태로 피드백을 제공해주세요.
+
+[코드 붙여넣기]
+
+리뷰 관점:
+- 기능 정확성: 요구사항을 올바르게 구현했는가
+- 가독성: 코드를 이해하기 쉬운가
+- 성능: 불필요한 연산이나 메모리 낭비가 없는가
+- 보안: 보안 취약점(SQL Injection, XSS 등)이 없는가
+- 테스트: 테스트 커버리지가 충분한가
+- 코드 컨벤션: 팀 규칙을 따르고 있는가
+
+각 항목별로 ✅ 통과 / ⚠️ 개선 필요 / ❌ 수정 필수로 표시하고 구체적인 피드백을 작성해주세요.`,
+        howToUse:'PR에서 리뷰할 코드를 붙여넣고 실행합니다. 언어나 프레임워크를 명시하면 더 정확한 리뷰가 가능합니다.',
+        exampleInput:'def get_user(user_id):\n    query = f"SELECT * FROM users WHERE id = {user_id}"\n    return db.execute(query)',
+        exampleOutput:'기능 정확성: ✅ 동작함\n보안: ❌ SQL Injection 취약점 발견 - f-string 대신 파라미터 바인딩 사용 필요',
+        comments:[{id:'c-007',authorId:'user-005',authorName:'최성훈',content:'코드 리뷰 퀄리티가 확 올라갔습니다. 팀 전체에 공유했어요!',createdAt:'2026-05-06'}],
+      },
+      {
+        id:'p-006', title:'SQL 쿼리 작성 보조 프롬프트',
+        description:'요구사항을 기반으로 SQL 쿼리를 작성하고 최적화합니다.',
+        category:'개발', tags:['SQL','DB','쿼리'],
+        authorId:'user-005', authorName:'최성훈',
+        createdAt:'2026-05-06', updatedAt:'2026-05-06',
+        views:143, copies:67, likes:29, isLiked:false, isFavorited:true,
+        promptBody:`아래 요구사항을 기반으로 SQL 쿼리를 작성해주세요.
+
+DB 종류: [MySQL / PostgreSQL / BigQuery 등]
+
+테이블 구조:
+[테이블명 및 컬럼 설명]
+
+요구사항:
+[데이터 추출 조건 설명]
+
+작성 기준:
+1. 실행 가능한 쿼리 작성
+2. 성능 최적화 (인덱스 활용, 서브쿼리 최소화)
+3. 쿼리 각 부분에 주석 추가
+4. 필요시 대안 쿼리도 함께 제시
+5. 예상 실행 결과 컬럼 설명`,
+        howToUse:'DB 종류, 테이블 구조(컬럼명과 타입), 원하는 데이터 조건을 입력합니다.',
+        exampleInput:'DB: MySQL\n테이블: orders(id, user_id, amount, status, created_at)\n조건: 지난 30일간 10만원 이상 주문한 사용자별 주문 횟수와 총 금액',
+        exampleOutput:'SELECT user_id, COUNT(*) as order_count, SUM(amount) as total_amount\nFROM orders\nWHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)...',
+        comments:[
+          {id:'c-008',authorId:'user-001',authorName:'홍길동',content:'데이터 추출할 때 정말 많이 쓰고 있어요. 감사합니다.',createdAt:'2026-05-05'},
+          {id:'c-009',authorId:'user-003',authorName:'이영희',content:'BigQuery에서도 잘 됩니다!',createdAt:'2026-05-04'},
+        ],
+      },
+      {
+        id:'p-007', title:'고객 문의 답변 초안 생성 프롬프트',
+        description:'고객 문의 유형에 맞는 전문적인 답변 초안을 빠르게 생성합니다.',
+        category:'고객 응대', tags:['CS','고객문의','답변'],
+        authorId:'user-006', authorName:'정미영',
+        createdAt:'2026-05-05', updatedAt:'2026-05-05',
+        views:67, copies:22, likes:11, isLiked:false, isFavorited:false,
+        promptBody:`아래 고객 문의에 대한 답변 초안을 작성해주세요.
+
+고객 문의 내용:
+[문의 텍스트 입력]
+
+답변 조건:
+- 톤: 정중하고 공감적인 어조 사용
+- 길이: 3~5문장 (간결하게)
+- 구성: 감사 인사 → 문제 확인 → 해결 방안 → 마무리
+- 불가한 요청의 경우: 정중히 설명하고 대안 제시
+- 개인정보 수집 필요 시: 안내 문구 포함
+
+추가 컨텍스트: [제품/서비스 특이사항 있으면 입력]`,
+        howToUse:'고객 문의 텍스트를 붙여넣고 필요시 서비스 특이사항을 추가합니다.',
+        exampleInput:'주문한 상품이 3일이 지났는데 아직 배송이 안 됐어요. 어떻게 된 건가요?',
+        exampleOutput:'안녕하세요, 고객님. 문의 주셔서 감사합니다. 배송 지연으로 불편을 드려 진심으로 사과드립니다...',
+        comments:[],
+      },
+      {
+        id:'p-008', title:'비즈니스 이메일 문장 교정 프롬프트',
+        description:'비즈니스 이메일을 전문적이고 자연스럽게 교정합니다.',
+        category:'번역/교정', tags:['이메일','교정','비즈니스'],
+        authorId:'user-001', authorName:'홍길동',
+        createdAt:'2026-05-04', updatedAt:'2026-05-09',
+        views:54, copies:19, likes:8, isLiked:false, isFavorited:false,
+        promptBody:`아래 이메일 초안을 비즈니스 상황에 맞게 교정해주세요.
+
+이메일 초안:
+[이메일 본문 입력]
+
+교정 기준:
+- 톤: [격식체 / 반격식체 / 친근한] 중 선택
+- 수신자: [내부 팀원 / 외부 거래처 / 임원] 중 선택
+- 목적: [요청 / 감사 / 사과 / 보고 / 제안] 중 선택
+
+교정 후 다음을 제공해주세요:
+1. 교정된 이메일 전문
+2. 주요 변경 사항 설명 (불릿 형태)
+3. 추가 개선 제안 (있을 경우)`,
+        howToUse:'이메일 초안과 교정 기준(톤, 수신자, 목적)을 선택하여 입력합니다.',
+        exampleInput:'안녕하세요. 저번에 말씀드린 건 어떻게 됐나요? 빨리 알려주세요.',
+        exampleOutput:'안녕하세요, [이름]님.\n\n지난번에 논의드린 [주제]에 대한 진행 상황을 여쭤봐도 될까요?...',
+        comments:[{id:'c-010',authorId:'user-004',authorName:'박지민',content:'거래처 이메일 쓸 때 매번 활용합니다. 덕분에 훨씬 프로페셔널해졌어요!',createdAt:'2026-05-03'}],
+      },
+      {
+        id:'p-009', title:'회의록 요약 및 액션아이템 추출 프롬프트',
+        description:'회의록 원문을 요약하고 액션아이템을 담당자별로 정리합니다.',
+        category:'회의', tags:['회의록','요약','액션아이템'],
+        authorId:'user-002', authorName:'김철수',
+        createdAt:'2026-05-03', updatedAt:'2026-05-03',
+        views:198, copies:84, likes:34, isLiked:true, isFavorited:true,
+        promptBody:`아래 회의 내용을 요약하고 액션아이템을 정리해주세요.
+
+회의 정보:
+- 일시: [입력]
+- 참석자: [이름 및 역할 입력]
+
+회의 내용:
+[회의록 원문 또는 녹취 텍스트 입력]
+
+출력 형식:
+## 회의 요약
+(3~5줄로 핵심 논의 내용 요약)
+
+## 주요 결정 사항
+| 결정 내용 | 근거 |
+|------|------|
+
+## 액션아이템
+| 담당자 | 할 일 | 기한 | 상태 |
+|------|------|------|------|
+
+## 다음 회의 안건 (있을 경우)`,
+        howToUse:'회의록이나 녹취 텍스트를 붙여넣고, 참석자 정보를 입력합니다.',
+        exampleInput:'참석자: 김철수(PM), 이영희(디자인), 최성훈(개발)\n논의 내용: 신규 기능 출시일정 조율...',
+        exampleOutput:'## 회의 요약\n2026년 5월 신규 기능 출시 일정을 5/20으로 확정하고...',
+        comments:[
+          {id:'c-011',authorId:'user-001',authorName:'홍길동',content:'회의 끝나고 바로 정리할 수 있어서 너무 편합니다!',createdAt:'2026-05-02'},
+          {id:'c-012',authorId:'user-004',authorName:'박지민',content:'액션아이템 표 형태가 완벽해요. Notion에 바로 붙여넣기 가능합니다.',createdAt:'2026-05-01'},
+        ],
+      },
+      {
+        id:'p-010', title:'사내 교육자료 목차 생성 프롬프트',
+        description:'교육 주제와 대상을 입력하면 체계적인 교육자료 목차를 생성합니다.',
+        category:'교육', tags:['교육','목차','온보딩'],
+        authorId:'user-003', authorName:'이영희',
+        createdAt:'2026-05-02', updatedAt:'2026-05-02',
+        views:43, copies:14, likes:7, isLiked:false, isFavorited:false,
+        promptBody:`아래 교육 정보를 바탕으로 교육자료 목차를 생성해주세요.
+
+교육 정보:
+- 주제: [입력]
+- 대상: [신입사원 / 팀원 / 전직원 / 관리자 등]
+- 교육 시간: [입력, 예: 2시간]
+- 교육 목표: [입력]
+
+목차 구성 기준:
+1. 도입부 (10-15%): 교육 목적 및 기대 효과
+2. 이론 파트 (40-50%): 핵심 개념 및 원칙
+3. 실습/사례 파트 (30-40%): 실제 적용 방법
+4. 정리 및 Q&A (10-15%): 핵심 요약 및 질문
+
+각 세션별 예상 소요 시간도 포함해주세요.`,
+        howToUse:'교육 주제, 대상, 시간, 목표를 입력합니다.',
+        exampleInput:'주제: 사내 AI 도구 활용법\n대상: 전직원\n시간: 1.5시간\n목표: 기본 AI 도구를 업무에 활용할 수 있게 된다',
+        exampleOutput:'1. 도입 (15분): AI 도구 도입 배경 및 기대 효과\n2. 핵심 개념 (30분): 프롬프트 엔지니어링 기초...',
+        comments:[],
+      },
+      {
+        id:'p-011', title:'경쟁사 서비스 비교 분석 프롬프트',
+        description:'경쟁사 서비스를 구조화된 프레임워크로 비교 분석합니다.',
+        category:'리서치', tags:['경쟁분석','시장조사','벤치마킹'],
+        authorId:'user-004', authorName:'박지민',
+        createdAt:'2026-05-01', updatedAt:'2026-05-01',
+        views:61, copies:23, likes:14, isLiked:false, isFavorited:false,
+        promptBody:`아래 서비스와 경쟁사들을 비교 분석해주세요.
+
+분석 대상:
+- 우리 서비스: [서비스명 및 설명]
+- 경쟁사: [경쟁사 1, 2, 3 입력]
+
+분석 프레임워크:
+1. 서비스 개요 비교 (주요 기능, 타겟 고객)
+2. 가격 정책 비교
+3. 핵심 기능 비교 (표 형식)
+4. UX/UI 특징 비교
+5. 강점/약점 분석 (각 서비스별 SWOT)
+6. 차별화 기회 도출
+
+객관적인 사실 기반으로 분석하되, 주관적 평가 시 근거를 명시해주세요.`,
+        howToUse:'우리 서비스와 비교할 경쟁사를 2~5개 입력합니다.',
+        exampleInput:'우리 서비스: AX Prompt Hub (사내 프롬프트 공유 플랫폼)\n경쟁사: PromptBase, FlowGPT, ShareGPT',
+        exampleOutput:'## 서비스 개요 비교\n| 서비스 | 주요 기능 | 타겟 | 가격 |',
+        comments:[],
+      },
+      {
+        id:'p-012', title:'고객 VOC 감성 분석 프롬프트',
+        description:'고객 리뷰와 피드백의 감성을 분석하고 개선 인사이트를 도출합니다.',
+        category:'분석', tags:['감성분석','VOC','리뷰분석'],
+        authorId:'user-005', authorName:'최성훈',
+        createdAt:'2026-04-30', updatedAt:'2026-04-30',
+        views:38, copies:11, likes:6, isLiked:false, isFavorited:false,
+        promptBody:`아래 고객 리뷰 또는 피드백을 감성 분석해주세요.
+
+[리뷰/피드백 데이터 입력]
+
+분석 요청 사항:
+1. 전체 감성 점수 (0~10점, 10점이 최고)
+2. 감성 분류 비율 (긍정/부정/중립 %)
+3. 자주 언급된 키워드 Top 10
+4. 긍정 요소 상위 3가지
+5. 개선 필요 요소 상위 3가지
+6. 트렌드 변화 (시계열 데이터가 있을 경우)
+7. 종합 개선 제안
+
+결과는 경영진 보고용으로 시각적으로 정리해주세요.`,
+        howToUse:'고객 리뷰를 한 줄씩 입력하거나 CSV 형태로 붙여넣습니다.',
+        exampleInput:'별점 4/앱이 빠르고 좋아요, 다만 검색 기능이 좀 약해요\n별점 2/자꾸 로그아웃 돼서 불편해요',
+        exampleOutput:'전체 감성 점수: 6.8/10\n감성 분류: 긍정 45%, 부정 35%, 중립 20%',
+        comments:[],
+      },
+    ];
+
+    /* ===================== ICONS ===================== */
+    const Svg = ({ children, size=18, className='', strokeWidth=1.75, fill='none' }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill={fill}
+           stroke="currentColor" strokeWidth={strokeWidth}
+           strokeLinecap="round" strokeLinejoin="round" className={className}>
+        {children}
+      </svg>
+    );
+
+    const IcHome = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </Svg>
+    );
+    const IcLibrary = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      </Svg>
+    );
+    const IcStar = ({ size, className, filled }) => (
+      <svg width={size||18} height={size||18} viewBox="0 0 24 24"
+           fill={filled ? 'currentColor' : 'none'} stroke="currentColor"
+           strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+    );
+    const IcUser = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </Svg>
+    );
+    const IcSearch = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </Svg>
+    );
+    const IcHeart = ({ size, className, filled }) => (
+      <svg width={size||18} height={size||18} viewBox="0 0 24 24"
+           fill={filled ? 'currentColor' : 'none'} stroke="currentColor"
+           strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    );
+    const IcBookmark = ({ size, className, filled }) => (
+      <svg width={size||18} height={size||18} viewBox="0 0 24 24"
+           fill={filled ? 'currentColor' : 'none'} stroke="currentColor"
+           strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+      </svg>
+    );
+    const IcCopy = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </Svg>
+    );
+    const IcEdit = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </Svg>
+    );
+    const IcTrash = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14H6L5 6"/>
+        <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
+      </Svg>
+    );
+    const IcPlus = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </Svg>
+    );
+    const IcArrowLeft = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </Svg>
+    );
+    const IcEye = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </Svg>
+    );
+    const IcMsg = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </Svg>
+    );
+    const IcAlert = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </Svg>
+    );
+    const IcX = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </Svg>
+    );
+    const IcCheck = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <polyline points="20 6 9 17 4 12"/>
+      </Svg>
+    );
+    const IcChevronRight = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <polyline points="9 18 15 12 9 6"/>
+      </Svg>
+    );
+    const IcFilter = ({ size, className }) => (
+      <Svg size={size} className={className}>
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+      </Svg>
+    );
+
+    /* ===================== UTILITY COMPONENTS ===================== */
+    const CategoryBadge = ({ category, size = 'sm' }) => {
+      const s = CAT_STYLE[category] || CAT_STYLE['기타'];
+      const cls = size === 'lg'
+        ? `inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium ${s.pill}`
+        : `inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${s.pill}`;
+      return <span className={cls}><span className={`w-1.5 h-1.5 rounded-full ${s.dot}`}></span>{category}</span>;
+    };
+
+    const StatBadge = ({ icon, value, label }) => (
+      <span className="inline-flex items-center gap-1 text-gray-500 text-xs">
+        {icon}
+        <span className="font-medium text-gray-700">{value.toLocaleString()}</span>
+        {label && <span>{label}</span>}
+      </span>
+    );
+
+    const EmptyState = ({ icon, title, desc, action }) => (
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="text-6xl mb-5">{icon}</div>
+        <h3 className="text-lg font-semibold text-gray-700 mb-2">{title}</h3>
+        <p className="text-sm text-gray-500 mb-6 max-w-xs">{desc}</p>
+        {action}
+      </div>
+    );
+
+    /* ===================== SIDEBAR ===================== */
+    const Sidebar = ({ page, nav }) => {
+      const items = [
+        { key:'home',       label:'홈',              Icon:IcHome },
+        { key:'list',       label:'프롬프트 라이브러리', Icon:IcLibrary },
+        { key:'favorites',  label:'즐겨찾기',          Icon:IcStar },
+        { key:'myPrompts',  label:'내 프롬프트',       Icon:IcUser },
+      ];
+      const isActive = (key) => {
+        if (key === 'list') return ['list','detail','create','edit'].includes(page);
+        return page === key;
+      };
+      return (
+        <aside className="w-56 flex-shrink-0 bg-white border-r border-gray-100 flex flex-col h-full">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5 px-5 py-5 border-b border-gray-50">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+              <span className="text-white font-bold text-sm">AX</span>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gray-800 leading-tight">Prompt Hub</p>
+              <p className="text-xs text-gray-400">사내 프롬프트 라이브러리</p>
+            </div>
+          </div>
+          {/* Nav */}
+          <nav className="flex-1 px-3 py-4 space-y-0.5">
+            {items.map(({ key, label, Icon }) => {
+              const active = isActive(key);
+              return (
+                <button key={key} onClick={() => nav(key)}
+                  className={`nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-left
+                    ${active
+                      ? 'bg-indigo-50 text-indigo-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+                  <Icon size={18} className={active ? 'text-indigo-600' : 'text-gray-400'} />
+                  {label}
+                  {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-500"></span>}
+                </button>
+              );
+            })}
+          </nav>
+          {/* User */}
+          <div className="px-4 py-4 border-t border-gray-100">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                <span className="text-xs font-semibold text-indigo-700">{CURRENT_USER.name[0]}</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-800 truncate">{CURRENT_USER.name}</p>
+                <p className="text-xs text-gray-400 truncate">{CURRENT_USER.department}</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      );
+    };
+
+    /* ===================== HEADER ===================== */
+    const Header = ({ search, setSearch, onSearch, nav }) => {
+      const handleKey = (e) => { if (e.key === 'Enter') onSearch(); };
+      return (
+        <header className="h-14 bg-white border-b border-gray-100 flex items-center px-6 gap-4 flex-shrink-0">
+          <div className="flex-1 relative max-w-md">
+            <IcSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="프롬프트를 검색하세요. 제목, 내용, 태그..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onKeyDown={handleKey}
+              className="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder-gray-400"
+            />
+          </div>
+          <button
+            onClick={() => nav('create')}
+            className="btn-transition flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+            <IcPlus size={15} />
+            프롬프트 등록
+          </button>
+        </header>
+      );
+    };
+
+    /* ===================== TOAST ===================== */
+    const Toast = ({ message, onClose }) => (
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 slide-up">
+        <div className="flex items-center gap-2.5 px-4 py-3 bg-gray-900 text-white rounded-xl shadow-xl text-sm">
+          <IcCheck size={16} className="text-emerald-400" />
+          {message}
+        </div>
+      </div>
+    );
+
+    /* ===================== DELETE MODAL ===================== */
+    const DeleteModal = ({ onConfirm, onCancel }) => (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/40" onClick={onCancel}></div>
+        <div className="relative bg-white rounded-2xl shadow-2xl p-6 w-96 fade-in">
+          <div className="flex justify-center mb-4">
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+              <IcAlert size={24} className="text-red-500" />
+            </div>
+          </div>
+          <h3 className="text-base font-bold text-gray-800 text-center mb-1">프롬프트를 삭제하시겠습니까?</h3>
+          <p className="text-sm text-gray-500 text-center mb-6">삭제한 프롬프트는 목록에서 더 이상 표시되지 않습니다.</p>
+          <div className="flex gap-3">
+            <button onClick={onCancel}
+              className="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50">
+              취소
+            </button>
+            <button onClick={onConfirm}
+              className="flex-1 py-2.5 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600">
+              삭제
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+
+    /* ===================== PROMPT CARD (grid) ===================== */
+    const PromptCard = ({ prompt, onClick, onToggleFav, onToggleLike }) => {
+      const isOwner = prompt.authorId === CURRENT_USER.id;
+      return (
+        <div className="card-hover bg-white rounded-xl border border-gray-100 shadow-sm p-4 cursor-pointer flex flex-col gap-3"
+             onClick={onClick}>
+          <div className="flex items-start justify-between gap-2">
+            <CategoryBadge category={prompt.category} />
+            <button className={`p-1 rounded-lg hover:bg-gray-50 flex-shrink-0 ${prompt.isFavorited ? 'text-amber-400' : 'text-gray-300'}`}
+                    onClick={e => { e.stopPropagation(); onToggleFav(prompt.id); }}>
+              <IcStar size={16} filled={prompt.isFavorited} />
+            </button>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-800 line-clamp-2 mb-1 leading-snug">{prompt.title}</h3>
+            <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{prompt.description}</p>
+          </div>
+          {prompt.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {prompt.tags.slice(0,3).map(t => (
+                <span key={t} className="text-xs text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full">#{t}</span>
+              ))}
+            </div>
+          )}
+          <div className="flex items-center justify-between pt-1 border-t border-gray-50">
+            <span className="text-xs text-gray-400">{prompt.authorName} · {prompt.createdAt}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <StatBadge icon={<IcEye size={12} />} value={prompt.views} />
+            <StatBadge icon={<IcCopy size={12} />} value={prompt.copies} />
+            <button className={`ml-auto flex items-center gap-1 text-xs btn-transition ${prompt.isLiked ? 'text-rose-500' : 'text-gray-400 hover:text-rose-400'}`}
+                    onClick={e => { e.stopPropagation(); onToggleLike(prompt.id); }}>
+              <IcHeart size={13} filled={prompt.isLiked} />
+              <span>{prompt.likes}</span>
+            </button>
+            <span className="flex items-center gap-1 text-xs text-gray-400">
+              <IcMsg size={12} />{prompt.comments.length}
+            </span>
+          </div>
+        </div>
+      );
+    };
+
+    /* ===================== PROMPT ROW (list) ===================== */
+    const PromptRow = ({ prompt, onClick, onToggleFav, onToggleLike }) => (
+      <div className="flex items-center gap-4 px-5 py-4 bg-white border-b border-gray-50 hover:bg-gray-50/70 cursor-pointer transition-colors"
+           onClick={onClick}>
+        <div className="w-24 flex-shrink-0">
+          <CategoryBadge category={prompt.category} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-800 line-clamp-1 mb-0.5">{prompt.title}</p>
+          <p className="text-xs text-gray-500 line-clamp-1">{prompt.description}</p>
+          <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+            {prompt.tags.slice(0,3).map(t => (
+              <span key={t} className="text-xs text-indigo-500 bg-indigo-50 px-1.5 py-0.5 rounded-full">#{t}</span>
+            ))}
+          </div>
+        </div>
+        <div className="text-right flex-shrink-0">
+          <p className="text-xs text-gray-700 font-medium">{prompt.authorName}</p>
+          <p className="text-xs text-gray-400">{prompt.createdAt}</p>
+        </div>
+        <div className="flex items-center gap-3 flex-shrink-0 w-48 justify-end">
+          <StatBadge icon={<IcEye size={12} />} value={prompt.views} />
+          <StatBadge icon={<IcCopy size={12} />} value={prompt.copies} />
+          <button className={`flex items-center gap-0.5 text-xs btn-transition ${prompt.isLiked ? 'text-rose-500' : 'text-gray-400 hover:text-rose-400'}`}
+                  onClick={e => { e.stopPropagation(); onToggleLike(prompt.id); }}>
+            <IcHeart size={13} filled={prompt.isLiked} />{prompt.likes}
+          </button>
+          <span className="flex items-center gap-0.5 text-xs text-gray-400">
+            <IcMsg size={12} />{prompt.comments.length}
+          </span>
+          <button className={`p-1.5 rounded-lg btn-transition ${prompt.isFavorited ? 'text-amber-400' : 'text-gray-300 hover:text-amber-400'}`}
+                  onClick={e => { e.stopPropagation(); onToggleFav(prompt.id); }}>
+            <IcStar size={15} filled={prompt.isFavorited} />
+          </button>
+        </div>
+      </div>
+    );
+
+    /* ===================== HOME PAGE ===================== */
+    const HomePage = ({ prompts, nav, onSearch, search, setSearch }) => {
+      const totalViews = prompts.reduce((s,p) => s + p.views, 0);
+      const totalCopies = prompts.reduce((s,p) => s + p.copies, 0);
+      const totalFavs = prompts.filter(p => p.isFavorited).length;
+      const popular = [...prompts].sort((a,b) => b.likes - a.likes).slice(0,4);
+      const recent = [...prompts].sort((a,b) => b.createdAt.localeCompare(a.createdAt)).slice(0,4);
+      const stats = [
+        { label:'등록 프롬프트', value:prompts.length, unit:'개', color:'text-indigo-600', bg:'bg-indigo-50', icon:'📚' },
+        { label:'즐겨찾기',      value:totalFavs,      unit:'개', color:'text-amber-600', bg:'bg-amber-50',  icon:'⭐' },
+        { label:'총 조회수',     value:totalViews,     unit:'회', color:'text-emerald-600',bg:'bg-emerald-50',icon:'👁' },
+        { label:'총 복사 횟수',  value:totalCopies,    unit:'회', color:'text-violet-600', bg:'bg-violet-50', icon:'📋' },
+      ];
+      return (
+        <div className="max-w-5xl mx-auto">
+          {/* Hero */}
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">AX Prompt Hub</h1>
+            <p className="text-gray-500 text-sm">사내 업무에 필요한 프롬프트를 검색하고 공유하세요</p>
+          </div>
+          {/* Stats */}
+          <div className="grid grid-cols-4 gap-4 mb-8">
+            {stats.map(s => (
+              <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+                <div className={`w-10 h-10 ${s.bg} rounded-lg flex items-center justify-center text-xl mb-3`}>{s.icon}</div>
+                <p className="text-xs text-gray-500 mb-1">{s.label}</p>
+                <p className={`text-2xl font-bold ${s.color}`}>
+                  {s.value.toLocaleString()}<span className="text-base font-medium ml-0.5">{s.unit}</span>
+                </p>
+              </div>
+            ))}
+          </div>
+          {/* Category Shortcuts */}
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6">
+            <h2 className="text-sm font-semibold text-gray-700 mb-3">목적별 찾기</h2>
+            <div className="flex flex-wrap gap-2">
+              {CATEGORIES.slice(1).map(cat => (
+                <button key={cat}
+                  onClick={() => { nav('list'); }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 btn-transition">
+                  <span>{CAT_ICON[cat]}</span>{cat}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Popular */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                🔥 인기 프롬프트
+              </h2>
+              <button onClick={() => nav('list')} className="text-xs text-indigo-600 hover:underline flex items-center gap-0.5">
+                더보기 <IcChevronRight size={12} />
+              </button>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              {popular.map(p => (
+                <PromptCard key={p.id} prompt={p} onClick={() => nav('detail', p.id)}
+                  onToggleFav={()=>{}} onToggleLike={()=>{}} />
+              ))}
+            </div>
+          </div>
+          {/* Recent */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                🆕 최신 프롬프트
+              </h2>
+              <button onClick={() => nav('list')} className="text-xs text-indigo-600 hover:underline flex items-center gap-0.5">
+                더보기 <IcChevronRight size={12} />
+              </button>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              {recent.map(p => (
+                <PromptCard key={p.id} prompt={p} onClick={() => nav('detail', p.id)}
+                  onToggleFav={()=>{}} onToggleLike={()=>{}} />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    /* ===================== LIST PAGE ===================== */
+    const ListPage = ({ prompts, nav, search, setSearch, filterCat, setFilterCat, sortBy, setSortBy, onToggleFav, onToggleLike, onSearch }) => {
+      const filtered = useMemo(() => {
+        let list = prompts;
+        if (filterCat && filterCat !== '전체') list = list.filter(p => p.category === filterCat);
+        if (search) {
+          const q = search.toLowerCase();
+          list = list.filter(p =>
+            p.title.toLowerCase().includes(q) ||
+            p.description.toLowerCase().includes(q) ||
+            p.promptBody.toLowerCase().includes(q) ||
+            p.tags.some(t => t.toLowerCase().includes(q))
+          );
+        }
+        switch(sortBy) {
+          case 'popular': return [...list].sort((a,b) => b.likes - a.likes);
+          case 'views':   return [...list].sort((a,b) => b.views - a.views);
+          case 'copies':  return [...list].sort((a,b) => b.copies - a.copies);
+          default:        return [...list].sort((a,b) => b.createdAt.localeCompare(a.createdAt));
+        }
+      }, [prompts, filterCat, search, sortBy]);
+
+      return (
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <div className="mb-5">
+            <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-1">
+              <span>홈</span><IcChevronRight size={12} /><span className="text-gray-600">프롬프트 라이브러리</span>
+            </div>
+            <h1 className="text-xl font-bold text-gray-900">프롬프트 목록</h1>
+            <p className="text-sm text-gray-500 mt-0.5">검색어 또는 목적 필터를 사용해 원하는 프롬프트를 찾아보세요</p>
+          </div>
+          {/* Filters */}
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm mb-4">
+            {/* Category filter */}
+            <div className="px-4 pt-4 pb-3 border-b border-gray-50">
+              <div className="flex flex-wrap gap-1.5">
+                {CATEGORIES.map(cat => (
+                  <button key={cat}
+                    onClick={() => setFilterCat(cat)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium btn-transition border
+                      ${filterCat === cat
+                        ? 'bg-indigo-600 text-white border-indigo-600'
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300 hover:text-indigo-600'}`}>
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* Sort + count */}
+            <div className="px-4 py-3 flex items-center justify-between">
+              <span className="text-sm text-gray-500">
+                총 <span className="font-semibold text-gray-800">{filtered.length}</span>개
+                {search && <span className="ml-1 text-indigo-600">· "{search}" 검색 결과</span>}
+              </span>
+              <select value={sortBy} onChange={e => setSortBy(e.target.value)}
+                className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="latest">최신순</option>
+                <option value="popular">인기순</option>
+                <option value="views">조회순</option>
+                <option value="copies">복사순</option>
+              </select>
+            </div>
+          </div>
+          {/* List */}
+          {filtered.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+              <EmptyState
+                icon="🔍"
+                title="검색 결과가 없습니다"
+                desc="다른 검색어를 입력하거나 목적 필터를 변경해보세요"
+                action={
+                  <div className="flex gap-2">
+                    <button onClick={() => { setSearch(''); setFilterCat('전체'); }}
+                      className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">
+                      필터 초기화
+                    </button>
+                    <button onClick={() => nav('create')}
+                      className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">
+                      프롬프트 등록
+                    </button>
+                  </div>
+                }
+              />
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              {filtered.map(p => (
+                <PromptRow key={p.id} prompt={p}
+                  onClick={() => nav('detail', p.id)}
+                  onToggleFav={onToggleFav}
+                  onToggleLike={onToggleLike}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    /* ===================== DETAIL PAGE ===================== */
+    const DetailPage = ({ prompt, nav, onToggleLike, onToggleFav, onCopy, onAddComment, onDeleteComment, onDeletePrompt }) => {
+      const [commentText, setCommentText] = useState('');
+      const [commentError, setCommentError] = useState('');
+      const isOwner = prompt.authorId === CURRENT_USER.id;
+
+      const handleCopy = () => {
+        navigator.clipboard.writeText(prompt.promptBody).catch(() => {});
+        onCopy(prompt.id);
+      };
+      const handleComment = () => {
+        if (!commentText.trim()) { setCommentError('댓글 내용을 입력해주세요.'); return; }
+        onAddComment(prompt.id, commentText.trim());
+        setCommentText('');
+        setCommentError('');
+      };
+      return (
+        <div className="max-w-5xl mx-auto">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-4">
+            <button onClick={() => nav('list')} className="hover:text-indigo-600 flex items-center gap-1">
+              <IcArrowLeft size={13} /> 목록으로
+            </button>
+            <IcChevronRight size={12} />
+            <span className="text-gray-600">{prompt.title}</span>
+          </div>
+          <div className="flex gap-5">
+            {/* Main */}
+            <div className="flex-1 min-w-0">
+              {/* Title block */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-4">
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-3">
+                      <CategoryBadge category={prompt.category} size="lg" />
+                      {isOwner && (
+                        <span className="text-xs bg-indigo-50 text-indigo-600 border border-indigo-200 px-2 py-0.5 rounded-full">내가 작성</span>
+                      )}
+                    </div>
+                    <h1 className="text-xl font-bold text-gray-900 mb-2">{prompt.title}</h1>
+                    <p className="text-gray-500 text-sm">{prompt.description}</p>
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0">
+                    {isOwner && (
+                      <>
+                        <button onClick={() => nav('edit', prompt.id)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 btn-transition">
+                          <IcEdit size={14} /> 수정
+                        </button>
+                        <button onClick={() => onDeletePrompt(prompt.id)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-200 text-sm text-red-500 hover:bg-red-50 btn-transition">
+                          <IcTrash size={14} /> 삭제
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {/* Meta */}
+                <div className="flex flex-wrap gap-4 text-sm text-gray-500 pb-4 border-b border-gray-50">
+                  <span><span className="text-gray-400 text-xs">작성자</span> <span className="font-medium text-gray-700">{prompt.authorName}</span></span>
+                  <span><span className="text-gray-400 text-xs">등록일</span> <span className="font-medium text-gray-700">{prompt.createdAt}</span></span>
+                  <span><span className="text-gray-400 text-xs">수정일</span> <span className="font-medium text-gray-700">{prompt.updatedAt}</span></span>
+                </div>
+                {/* Stats + Actions */}
+                <div className="flex items-center gap-4 pt-4">
+                  <div className="flex items-center gap-4 text-sm text-gray-500 flex-1">
+                    <span className="flex items-center gap-1.5"><IcEye size={14} />{prompt.views.toLocaleString()} 조회</span>
+                    <span className="flex items-center gap-1.5"><IcCopy size={14} />{prompt.copies.toLocaleString()} 복사</span>
+                    <span className="flex items-center gap-1.5"><IcHeart size={14} />{prompt.likes} 좋아요</span>
+                    <span className="flex items-center gap-1.5"><IcMsg size={14} />{prompt.comments.length} 댓글</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => onToggleFav(prompt.id)}
+                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-sm font-medium btn-transition
+                        ${prompt.isFavorited ? 'bg-amber-50 border-amber-200 text-amber-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                      <IcStar size={15} filled={prompt.isFavorited} />
+                      {prompt.isFavorited ? '즐겨찾기됨' : '즐겨찾기'}
+                    </button>
+                    <button onClick={() => onToggleLike(prompt.id)}
+                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-sm font-medium btn-transition
+                        ${prompt.isLiked ? 'bg-rose-50 border-rose-200 text-rose-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                      <IcHeart size={15} filled={prompt.isLiked} />
+                      {prompt.isLiked ? '좋아요됨' : '좋아요'}
+                    </button>
+                    <button onClick={handleCopy}
+                      className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 btn-transition">
+                      <IcCopy size={15} /> 복사하기
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {/* Tags */}
+              {prompt.tags.length > 0 && (
+                <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">태그</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {prompt.tags.map(t => (
+                      <span key={t} className="text-sm text-indigo-500 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">#{t}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Prompt Body */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-sm font-semibold text-gray-700">프롬프트 본문</h2>
+                  <button onClick={handleCopy}
+                    className="flex items-center gap-1 text-xs text-indigo-600 hover:underline">
+                    <IcCopy size={12} /> 복사
+                  </button>
+                </div>
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 prompt-body text-gray-700">
+                  {prompt.promptBody}
+                </div>
+              </div>
+              {/* How to use */}
+              {prompt.howToUse && (
+                <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-4">
+                  <h2 className="text-sm font-semibold text-gray-700 mb-2">사용 방법</h2>
+                  <p className="text-sm text-gray-600 leading-relaxed">{prompt.howToUse}</p>
+                </div>
+              )}
+              {/* Examples */}
+              {(prompt.exampleInput || prompt.exampleOutput) && (
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  {prompt.exampleInput && (
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                      <h2 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+                        <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-600 text-xs flex items-center justify-center font-bold">입</span>
+                        예시 입력
+                      </h2>
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 prompt-body text-gray-600 text-xs">{prompt.exampleInput}</div>
+                    </div>
+                  )}
+                  {prompt.exampleOutput && (
+                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                      <h2 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+                        <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-600 text-xs flex items-center justify-center font-bold">출</span>
+                        예시 출력
+                      </h2>
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 prompt-body text-gray-600 text-xs">{prompt.exampleOutput}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+              {/* Comments */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                <h2 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-1.5">
+                  <IcMsg size={15} className="text-gray-400" />
+                  댓글 <span className="text-indigo-600">{prompt.comments.length}</span>
+                </h2>
+                {/* Comment input */}
+                <div className="flex gap-2 mb-5">
+                  <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs font-semibold text-indigo-700">{CURRENT_USER.name[0]}</span>
+                  </div>
+                  <div className="flex-1">
+                    <textarea
+                      value={commentText}
+                      onChange={e => { setCommentText(e.target.value); setCommentError(''); }}
+                      placeholder="의견, 사용 후기, 개선 제안 등을 남겨주세요..."
+                      rows={2}
+                      className={`w-full px-3 py-2 text-sm border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                        ${commentError ? 'border-red-300' : 'border-gray-200'}`}
+                    />
+                    {commentError && <p className="text-xs text-red-500 mt-1">{commentError}</p>}
+                    <div className="flex justify-end mt-1.5">
+                      <button onClick={handleComment}
+                        className="px-4 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 btn-transition">
+                        등록
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {/* Comment list */}
+                {prompt.comments.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400 text-sm">
+                    첫 댓글을 남겨보세요 💬
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {prompt.comments.map(c => (
+                      <div key={c.id} className="flex gap-2.5">
+                        <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                          <span className="text-xs font-medium text-gray-600">{c.authorName[0]}</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-gray-700">{c.authorName}</span>
+                              <span className="text-xs text-gray-400">{c.createdAt}</span>
+                            </div>
+                            {c.authorId === CURRENT_USER.id && (
+                              <button onClick={() => onDeleteComment(prompt.id, c.id)}
+                                className="text-xs text-gray-400 hover:text-red-500 btn-transition">삭제</button>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mt-0.5 leading-relaxed">{c.content}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    /* ===================== PROMPT FORM (Create & Edit) ===================== */
+    const PromptForm = ({ mode, initialData, onSubmit, onCancel }) => {
+      const [form, setForm] = useState({
+        title: initialData?.title || '',
+        description: initialData?.description || '',
+        category: initialData?.category || '',
+        promptBody: initialData?.promptBody || '',
+        howToUse: initialData?.howToUse || '',
+        exampleInput: initialData?.exampleInput || '',
+        exampleOutput: initialData?.exampleOutput || '',
+        tags: initialData?.tags?.join(', ') || '',
+      });
+      const [errors, setErrors] = useState({});
+
+      const set = (field, val) => {
+        setForm(f => ({ ...f, [field]: val }));
+        if (errors[field]) setErrors(e => ({ ...e, [field]: '' }));
+      };
+
+      const validate = () => {
+        const e = {};
+        if (!form.title.trim()) e.title = '제목을 입력해주세요.';
+        if (!form.description.trim()) e.description = '한 줄 설명을 입력해주세요.';
+        if (!form.category) e.category = '목적을 선택해주세요.';
+        if (!form.promptBody.trim()) e.promptBody = '프롬프트 본문을 입력해주세요.';
+        setErrors(e);
+        return Object.keys(e).length === 0;
+      };
+
+      const handleSubmit = () => {
+        if (!validate()) return;
+        const tags = form.tags.split(',').map(t => t.trim()).filter(Boolean);
+        onSubmit({ ...form, tags });
+      };
+
+      const isEdit = mode === 'edit';
+      return (
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-4">
+            <button onClick={onCancel} className="hover:text-indigo-600 flex items-center gap-1">
+              <IcArrowLeft size={13} /> {isEdit ? '상세로' : '목록으로'}
+            </button>
+            <IcChevronRight size={12} />
+            <span className="text-gray-600">{isEdit ? '프롬프트 수정' : '프롬프트 등록'}</span>
+          </div>
+          <div className="flex gap-5">
+            {/* Form */}
+            <div className="flex-1">
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-4">
+                <h1 className="text-lg font-bold text-gray-900 mb-1">
+                  {isEdit ? '프롬프트 수정' : '프롬프트 등록'}
+                </h1>
+                <p className="text-xs text-gray-500 mb-6">
+                  프롬프트를 다른 구성원이 쉽게 이해하고 재사용할 수 있도록 작성해주세요.
+                </p>
+                {/* Title */}
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    제목 <span className="text-red-500">*</span>
+                  </label>
+                  <input type="text" value={form.title} onChange={e => set('title', e.target.value)}
+                    placeholder="프롬프트 이름을 입력하세요"
+                    className={`w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                      ${errors.title ? 'border-red-300' : 'border-gray-200'}`} />
+                  {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title}</p>}
+                </div>
+                {/* Description */}
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    한 줄 설명 <span className="text-red-500">*</span>
+                  </label>
+                  <input type="text" value={form.description} onChange={e => set('description', e.target.value)}
+                    placeholder="프롬프트 용도를 한 줄로 요약하세요"
+                    className={`w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                      ${errors.description ? 'border-red-300' : 'border-gray-200'}`} />
+                  {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description}</p>}
+                </div>
+                {/* Category */}
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    목적 <span className="text-red-500">*</span>
+                  </label>
+                  <select value={form.category} onChange={e => set('category', e.target.value)}
+                    className={`w-full px-3 py-2.5 text-sm border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                      ${errors.category ? 'border-red-300' : 'border-gray-200'} ${!form.category ? 'text-gray-400' : 'text-gray-700'}`}>
+                    <option value="">목적을 선택하세요</option>
+                    {CATEGORIES.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  {errors.category && <p className="text-xs text-red-500 mt-1">{errors.category}</p>}
+                </div>
+                {/* Prompt Body */}
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    프롬프트 본문 <span className="text-red-500">*</span>
+                  </label>
+                  <textarea value={form.promptBody} onChange={e => set('promptBody', e.target.value)}
+                    placeholder="실제 사용할 프롬프트를 입력하세요. 변수는 [대괄호]로 표시하면 좋습니다."
+                    rows={10}
+                    className={`w-full px-3 py-2.5 text-sm border rounded-lg resize-vertical focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono
+                      ${errors.promptBody ? 'border-red-300' : 'border-gray-200'}`} />
+                  {errors.promptBody && <p className="text-xs text-red-500 mt-1">{errors.promptBody}</p>}
+                </div>
+                {/* Tags */}
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    태그 <span className="text-gray-400 font-normal">(선택)</span>
+                  </label>
+                  <input type="text" value={form.tags} onChange={e => set('tags', e.target.value)}
+                    placeholder="태그를 쉼표로 구분하여 입력하세요 (예: 보고서, 기획, 임원)"
+                    className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                </div>
+              </div>
+              {/* Optional sections */}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-4">
+                <h2 className="text-sm font-semibold text-gray-700 mb-4">추가 정보 <span className="text-gray-400 font-normal text-xs">(선택)</span></h2>
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">사용 방법</label>
+                  <textarea value={form.howToUse} onChange={e => set('howToUse', e.target.value)}
+                    placeholder="어떤 상황에서 어떻게 쓰는지 설명해주세요"
+                    rows={3}
+                    className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">예시 입력</label>
+                    <textarea value={form.exampleInput} onChange={e => set('exampleInput', e.target.value)}
+                      placeholder="사용자가 넣어야 할 입력 예시"
+                      rows={4}
+                      className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">예시 출력</label>
+                    <textarea value={form.exampleOutput} onChange={e => set('exampleOutput', e.target.value)}
+                      placeholder="기대되는 출력 예시"
+                      rows={4}
+                      className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                  </div>
+                </div>
+              </div>
+              {/* Warning */}
+              <div className="flex items-start gap-2.5 p-4 bg-amber-50 border border-amber-200 rounded-xl mb-5 text-sm text-amber-700">
+                <IcAlert size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                <span>개인정보, 고객정보, 계정정보, API Key, 계약정보 등 민감정보는 포함하지 마세요.</span>
+              </div>
+              {/* Buttons */}
+              <div className="flex justify-end gap-3">
+                <button onClick={onCancel}
+                  className="px-5 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 btn-transition">
+                  취소
+                </button>
+                <button onClick={handleSubmit}
+                  className="px-6 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 btn-transition">
+                  {isEdit ? '저장' : '등록'}
+                </button>
+              </div>
+            </div>
+            {/* Sidebar */}
+            <div className="w-64 flex-shrink-0">
+              {isEdit ? (
+                <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 sticky top-0">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">현재 통계</h3>
+                  <div className="space-y-3">
+                    {[
+                      { label:'조회수', val: initialData?.views || 0, icon: <IcEye size={14} /> },
+                      { label:'복사 횟수', val: initialData?.copies || 0, icon: <IcCopy size={14} /> },
+                      { label:'좋아요 수', val: initialData?.likes || 0, icon: <IcHeart size={14} /> },
+                    ].map(s => (
+                      <div key={s.label} className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5 text-sm text-gray-500">{s.icon}{s.label}</span>
+                        <span className="font-semibold text-gray-800">{s.val.toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {initialData?.tags?.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <p className="text-xs text-gray-500 mb-2">현재 태그</p>
+                      <div className="flex flex-wrap gap-1">
+                        {initialData.tags.map(t => (
+                          <span key={t} className="text-xs text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full">#{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 sticky top-0">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">작성 가이드</h3>
+                  <div className="space-y-3 text-xs text-gray-500">
+                    {[
+                      { icon:'✏️', tip:'제목은 프롬프트 목적이 바로 보이도록 명확하게 작성하세요.' },
+                      { icon:'🎯', tip:'목적을 정확히 선택하면 다른 사용자가 쉽게 찾을 수 있습니다.' },
+                      { icon:'📋', tip:'변수 입력 부분은 [대괄호]로 표시하면 재사용하기 좋습니다.' },
+                      { icon:'🏷️', tip:'태그를 잘 달수록 검색에 잘 걸립니다.' },
+                      { icon:'📖', tip:'사용 방법과 예시를 추가하면 다른 사람이 더 쉽게 활용할 수 있습니다.' },
+                    ].map((g, i) => (
+                      <div key={i} className="flex gap-2 items-start">
+                        <span>{g.icon}</span>
+                        <p className="leading-relaxed">{g.tip}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    /* ===================== FAVORITES PAGE ===================== */
+    const FavoritesPage = ({ prompts, nav, onToggleFav, onToggleLike }) => {
+      const favs = prompts.filter(p => p.isFavorited);
+      const [search, setSearch] = useState('');
+      const filtered = search
+        ? favs.filter(p => p.title.toLowerCase().includes(search.toLowerCase()))
+        : favs;
+
+      return (
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-5">
+            <h1 className="text-xl font-bold text-gray-900">즐겨찾기</h1>
+            <p className="text-sm text-gray-500 mt-0.5">자주 사용하는 프롬프트를 즐겨찾기에서 바로 확인하세요</p>
+          </div>
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {[
+              { label:'즐겨찾기', val: favs.length, icon:'⭐', color:'text-amber-600', bg:'bg-amber-50' },
+              { label:'즐겨찾기 총 조회수', val: favs.reduce((s,p)=>s+p.views,0), icon:'👁', color:'text-emerald-600', bg:'bg-emerald-50' },
+              { label:'즐겨찾기 총 복사', val: favs.reduce((s,p)=>s+p.copies,0), icon:'📋', color:'text-indigo-600', bg:'bg-indigo-50' },
+            ].map(s => (
+              <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
+                <div className={`w-10 h-10 ${s.bg} rounded-lg flex items-center justify-center text-xl`}>{s.icon}</div>
+                <div>
+                  <p className="text-xs text-gray-500">{s.label}</p>
+                  <p className={`text-xl font-bold ${s.color}`}>{s.val.toLocaleString()}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Search */}
+          {favs.length > 0 && (
+            <div className="relative mb-4 max-w-sm">
+              <IcSearch size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="즐겨찾기 내 검색..."
+                className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+          )}
+          {favs.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+              <EmptyState
+                icon="⭐"
+                title="즐겨찾기한 프롬프트가 없습니다"
+                desc="자주 사용하는 프롬프트를 즐겨찾기에 추가해보세요"
+                action={
+                  <button onClick={() => nav('list')}
+                    className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">
+                    프롬프트 둘러보기
+                  </button>
+                }
+              />
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+              <EmptyState icon="🔍" title="검색 결과가 없습니다" desc="다른 검색어를 입력해보세요" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-4">
+              {filtered.map(p => (
+                <PromptCard key={p.id} prompt={p}
+                  onClick={() => nav('detail', p.id)}
+                  onToggleFav={onToggleFav}
+                  onToggleLike={onToggleLike}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    /* ===================== MY PROMPTS PAGE ===================== */
+    const MyPromptsPage = ({ prompts, nav, onDelete }) => {
+      const mine = prompts.filter(p => p.authorId === CURRENT_USER.id);
+      const [search, setSearch] = useState('');
+      const filtered = search
+        ? mine.filter(p => p.title.toLowerCase().includes(search.toLowerCase()))
+        : mine;
+
+      return (
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-start justify-between mb-5">
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">내 프롬프트</h1>
+              <p className="text-sm text-gray-500 mt-0.5">내가 작성한 프롬프트를 관리하세요</p>
+            </div>
+            <button onClick={() => nav('create')}
+              className="btn-transition flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700">
+              <IcPlus size={15} /> 프롬프트 등록
+            </button>
+          </div>
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {[
+              { label:'내 프롬프트', val: mine.length, icon:'📚', color:'text-indigo-600', bg:'bg-indigo-50' },
+              { label:'총 조회수', val: mine.reduce((s,p)=>s+p.views,0), icon:'👁', color:'text-emerald-600', bg:'bg-emerald-50' },
+              { label:'총 복사 횟수', val: mine.reduce((s,p)=>s+p.copies,0), icon:'📋', color:'text-violet-600', bg:'bg-violet-50' },
+            ].map(s => (
+              <div key={s.label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
+                <div className={`w-10 h-10 ${s.bg} rounded-lg flex items-center justify-center text-xl`}>{s.icon}</div>
+                <div>
+                  <p className="text-xs text-gray-500">{s.label}</p>
+                  <p className={`text-xl font-bold ${s.color}`}>{s.val.toLocaleString()}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Search */}
+          {mine.length > 0 && (
+            <div className="relative mb-4 max-w-sm">
+              <IcSearch size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="내 프롬프트 검색..."
+                className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+          )}
+          {mine.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+              <EmptyState
+                icon="📝"
+                title="아직 등록한 프롬프트가 없습니다"
+                desc="업무에 자주 사용하는 프롬프트를 등록해보세요"
+                action={
+                  <button onClick={() => nav('create')}
+                    className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">
+                    첫 프롬프트 등록하기
+                  </button>
+                }
+              />
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+              <EmptyState icon="🔍" title="검색 결과가 없습니다" desc="다른 검색어를 입력해보세요" />
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-100 bg-gray-50">
+                    {['제목','목적','등록일','수정일','조회','복사','좋아요','상태','액션'].map(h => (
+                      <th key={h} className="text-left text-xs font-semibold text-gray-500 px-4 py-3">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map(p => (
+                    <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/70 transition-colors">
+                      <td className="px-4 py-3">
+                        <p className="text-sm font-medium text-gray-800 line-clamp-1 max-w-48">{p.title}</p>
+                      </td>
+                      <td className="px-4 py-3"><CategoryBadge category={p.category} /></td>
+                      <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">{p.createdAt}</td>
+                      <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">{p.updatedAt}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700 font-medium">{p.views.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700 font-medium">{p.copies.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700 font-medium">{p.likes}</td>
+                      <td className="px-4 py-3">
+                        <span className="text-xs bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded-full">공개</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => nav('detail', p.id)}
+                            className="p-1.5 rounded-md text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 btn-transition" title="상세 보기">
+                            <IcEye size={14} />
+                          </button>
+                          <button onClick={() => nav('edit', p.id)}
+                            className="p-1.5 rounded-md text-gray-500 hover:bg-amber-50 hover:text-amber-600 btn-transition" title="수정">
+                            <IcEdit size={14} />
+                          </button>
+                          <button onClick={() => onDelete(p.id)}
+                            className="p-1.5 rounded-md text-gray-500 hover:bg-red-50 hover:text-red-500 btn-transition" title="삭제">
+                            <IcTrash size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    /* ===================== APP ===================== */
+    function App() {
+      const [prompts, setPrompts] = useState(INITIAL_PROMPTS);
+      const [page, setPage] = useState('home');
+      const [selectedId, setSelectedId] = useState(null);
+      const [search, setSearch] = useState('');
+      const [filterCat, setFilterCat] = useState('전체');
+      const [sortBy, setSortBy] = useState('latest');
+      const [toast, setToast] = useState({ show: false, msg: '' });
+      const [deleteModal, setDeleteModal] = useState({ show: false, id: null, returnTo: 'list' });
+
+      const mainRef = useRef(null);
+
+      const nav = useCallback((newPage, id = null) => {
+        setPage(newPage);
+        if (id !== null) setSelectedId(id);
+        if (newPage === 'detail' && id) {
+          setPrompts(prev => prev.map(p => p.id === id ? { ...p, views: p.views + 1 } : p));
+        }
+        if (mainRef.current) mainRef.current.scrollTop = 0;
+      }, []);
+
+      const showToast = useCallback((msg) => {
+        setToast({ show: true, msg });
+        setTimeout(() => setToast({ show: false, msg: '' }), 2500);
+      }, []);
+
+      const onSearch = useCallback(() => {
+        if (search.trim()) {
+          setFilterCat('전체');
+          nav('list');
+        }
+      }, [search, nav]);
+
+      const toggleLike = useCallback((id) => {
+        setPrompts(prev => prev.map(p =>
+          p.id === id ? { ...p, isLiked: !p.isLiked, likes: p.isLiked ? p.likes - 1 : p.likes + 1 } : p
+        ));
+      }, []);
+
+      const toggleFav = useCallback((id) => {
+        setPrompts(prev => prev.map(p =>
+          p.id === id ? { ...p, isFavorited: !p.isFavorited } : p
+        ));
+        const p = prompts.find(x => x.id === id);
+        showToast(p?.isFavorited ? '즐겨찾기를 해제했습니다' : '즐겨찾기에 추가했습니다');
+      }, [prompts, showToast]);
+
+      const onCopy = useCallback((id) => {
+        setPrompts(prev => prev.map(p => p.id === id ? { ...p, copies: p.copies + 1 } : p));
+        showToast('프롬프트가 복사되었습니다');
+      }, [showToast]);
+
+      const addComment = useCallback((promptId, text) => {
+        const newComment = {
+          id: 'c-' + Date.now(),
+          authorId: CURRENT_USER.id,
+          authorName: CURRENT_USER.name,
+          content: text,
+          createdAt: new Date().toISOString().split('T')[0],
+        };
+        setPrompts(prev => prev.map(p =>
+          p.id === promptId ? { ...p, comments: [...p.comments, newComment] } : p
+        ));
+      }, []);
+
+      const deleteComment = useCallback((promptId, commentId) => {
+        setPrompts(prev => prev.map(p =>
+          p.id === promptId ? { ...p, comments: p.comments.filter(c => c.id !== commentId) } : p
+        ));
+      }, []);
+
+      const requestDelete = useCallback((id, returnTo = 'list') => {
+        setDeleteModal({ show: true, id, returnTo });
+      }, []);
+
+      const confirmDelete = useCallback(() => {
+        const { id, returnTo } = deleteModal;
+        setPrompts(prev => prev.filter(p => p.id !== id));
+        setDeleteModal({ show: false, id: null, returnTo: 'list' });
+        showToast('프롬프트가 삭제되었습니다');
+        nav(returnTo);
+      }, [deleteModal, showToast, nav]);
+
+      const createPrompt = useCallback((formData) => {
+        const newId = 'p-' + Date.now();
+        const now = new Date().toISOString().split('T')[0];
+        const newPrompt = {
+          id: newId,
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          tags: formData.tags,
+          authorId: CURRENT_USER.id,
+          authorName: CURRENT_USER.name,
+          createdAt: now,
+          updatedAt: now,
+          views: 0, copies: 0, likes: 0, isLiked: false, isFavorited: false,
+          promptBody: formData.promptBody,
+          howToUse: formData.howToUse,
+          exampleInput: formData.exampleInput,
+          exampleOutput: formData.exampleOutput,
+          comments: [],
+        };
+        setPrompts(prev => [newPrompt, ...prev]);
+        showToast('프롬프트가 등록되었습니다');
+        nav('detail', newId);
+      }, [showToast, nav]);
+
+      const editPrompt = useCallback((formData) => {
+        const now = new Date().toISOString().split('T')[0];
+        setPrompts(prev => prev.map(p =>
+          p.id === selectedId ? { ...p, ...formData, updatedAt: now } : p
+        ));
+        showToast('프롬프트가 수정되었습니다');
+        nav('detail', selectedId);
+      }, [selectedId, showToast, nav]);
+
+      const selectedPrompt = useMemo(() =>
+        prompts.find(p => p.id === selectedId), [prompts, selectedId]
+      );
+
+      const renderPage = () => {
+        switch (page) {
+          case 'home':
+            return <HomePage prompts={prompts} nav={nav} search={search} setSearch={setSearch} onSearch={onSearch} />;
+          case 'list':
+            return <ListPage prompts={prompts} nav={nav} search={search} setSearch={setSearch}
+                     filterCat={filterCat} setFilterCat={setFilterCat}
+                     sortBy={sortBy} setSortBy={setSortBy}
+                     onToggleFav={toggleFav} onToggleLike={toggleLike} onSearch={onSearch} />;
+          case 'detail':
+            return selectedPrompt
+              ? <DetailPage prompt={selectedPrompt} nav={nav}
+                  onToggleLike={toggleLike} onToggleFav={toggleFav} onCopy={onCopy}
+                  onAddComment={addComment} onDeleteComment={deleteComment}
+                  onDeletePrompt={(id) => requestDelete(id, 'list')} />
+              : <div className="text-center py-20 text-gray-400">프롬프트를 찾을 수 없습니다</div>;
+          case 'create':
+            return <PromptForm mode="create" initialData={null} onSubmit={createPrompt} onCancel={() => nav('list')} />;
+          case 'edit':
+            return selectedPrompt
+              ? <PromptForm mode="edit" initialData={selectedPrompt} onSubmit={editPrompt} onCancel={() => nav('detail', selectedId)} />
+              : <div className="text-center py-20 text-gray-400">프롬프트를 찾을 수 없습니다</div>;
+          case 'favorites':
+            return <FavoritesPage prompts={prompts} nav={nav} onToggleFav={toggleFav} onToggleLike={toggleLike} />;
+          case 'myPrompts':
+            return <MyPromptsPage prompts={prompts} nav={nav} onDelete={(id) => requestDelete(id, 'myPrompts')} />;
+          default:
+            return null;
+        }
+      };
+
+      return (
+        <div className="flex h-screen bg-gray-50 overflow-hidden">
+          <Sidebar page={page} nav={nav} />
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <Header search={search} setSearch={setSearch} onSearch={onSearch} nav={nav} />
+            <main ref={mainRef} className="flex-1 overflow-y-auto p-6">
+              <div className="fade-in" key={page + selectedId}>
+                {renderPage()}
+              </div>
+            </main>
+          </div>
+          {toast.show && <Toast message={toast.msg} />}
+          {deleteModal.show && (
+            <DeleteModal
+              onConfirm={confirmDelete}
+              onCancel={() => setDeleteModal({ show: false, id: null, returnTo: 'list' })}
+            />
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
