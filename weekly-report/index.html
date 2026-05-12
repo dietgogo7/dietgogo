@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주간업무 조회 시스템</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif; background: #f0f2f5; color: #1a1a2e; font-size: 14px; }
+
+  header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white; padding: 20px 32px;
+    display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+  header .subtitle { font-size: 12px; color: #a0a9c0; margin-top: 2px; }
+
+  .container { max-width: 1440px; margin: 0 auto; padding: 24px 20px; }
+
+  /* Upload */
+  .upload-zone {
+    border: 2px dashed #c5cae9; border-radius: 12px;
+    background: white; padding: 32px; text-align: center;
+    cursor: pointer; transition: all 0.2s; margin-bottom: 16px; position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: #5c6bc0; background: #f5f6ff; }
+  .upload-zone input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+  .upload-icon { font-size: 36px; margin-bottom: 10px; }
+  .upload-zone p { color: #5c6bc0; font-weight: 500; font-size: 15px; }
+  .upload-zone small { color: #9e9e9e; margin-top: 5px; display: block; }
+
+  /* Section */
+  .section { background: white; border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
+  .section-title { font-size: 13px; font-weight: 600; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
+  .badge { background: #5c6bc0; color: white; border-radius: 10px; padding: 2px 8px; font-size: 11px; font-weight: 700; }
+
+  /* File chips */
+  .file-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .file-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: #f5f5f5; border: 1.5px solid #e0e0e0;
+    border-radius: 20px; padding: 6px 14px;
+    font-size: 12px; color: #555; cursor: pointer;
+    transition: all 0.15s; user-select: none;
+  }
+  .file-chip:hover { border-color: #7986cb; background: #f0f2ff; color: #3949ab; }
+  .file-chip.selected { background: #e8eaf6; border-color: #5c6bc0; color: #3949ab; font-weight: 600; }
+  .file-chip .chip-rows { color: #9e9e9e; font-size: 11px; }
+  .file-chip.selected .chip-rows { color: #7986cb; }
+  .file-chip .chip-del {
+    background: none; border: none; color: #bdbdbd; cursor: pointer;
+    font-size: 15px; line-height: 1; padding: 0; width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: all 0.15s; flex-shrink: 0;
+  }
+  .file-chip .chip-del:hover { background: #ef5350; color: white; }
+
+  /* Performance panel */
+  #perfPanel { margin-bottom: 16px; }
+  .perf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+  .perf-title { font-size: 14px; font-weight: 700; color: #1a1a2e; }
+  .perf-subtitle { font-size: 11px; color: #78909c; margin-top: 2px; }
+
+  .perf-kpi-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .perf-kpi {
+    flex: 1; min-width: 110px; padding: 12px 16px;
+    background: #f8f9ff; border-radius: 10px; border-left: 3px solid #5c6bc0;
+  }
+  .perf-kpi.green { border-left-color: #43a047; }
+  .perf-kpi.orange { border-left-color: #fb8c00; }
+  .perf-kpi.up { border-left-color: #26a69a; }
+  .perf-kpi.down { border-left-color: #ef5350; }
+  .kpi-label { font-size: 10px; color: #78909c; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  .kpi-value { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-top: 3px; }
+  .kpi-sub { font-size: 11px; color: #9e9e9e; margin-top: 2px; }
+
+  .perf-table-wrap { overflow-x: auto; }
+  .perf-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .perf-table th { background: #f5f5f5; padding: 7px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #e0e0e0; white-space: nowrap; }
+  .perf-table td { padding: 7px 12px; border-bottom: 1px solid #f5f5f5; white-space: nowrap; }
+  .perf-table tbody tr:hover { background: #fafbff; }
+  .perf-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .perf-table .total-row td { font-weight: 700; background: #f0f2ff; border-top: 2px solid #c5cae9; }
+  .yoy-pos { color: #2e7d32; }
+  .yoy-neg { color: #c62828; }
+  .ach-high { color: #1565c0; font-weight: 600; }
+
+  /* Tabs */
+  .tabs-bar {
+    display: flex; gap: 4px; margin-bottom: 16px;
+    background: white; border-radius: 12px;
+    padding: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .tab-btn {
+    flex: 1; padding: 10px 20px; border: none; border-radius: 8px;
+    background: transparent; color: #78909c;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .tab-btn:hover { background: #f5f5f5; color: #1a1a2e; }
+  .tab-btn.active { background: #5c6bc0; color: white; font-weight: 600; }
+  .tab-btn .tab-count { font-size: 11px; opacity: 0.8; }
+
+  /* Filters */
+  .filters-grid { display: grid; gap: 10px; align-items: end; }
+  .filters-grid.is-member { grid-template-columns: 2fr repeat(4, 1fr); }
+  .filters-grid.is-manager { grid-template-columns: 2fr repeat(3, 1fr); }
+  .filter-group { display: flex; flex-direction: column; gap: 4px; }
+  .filter-group label { font-size: 10px; font-weight: 600; color: #78909c; text-transform: uppercase; letter-spacing: 0.5px; }
+  .filter-group select, .filter-group input {
+    border: 1px solid #e0e0e0; border-radius: 6px;
+    padding: 7px 10px; font-size: 13px; color: #1a1a2e;
+    background: white; outline: none; transition: border-color 0.15s; width: 100%;
+  }
+  .filter-group select:focus, .filter-group input:focus { border-color: #5c6bc0; }
+  .filter-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+  .btn { padding: 7px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+  .btn-ghost { background: #f5f5f5; color: #555; border: 1px solid #e0e0e0; }
+  .btn-ghost:hover { background: #eeeeee; }
+  .active-filters { font-size: 11px; color: #78909c; }
+
+  /* Stats */
+  .stats-row { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .stat-card {
+    background: white; border-radius: 10px; padding: 12px 18px;
+    flex: 1; min-width: 100px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border-left: 3px solid #5c6bc0;
+  }
+  .stat-card.green { border-left-color: #43a047; }
+  .stat-card.orange { border-left-color: #fb8c00; }
+  .stat-label { font-size: 10px; color: #78909c; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat-value { font-size: 24px; font-weight: 700; color: #1a1a2e; margin-top: 3px; }
+
+  /* Table */
+  .result-meta { font-size: 12px; color: #78909c; margin-bottom: 8px; }
+  .table-container { max-height: 580px; overflow-y: auto; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; background: white; font-size: 13px; }
+  thead th {
+    background: #1a1a2e; color: white;
+    padding: 10px 13px; text-align: left;
+    font-weight: 500; white-space: nowrap; font-size: 12px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  thead th:first-child { border-radius: 12px 0 0 0; }
+  thead th:last-child { border-radius: 0 12px 0 0; }
+  tbody tr { border-bottom: 1px solid #f5f5f5; transition: background 0.1s; }
+  tbody tr:hover { background: #f8f9ff; }
+  tbody td { padding: 9px 13px; vertical-align: top; }
+  td.title-col { max-width: 200px; font-weight: 500; }
+  td.desc-col { max-width: 280px; font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
+  td.date-col { white-space: nowrap; color: #555; font-size: 12px; }
+  td.person-col { white-space: nowrap; font-weight: 500; }
+
+  .status-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 12px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .status-진행중 { background: #e3f2fd; color: #1565c0; }
+  .status-완료 { background: #e8f5e9; color: #2e7d32; }
+  .status-검토중 { background: #fff3e0; color: #e65100; }
+  .status-보류 { background: #fce4ec; color: #c62828; }
+  .status-default { background: #f5f5f5; color: #666; }
+
+  .team-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .team-0 { background: #e8eaf6; color: #3949ab; }
+  .team-1 { background: #fce4ec; color: #ad1457; }
+  .team-2 { background: #e0f2f1; color: #00695c; }
+  .team-3 { background: #fff8e1; color: #f57f17; }
+
+  .link-icon { display: inline-flex; align-items: center; gap: 3px; color: #5c6bc0; text-decoration: none; font-size: 12px; }
+  .link-icon:hover { text-decoration: underline; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: #bdbdbd; }
+  .empty-state .icon { font-size: 44px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+  .empty-state small { font-size: 12px; margin-top: 6px; display: block; }
+
+  .search-highlight { background: #fff59d; border-radius: 2px; }
+
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: #1a1a2e; color: white; padding: 11px 18px;
+    border-radius: 8px; font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    animation: slideUp 0.25s ease; z-index: 9999;
+  }
+  @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  @media (max-width: 768px) {
+    .filters-grid { grid-template-columns: 1fr 1fr; }
+    .perf-kpi-row { gap: 6px; }
+    header { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>📋 주간업무 조회 시스템</h1>
+    <div class="subtitle">엑셀 업로드 → 팀별 실적 확인 → 업무 통합 조회 및 필터링</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Upload -->
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" accept=".xlsx,.xls" multiple>
+    <div class="upload-icon">📂</div>
+    <p>주간업무 엑셀 파일을 드래그하거나 클릭하여 업로드</p>
+    <small>여러 파일 동시 업로드 지원 · .xlsx 형식 · 데이터는 브라우저(localStorage)에 저장됩니다</small>
+  </div>
+
+  <!-- File selectors -->
+  <div class="section" id="filesSection" style="display:none">
+    <div class="section-header">
+      <div class="section-title">📁 업로드된 파일 <span class="badge" id="fileCount">0</span></div>
+      <button class="btn btn-ghost" onclick="clearAllFiles()" style="font-size:12px;padding:5px 12px;">전체 삭제</button>
+    </div>
+    <div class="file-chips" id="fileChips"></div>
+    <div style="margin-top:10px;font-size:11px;color:#9e9e9e;">파일 클릭 시 해당 팀만 보기 + 실적 현황 표시 · 다시 클릭하면 전체 보기</div>
+  </div>
+
+  <!-- Performance panel -->
+  <div id="perfPanel" style="display:none">
+    <div class="section">
+      <div class="perf-header">
+        <div>
+          <div class="perf-title" id="perfTitle">📊 실적 현황</div>
+          <div class="perf-subtitle" id="perfSubtitle"></div>
+        </div>
+      </div>
+      <div class="perf-kpi-row" id="perfKpiRow"></div>
+      <div class="perf-table-wrap">
+        <table class="perf-table" id="perfTable">
+          <thead><tr>
+            <th>PD</th><th>목표 (합산)</th><th>매출 (합산)</th><th>달성율</th><th>YOY</th>
+          </tr></thead>
+          <tbody id="perfTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sheet Tabs -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" id="tab팀장" onclick="setTab('팀장')">
+      📋 팀장 양식 <span class="tab-count" id="tabCount팀장"></span>
+    </button>
+    <button class="tab-btn" id="tab팀원" onclick="setTab('팀원')">
+      👤 팀원 양식 <span class="tab-count" id="tabCount팀원"></span>
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🔍 필터</div>
+    </div>
+    <div class="filters-grid is-manager" id="filtersGrid">
+      <div class="filter-group">
+        <label>키워드 검색</label>
+        <input type="text" id="searchInput" placeholder="업무명, 설명, 담당자 검색..." oninput="applyFilters()">
+      </div>
+      <div class="filter-group" id="filterPersonGroup" style="display:none;">
+        <label>담당자</label>
+        <select id="filterPerson" onchange="applyFilters()"><option value="">전체</option></select>
+      </div>
+      <div class="filter-group">
+        <label>분류</label>
+        <select id="filterCategory" onchange="applyFilters()"><option value="">전체</option></select>
+      </div>
+      <div class="filter-group">
+        <label>구분</label>
+        <select id="filterDivision" onchange="applyFilters()"><option value="">전체</option></select>
+      </div>
+      <div class="filter-group">
+        <label>상태</label>
+        <select id="filterStatus" onchange="applyFilters()">
+          <option value="">전체</option>
+          <option value="진행중">진행중</option>
+          <option value="완료">완료</option>
+          <option value="검토중">검토중</option>
+          <option value="보류">보류</option>
+        </select>
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button class="btn btn-ghost" onclick="resetFilters()">초기화</button>
+      <span class="active-filters" id="activeFilterHint"></span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row" id="statsRow" style="display:none">
+    <div class="stat-card"><div class="stat-label">표시 업무</div><div class="stat-value" id="statTotal">0</div></div>
+    <div class="stat-card orange"><div class="stat-label">진행중</div><div class="stat-value" id="statInProgress">0</div></div>
+    <div class="stat-card green"><div class="stat-label">완료</div><div class="stat-value" id="statDone">0</div></div>
+    <div class="stat-card"><div class="stat-label">검토중</div><div class="stat-value" id="statReview">0</div></div>
+  </div>
+
+  <!-- Results -->
+  <div class="result-meta" id="resultMeta"></div>
+  <div class="table-container">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>팀</th><th>담당자</th><th>분류</th><th>구분</th>
+            <th>Week 시작</th><th>업무명</th><th>간략 설명</th>
+            <th>완료 목표</th><th>상태</th><th>링크</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="10"><div class="empty-state">
+            <div class="icon">📥</div>
+            <p>업로드된 파일이 없습니다</p>
+            <small>위에서 주간업무 엑셀 파일을 업로드해 주세요</small>
+          </div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'weekly_v3';
+
+let allData  = [];         // 업무보고 rows
+let perfMap  = {};         // { fileName: { teamName, summary, pdRows } }
+let selectedFile = null;   // null = 전체, string = 특정 파일
+let activeTab = '팀장';    // '팀장' | '팀원'
+let filteredData = [];
+
+// 팀별 색상 (파일 순서 기반)
+const TEAM_COLORS = ['team-0','team-1','team-2','team-3'];
+let teamColorMap = {};
+
+// ── 초기화 ──────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  loadFromStorage();
+  setupUpload();
+});
+
+// ── 업로드 ──────────────────────────────────────────────────────────────────
+function setupUpload() {
+  const zone  = document.getElementById('uploadZone');
+  const input = document.getElementById('fileInput');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    handleFiles(Array.from(e.dataTransfer.files));
+  });
+  input.addEventListener('change', () => { handleFiles(Array.from(input.files)); input.value = ''; });
+}
+
+function handleFiles(files) {
+  const valid = files.filter(f => f.name.match(/\.(xlsx|xls)$/i));
+  if (!valid.length) { showToast('⚠️ .xlsx 또는 .xls 파일만 지원합니다'); return; }
+  valid.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try { parseExcel(e.target.result, file.name); }
+      catch (err) { showToast(`❌ ${file.name} 파싱 실패: ${err.message}`); }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+// ── 엑셀 파싱 ───────────────────────────────────────────────────────────────
+function parseExcel(buf, fileName) {
+  const wb = XLSX.read(buf, { type: 'array', cellDates: true, dateNF: 'yyyy-mm-dd' });
+
+  // 동일 파일 재업로드 시 기존 데이터 교체
+  allData = allData.filter(d => d.fileName !== fileName);
+  delete perfMap[fileName];
+
+  const teamName = extractTeamName(fileName);
+  let rowsAdded = 0;
+
+  wb.SheetNames.forEach(sheetName => {
+    const ws = wb.Sheets[sheetName];
+
+    // 실적 시트
+    if (sheetName.trim() === '실적') {
+      const perf = parsePerformanceSheet(ws, teamName, fileName);
+      if (perf) perfMap[fileName] = perf;
+      return;
+    }
+
+    // 업무보고 시트
+    const isManager = sheetName.includes('팀장');
+    const isMember  = sheetName.includes('팀원');
+    if (!isManager && !isMember) return;
+
+    const rawRows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'yyyy-mm-dd' });
+    const headerIdx = rawRows.findIndex(row =>
+      row.some(c => typeof c === 'string' && c.trim() === '담당자')
+    );
+    if (headerIdx === -1) return;
+
+    const headers = rawRows[headerIdx].map(h => String(h || '').trim());
+    const col = buildColMap(headers);
+    const sheetType = isManager ? '팀장' : '팀원';
+    let lastPerson = '';
+
+    for (let i = headerIdx + 1; i < rawRows.length; i++) {
+      const row = rawRows[i];
+      if (!row || row.every(c => !c)) continue;
+
+      const rawPerson = getCell(row, col.person);
+      const person = rawPerson || lastPerson;
+      if (rawPerson) lastPerson = rawPerson;
+
+      const title = getCell(row, col.title);
+      if (!title) continue;
+
+      allData.push({
+        fileName, teamName, sheetType,
+        person,
+        category:   getCell(row, col.category),
+        division:   getCell(row, col.division),
+        weekStart:  formatDate(getCell(row, col.weekStart)),
+        title,
+        desc:       getCell(row, col.desc),
+        targetDate: formatDate(getCell(row, col.targetDate)),
+        status:     getCell(row, col.status),
+        note:       getCell(row, col.note),
+      });
+      rowsAdded++;
+    }
+  });
+
+  saveToStorage();
+  rebuildTeamColors();
+  renderAll();
+  showToast(`✅ ${teamName} 로드 완료 (업무 ${rowsAdded}건)`);
+}
+
+// ── 실적 시트 파싱 ─────────────────────────────────────────────────────────
+function parsePerformanceSheet(ws, teamName, fileName) {
+  const rawRows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true });
+  if (rawRows.length < 3) return null;
+
+  // sub-header(row 1)에서 컬럼 위치 자동 감지
+  const subHdr = rawRows[1] || [];
+  const achIdx = subHdr.findIndex(c => c && String(c).trim() === '달성율');
+  if (achIdx === -1) return null;
+
+  // 달성율 기준으로 역산: ...목표, 목표YOY, 매출, 달성율, YOY
+  const goalIdx    = achIdx - 3;
+  const revIdx     = achIdx - 1;
+  const yoyIdx     = achIdx + 1;
+
+  // 분야 컬럼 위치: header row 0에서 '분야' 찾기
+  const hdr0 = rawRows[0] || [];
+  const divisionIdx = hdr0.findIndex(c => c && String(c).trim() === '분야');
+  // 분야를 못 찾으면 1번 시도 (팀1 구조)
+  const divCol = divisionIdx >= 0 ? divisionIdx : 1;
+
+  const summary  = {};
+  const pdRows   = [];
+  let currentPD  = '';
+
+  rawRows.slice(2).forEach(row => {
+    if (!row || row.length < achIdx + 1) return;
+
+    const pd  = row[0] ? String(row[0]).trim() : '';
+    const div = row[divCol] ? String(row[divCol]).trim() : '';
+
+    if (pd && pd !== 'PD' && pd !== 'NaN') currentPD = pd;
+
+    const goal = parseNum(row[goalIdx]);
+    const rev  = parseNum(row[revIdx]);
+    const ach  = parseNum(row[achIdx]);
+    const yoy  = parseNum(row[yoyIdx]);
+
+    // 팀 합계 행
+    if (pd.includes('합계') || div.includes('합계')) {
+      summary.goal = goal;
+      summary.revenue = rev;
+      summary.achievement = ach;
+      summary.yoy = yoy;
+      return;
+    }
+
+    // PD 소계 행
+    if (div === '소계' && currentPD) {
+      pdRows.push({ pd: currentPD, goal, revenue: rev, achievement: ach, yoy });
+    }
+  });
+
+  if (!summary.goal && !summary.revenue) return null;
+  return { teamName, fileName, summary, pdRows };
+}
+
+function parseNum(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const n = parseFloat(v);
+  return isNaN(n) ? null : n;
+}
+
+// ── 컬럼 매핑 ───────────────────────────────────────────────────────────────
+function buildColMap(headers) {
+  const find = (...kw) => {
+    const i = headers.findIndex(h => kw.some(k => h.includes(k)));
+    return i >= 0 ? i : -1;
+  };
+  return {
+    person:     find('담당자'),
+    category:   find('분류'),
+    division:   find('구분'),
+    weekStart:  find('week', 'Week', 'WEEK'),
+    title:      find('title', 'Title', '업무명', '제목'),
+    desc:       find('간략', '설명', '내용'),
+    targetDate: find('오픈', '완료', '목표'),
+    status:     find('상태'),
+    note:       find('비고', '링크'),
+  };
+}
+
+function getCell(row, idx) {
+  if (idx < 0 || idx >= row.length) return '';
+  const v = row[idx];
+  return (v !== null && v !== undefined) ? String(v).trim() : '';
+}
+
+function formatDate(val) {
+  if (!val) return '';
+  const m = String(val).match(/(\d{4}[-./]\d{2}[-./]\d{2})/);
+  return m ? m[1].replace(/[./]/g, '-') : val;
+}
+
+function extractTeamName(fileName) {
+  const m = fileName.match(/(도서\d+팀|팀\d+|\d+팀)/);
+  if (m) return m[1];
+  const noExt = fileName.replace(/\.(xlsx|xls)$/i, '');
+  return noExt.length > 18 ? noExt.slice(0, 18) + '…' : noExt;
+}
+
+// ── 스토리지 ────────────────────────────────────────────────────────────────
+function saveToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ allData, perfMap }));
+  } catch (e) {
+    showToast('⚠️ 저장 공간 부족. 일부 파일을 삭제해 주세요.');
+  }
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const obj = JSON.parse(raw);
+    allData = obj.allData || [];
+    perfMap = obj.perfMap || {};
+    rebuildTeamColors();
+    renderAll();
+  } catch (e) { allData = []; perfMap = {}; }
+}
+
+function clearAllFiles() {
+  if (!confirm('저장된 모든 데이터를 삭제하시겠습니까?')) return;
+  allData = []; perfMap = {}; selectedFile = null;
+  localStorage.removeItem(STORAGE_KEY);
+  teamColorMap = {};
+  renderAll();
+  showToast('🗑️ 모든 데이터 삭제됨');
+}
+
+// idx: index in getFileList()
+function removeFileByIdx(idx) {
+  const files = getFileList();
+  const fileName = files[idx];
+  if (!fileName) return;
+  if (selectedFile === fileName) selectedFile = null;
+  allData = allData.filter(d => d.fileName !== fileName);
+  delete perfMap[fileName];
+  rebuildTeamColors();
+  saveToStorage();
+  renderAll();
+  showToast(`🗑️ ${extractTeamName(fileName)} 삭제됨`);
+}
+
+// ── 파일 선택 토글 ──────────────────────────────────────────────────────────
+function toggleFile(idx) {
+  const files = getFileList();
+  const fileName = files[idx];
+  if (!fileName) return;
+  selectedFile = (selectedFile === fileName) ? null : fileName;
+  renderAll();
+}
+
+function getFileList() {
+  // allData 기준 고유 파일명 + perfMap에만 있는 파일명 합산
+  const fromData = [...new Set(allData.map(d => d.fileName))];
+  const fromPerf = Object.keys(perfMap).filter(f => !fromData.includes(f));
+  return [...fromData, ...fromPerf];
+}
+
+function rebuildTeamColors() {
+  teamColorMap = {};
+  getFileList().forEach((f, i) => { teamColorMap[f] = TEAM_COLORS[i % TEAM_COLORS.length]; });
+}
+
+// ── 탭 전환 ─────────────────────────────────────────────────────────────────
+function setTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab' + tab).classList.add('active');
+  syncPersonFilterVisibility();
+  applyFilters();
+}
+
+function syncPersonFilterVisibility() {
+  const personGroup = document.getElementById('filterPersonGroup');
+  const personSelect = document.getElementById('filterPerson');
+  const filtersGrid = document.getElementById('filtersGrid');
+  const isMemberTab = activeTab === '팀원';
+
+  personGroup.style.display = isMemberTab ? 'flex' : 'none';
+  filtersGrid.classList.toggle('is-member', isMemberTab);
+  filtersGrid.classList.toggle('is-manager', !isMemberTab);
+
+  if (!isMemberTab && personSelect.value) {
+    personSelect.value = '';
+  }
+}
+
+// ── 전체 렌더링 ──────────────────────────────────────────────────────────────
+function renderAll() {
+  renderFileChips();
+  renderPerfPanel();
+  updateTabCounts();
+  syncPersonFilterVisibility();
+  updateFilterOptions();
+  applyFilters();
+}
+
+// ── 파일 칩 렌더링 ──────────────────────────────────────────────────────────
+function renderFileChips() {
+  const files   = getFileList();
+  const section = document.getElementById('filesSection');
+  document.getElementById('fileCount').textContent = files.length;
+  section.style.display = files.length ? 'block' : 'none';
+
+  document.getElementById('fileChips').innerHTML = files.map((f, idx) => {
+    const n   = allData.filter(d => d.fileName === f).length;
+    const sel = f === selectedFile;
+    const tn  = extractTeamName(f);
+    return `<div class="file-chip ${sel ? 'selected' : ''}" onclick="toggleFile(${idx})">
+      <span>📄 ${escHtml(tn)}</span>
+      <span class="chip-rows">${n}건</span>
+      <button class="chip-del" onclick="event.stopPropagation();removeFileByIdx(${idx})" title="삭제">×</button>
+    </div>`;
+  }).join('');
+}
+
+// ── 실적 패널 렌더링 ────────────────────────────────────────────────────────
+function renderPerfPanel() {
+  const panel = document.getElementById('perfPanel');
+  if (!selectedFile || !perfMap[selectedFile]) {
+    panel.style.display = 'none';
+    return;
+  }
+  panel.style.display = 'block';
+
+  const p = perfMap[selectedFile];
+  document.getElementById('perfTitle').textContent    = `📊 ${p.teamName} 실적 현황`;
+  document.getElementById('perfSubtitle').textContent = '예스24 + 제휴 합산 기준';
+
+  // KPI 카드
+  const s = p.summary;
+  const achClass = s.achievement >= 0.3 ? 'green' : (s.achievement >= 0.2 ? '' : 'down');
+  const yoyClass = s.yoy >= 0 ? 'up' : 'down';
+  document.getElementById('perfKpiRow').innerHTML = `
+    <div class="perf-kpi">
+      <div class="kpi-label">월 목표</div>
+      <div class="kpi-value">${fmtMoney(s.goal)}</div>
+      <div class="kpi-sub">원</div>
+    </div>
+    <div class="perf-kpi green">
+      <div class="kpi-label">월 매출</div>
+      <div class="kpi-value">${fmtMoney(s.revenue)}</div>
+      <div class="kpi-sub">원</div>
+    </div>
+    <div class="perf-kpi ${achClass}">
+      <div class="kpi-label">달성율</div>
+      <div class="kpi-value">${fmtPct(s.achievement)}</div>
+      <div class="kpi-sub">목표 대비</div>
+    </div>
+    <div class="perf-kpi ${yoyClass}">
+      <div class="kpi-label">YOY</div>
+      <div class="kpi-value">${fmtYoy(s.yoy)}</div>
+      <div class="kpi-sub">전년 동기 대비</div>
+    </div>`;
+
+  // PD 별 breakdown table
+  document.getElementById('perfTableBody').innerHTML =
+    p.pdRows.map(r => {
+      const yoyCls = r.yoy === null ? '' : (r.yoy >= 0 ? 'yoy-pos' : 'yoy-neg');
+      return `<tr>
+        <td><strong>${escHtml(r.pd)}</strong></td>
+        <td class="num">${fmtMoney(r.goal)}</td>
+        <td class="num">${fmtMoney(r.revenue)}</td>
+        <td class="num ach-high">${fmtPct(r.achievement)}</td>
+        <td class="num ${yoyCls}">${fmtYoy(r.yoy)}</td>
+      </tr>`;
+    }).join('') +
+    `<tr class="total-row">
+      <td>팀 합계</td>
+      <td class="num">${fmtMoney(s.goal)}</td>
+      <td class="num">${fmtMoney(s.revenue)}</td>
+      <td class="num ach-high">${fmtPct(s.achievement)}</td>
+      <td class="num ${s.yoy >= 0 ? 'yoy-pos' : 'yoy-neg'}">${fmtYoy(s.yoy)}</td>
+    </tr>`;
+}
+
+// ── 탭 카운트 업데이트 ──────────────────────────────────────────────────────
+function updateTabCounts() {
+  const base = selectedFile ? allData.filter(d => d.fileName === selectedFile) : allData;
+  const c팀장 = base.filter(d => d.sheetType === '팀장').length;
+  const c팀원 = base.filter(d => d.sheetType === '팀원').length;
+  document.getElementById('tabCount팀장').textContent = c팀장 ? `(${c팀장})` : '';
+  document.getElementById('tabCount팀원').textContent = c팀원 ? `(${c팀원})` : '';
+}
+
+// ── 필터 옵션 업데이트 ──────────────────────────────────────────────────────
+function updateFilterOptions() {
+  // 현재 파일 선택 + 탭 기준으로 옵션 생성
+  const base = getBaseData();
+  const persons = activeTab === '팀원' ? uniq(base.map(d => d.person).filter(Boolean)) : [];
+  const cats    = uniq(base.map(d => d.category).filter(Boolean));
+  const divs    = uniq(base.map(d => d.division).filter(Boolean));
+  setSelectOptions('filterPerson',   persons);
+  setSelectOptions('filterCategory', cats);
+  setSelectOptions('filterDivision', divs);
+}
+
+function setSelectOptions(id, values) {
+  const sel = document.getElementById(id);
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">전체</option>' +
+    values.sort().map(v => `<option value="${escHtml(v)}">${escHtml(v)}</option>`).join('');
+  if (values.includes(cur)) sel.value = cur;
+}
+
+// ── 필터 적용 ───────────────────────────────────────────────────────────────
+function getBaseData() {
+  let data = allData.filter(d => d.sheetType === activeTab);
+  if (selectedFile) data = data.filter(d => d.fileName === selectedFile);
+  return data;
+}
+
+function applyFilters() {
+  updateTabCounts();
+  updateFilterOptions();
+
+  const person   = activeTab === '팀원' ? document.getElementById('filterPerson').value : '';
+  const category = document.getElementById('filterCategory').value;
+  const division = document.getElementById('filterDivision').value;
+  const status   = document.getElementById('filterStatus').value;
+  const search   = document.getElementById('searchInput').value.toLowerCase();
+
+  filteredData = getBaseData().filter(d => {
+    if (person   && d.person    !== person)   return false;
+    if (category && d.category  !== category) return false;
+    if (division && d.division  !== division) return false;
+    if (status   && d.status    !== status)   return false;
+    if (search) {
+      const hay = [d.person, d.title, d.desc, d.category, d.division, d.note].join(' ').toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+
+  const active = [person, category, division, status, search].filter(Boolean);
+  document.getElementById('activeFilterHint').textContent =
+    active.length ? `필터 ${active.length}개 적용 중` : '';
+
+  renderTable();
+  renderStats();
+}
+
+function resetFilters() {
+  ['filterPerson','filterCategory','filterDivision','filterStatus'].forEach(id =>
+    document.getElementById(id).value = ''
+  );
+  document.getElementById('searchInput').value = '';
+  applyFilters();
+}
+
+// ── 테이블 렌더링 ────────────────────────────────────────────────────────────
+function renderTable() {
+  const tbody  = document.getElementById('tableBody');
+  const meta   = document.getElementById('resultMeta');
+  const search = document.getElementById('searchInput').value;
+  const base   = getBaseData();
+
+  if (!allData.length) {
+    tbody.innerHTML = emptyHtml('📥', '업로드된 파일이 없습니다', '위에서 주간업무 엑셀 파일을 업로드해 주세요');
+    meta.textContent = ''; return;
+  }
+  if (!filteredData.length) {
+    tbody.innerHTML = emptyHtml('🔍', '검색 결과가 없습니다', '필터 조건을 변경해 보세요');
+    meta.textContent = `${base.length}건 중 0건`; return;
+  }
+
+  meta.textContent = `${base.length}건 중 ${filteredData.length}건 표시`;
+
+  tbody.innerHTML = filteredData.map(d => {
+    const statusCls = ['진행중','완료','검토중','보류'].includes(d.status)
+      ? `status-${d.status}` : 'status-default';
+    const teamCls  = teamColorMap[d.fileName] || 'team-0';
+    return `<tr>
+      <td><span class="team-badge ${teamCls}">${escHtml(d.teamName)}</span></td>
+      <td class="person-col">${hl(escHtml(d.person), search)}</td>
+      <td>${escHtml(d.category)}</td>
+      <td>${escHtml(d.division)}</td>
+      <td class="date-col">${escHtml(d.weekStart)}</td>
+      <td class="title-col">${hl(escHtml(d.title), search)}</td>
+      <td class="desc-col">${hl(escHtml(d.desc), search)}</td>
+      <td class="date-col">${escHtml(d.targetDate)}</td>
+      <td><span class="status-badge ${statusCls}">${escHtml(d.status)}</span></td>
+      <td>${noteHtml(d.note)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function emptyHtml(icon, msg, sub) {
+  return `<tr><td colspan="10"><div class="empty-state">
+    <div class="icon">${icon}</div><p>${msg}</p><small>${sub}</small>
+  </div></td></tr>`;
+}
+
+function noteHtml(note) {
+  if (!note) return '';
+  return note.replace(/(https?:\/\/[^\s]+)/g, url =>
+    `<a class="link-icon" href="${url}" target="_blank" rel="noopener">🔗 링크</a>`
+  );
+}
+
+function hl(text, search) {
+  if (!search || !text) return text;
+  const esc = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(`(${esc})`, 'gi'), '<mark class="search-highlight">$1</mark>');
+}
+
+// ── 통계 렌더링 ──────────────────────────────────────────────────────────────
+function renderStats() {
+  const row = document.getElementById('statsRow');
+  if (!allData.length) { row.style.display = 'none'; return; }
+  row.style.display = 'flex';
+  document.getElementById('statTotal').textContent      = filteredData.length;
+  document.getElementById('statInProgress').textContent = filteredData.filter(d => d.status === '진행중').length;
+  document.getElementById('statDone').textContent       = filteredData.filter(d => d.status === '완료').length;
+  document.getElementById('statReview').textContent     = filteredData.filter(d => d.status === '검토중').length;
+}
+
+// ── 숫자 포맷 ────────────────────────────────────────────────────────────────
+function fmtMoney(v) {
+  if (v === null || v === undefined) return '-';
+  const n = Math.abs(parseFloat(v));
+  const sign = parseFloat(v) < 0 ? '-' : '';
+  if (n >= 1e8) return sign + (n / 1e8).toFixed(1) + '억';
+  if (n >= 1e7) return sign + Math.round(n / 1e7) + '천만';
+  if (n >= 1e4) return sign + (n / 1e4).toFixed(0) + '만';
+  return sign + n.toLocaleString('ko-KR');
+}
+
+function fmtPct(v) {
+  if (v === null || v === undefined) return '-';
+  return (parseFloat(v) * 100).toFixed(1) + '%';
+}
+
+function fmtYoy(v) {
+  if (v === null || v === undefined) return '-';
+  const pct = (parseFloat(v) * 100).toFixed(1);
+  return (parseFloat(v) >= 0 ? '+' : '') + pct + '%';
+}
+
+// ── 유틸 ─────────────────────────────────────────────────────────────────────
+function uniq(arr) { return [...new Set(arr)]; }
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+</script>
+</body>
+</html>
