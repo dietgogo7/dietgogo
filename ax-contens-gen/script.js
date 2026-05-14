@@ -183,7 +183,6 @@ function renderResults(results) {
           <div class="card-actions">
             <button type="button" class="btn-copy">복사</button>
             <button type="button">재생성</button>
-            <button type="button">저장</button>
           </div>
         </article>
       `
