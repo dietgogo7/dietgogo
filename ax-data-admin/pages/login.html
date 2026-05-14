@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
   <div id="app">
     <div class="login-page">
@@ -28,11 +30,13 @@
           <form class="login-form" id="loginForm">
             <div class="form-group">
               <label class="form-label" for="email">이메일</label>
-              <input type="email" id="email" class="form-input" placeholder="name@axdata.com" required>
+              <input type="email" id="email" class="form-input" placeholder="name@axdata.com" required
+                value="admin@axdata.com">
             </div>
             <div class="form-group">
               <label class="form-label" for="password">비밀번호</label>
-              <input type="password" id="password" class="form-input" placeholder="비밀번호를 입력하세요" required>
+              <input type="password" id="password" class="form-input" placeholder="비밀번호를 입력하세요" required
+                value="admin1234">
             </div>
             <div id="loginError" class="alert alert-destructive" style="display:none;margin-top:0.75rem;">
               <span class="alert-icon"></span>
@@ -51,4 +55,5 @@
   <script src="../js/common.js"></script>
   <script src="../js/login.js"></script>
 </body>
+
 </html>
