@@ -1,0 +1,35 @@
+{
+  "summary": {
+    "totalSales": 987654000,
+    "totalOrders": 24381,
+    "avgOrderValue": 40511,
+    "returnRate": 1.8
+  },
+  "data": [
+    { "date": "2026-05-01", "category": "소설/시/희곡", "channel": "PC웹", "sales": 38420000, "orders": 1243, "avgPrice": 30910, "qty": 1521, "returnRate": 1.2 },
+    { "date": "2026-05-01", "category": "경제경영", "channel": "모바일앱", "sales": 29800000, "orders": 589, "avgPrice": 50594, "qty": 702, "returnRate": 0.8 },
+    { "date": "2026-05-01", "category": "자기계발", "channel": "PC웹", "sales": 22100000, "orders": 712, "avgPrice": 31039, "qty": 856, "returnRate": 1.0 },
+    { "date": "2026-05-01", "category": "어린이/청소년", "channel": "오프라인", "sales": 18500000, "orders": 634, "avgPrice": 29179, "qty": 890, "returnRate": 2.3 },
+    { "date": "2026-05-01", "category": "IT/컴퓨터", "channel": "모바일앱", "sales": 15200000, "orders": 312, "avgPrice": 48717, "qty": 378, "returnRate": 0.6 },
+    { "date": "2026-05-02", "category": "소설/시/희곡", "channel": "모바일앱", "sales": 41300000, "orders": 1380, "avgPrice": 29927, "qty": 1645, "returnRate": 1.4 },
+    { "date": "2026-05-02", "category": "경제경영", "channel": "PC웹", "sales": 33600000, "orders": 651, "avgPrice": 51612, "qty": 788, "returnRate": 0.5 },
+    { "date": "2026-05-02", "category": "만화", "channel": "모바일앱", "sales": 12400000, "orders": 1102, "avgPrice": 11252, "qty": 1543, "returnRate": 0.3 },
+    { "date": "2026-05-02", "category": "자기계발", "channel": "제휴몰", "sales": 19800000, "orders": 598, "avgPrice": 33110, "qty": 721, "returnRate": 1.8 },
+    { "date": "2026-05-02", "category": "IT/컴퓨터", "channel": "PC웹", "sales": 17900000, "orders": 356, "avgPrice": 50280, "qty": 423, "returnRate": 0.4 },
+    { "date": "2026-05-03", "category": "소설/시/희곡", "channel": "오프라인", "sales": 28700000, "orders": 967, "avgPrice": 29680, "qty": 1189, "returnRate": 1.9 },
+    { "date": "2026-05-03", "category": "어린이/청소년", "channel": "PC웹", "sales": 24500000, "orders": 812, "avgPrice": 30172, "qty": 1023, "returnRate": 2.8 },
+    { "date": "2026-05-03", "category": "건강/취미", "channel": "모바일앱", "sales": 16300000, "orders": 445, "avgPrice": 36629, "qty": 534, "returnRate": 1.5 },
+    { "date": "2026-05-03", "category": "경제경영", "channel": "제휴몰", "sales": 21700000, "orders": 423, "avgPrice": 51302, "qty": 508, "returnRate": 0.7 },
+    { "date": "2026-05-03", "category": "만화", "channel": "PC웹", "sales": 9800000, "orders": 867, "avgPrice": 11304, "qty": 1198, "returnRate": 0.2 },
+    { "date": "2026-05-04", "category": "자기계발", "channel": "모바일앱", "sales": 25600000, "orders": 778, "avgPrice": 32904, "qty": 934, "returnRate": 1.2 },
+    { "date": "2026-05-04", "category": "소설/시/희곡", "channel": "PC웹", "sales": 35400000, "orders": 1156, "avgPrice": 30622, "qty": 1389, "returnRate": 1.0 },
+    { "date": "2026-05-04", "category": "IT/컴퓨터", "channel": "오프라인", "sales": 13200000, "orders": 267, "avgPrice": 49438, "qty": 312, "returnRate": 0.4 },
+    { "date": "2026-05-04", "category": "어린이/청소년", "channel": "모바일앱", "sales": 20100000, "orders": 689, "avgPrice": 29172, "qty": 867, "returnRate": 3.1 },
+    { "date": "2026-05-04", "category": "건강/취미", "channel": "제휴몰", "sales": 14700000, "orders": 398, "avgPrice": 36935, "qty": 479, "returnRate": 1.8 },
+    { "date": "2026-05-05", "category": "경제경영", "channel": "모바일앱", "sales": 31200000, "orders": 612, "avgPrice": 50980, "qty": 734, "returnRate": 0.6 },
+    { "date": "2026-05-05", "category": "소설/시/희곡", "channel": "모바일앱", "sales": 43800000, "orders": 1467, "avgPrice": 29857, "qty": 1756, "returnRate": 1.3 },
+    { "date": "2026-05-05", "category": "만화", "channel": "모바일앱", "sales": 11600000, "orders": 1023, "avgPrice": 11339, "qty": 1456, "returnRate": 0.2 },
+    { "date": "2026-05-05", "category": "자기계발", "channel": "PC웹", "sales": 23400000, "orders": 712, "avgPrice": 32865, "qty": 878, "returnRate": 1.4 },
+    { "date": "2026-05-05", "category": "IT/컴퓨터", "channel": "제휴몰", "sales": 16800000, "orders": 334, "avgPrice": 50299, "qty": 401, "returnRate": 0.5 }
+  ]
+}

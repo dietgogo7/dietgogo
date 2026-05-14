@@ -1,0 +1,59 @@
+{
+  "requests": [
+    {
+      "id": "req001",
+      "title": "채널별 판매 리포트에 전월 대비 증감률 컬럼 추가 요청",
+      "content": "채널별 판매 분석 리포트에서 전월 대비 증감률(%)을 확인할 수 있는 컬럼이 필요합니다. 현재는 절대 수치만 표시되어 트렌드 파악이 어렵습니다.",
+      "requester": "이분석",
+      "department": "영업본부",
+      "status": "in-progress",
+      "priority": "high",
+      "createdAt": "2026-05-12",
+      "updatedAt": "2026-05-13"
+    },
+    {
+      "id": "req002",
+      "title": "베스트셀러 리포트 스케줄 자동 발송 설정 요청",
+      "content": "매주 월요일 오전 9시에 베스트셀러 현황 리포트가 자동으로 팀원 전체에게 발송되도록 스케줄 설정이 필요합니다.",
+      "requester": "박운영",
+      "department": "MD본부",
+      "status": "pending",
+      "priority": "medium",
+      "createdAt": "2026-05-11",
+      "updatedAt": "2026-05-11"
+    },
+    {
+      "id": "req003",
+      "title": "주문 상세 내역 리포트 고객 연락처 마스킹 강화",
+      "content": "현재 주문 상세 내역에서 고객 연락처 뒷자리 4자리가 노출되고 있습니다. 개인정보 보호 정책에 따라 중간 번호도 마스킹 처리 요청드립니다.",
+      "requester": "김관리",
+      "department": "판매관리본부",
+      "status": "completed",
+      "priority": "high",
+      "createdAt": "2026-05-08",
+      "updatedAt": "2026-05-10"
+    },
+    {
+      "id": "req004",
+      "title": "반품/교환 현황 리포트에 사유별 상세 필터 추가",
+      "content": "반품 사유(단순 변심, 불량, 오배송 등)별로 필터링하여 조회할 수 있는 기능이 필요합니다.",
+      "requester": "박운영",
+      "department": "CS본부",
+      "status": "pending",
+      "priority": "low",
+      "createdAt": "2026-05-07",
+      "updatedAt": "2026-05-07"
+    },
+    {
+      "id": "req005",
+      "title": "카테고리별 판매 분석 엑셀 다운로드 시 차트 포함 요청",
+      "content": "엑셀 다운로드 시 데이터뿐 아니라 카테고리 비중 차트(파이 차트)도 함께 포함되어 출력되었으면 합니다.",
+      "requester": "이분석",
+      "department": "영업본부",
+      "status": "pending",
+      "priority": "medium",
+      "createdAt": "2026-05-06",
+      "updatedAt": "2026-05-06"
+    }
+  ]
+}

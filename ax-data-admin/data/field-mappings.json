@@ -1,0 +1,143 @@
+{
+  "mappings": [
+    {
+      "reportId": "rpt001",
+      "reportName": "일별 판매 현황",
+      "fields": [
+        { "sourceField": "sale_date", "displayName": "일자", "dataType": "Date", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 1 },
+        { "sourceField": "category_name", "displayName": "카테고리", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "channel_name", "displayName": "채널", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 3 },
+        { "sourceField": "total_sales", "displayName": "판매금액", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 4 },
+        { "sourceField": "order_count", "displayName": "주문수", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 5 },
+        { "sourceField": "qty", "displayName": "판매수량", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 6 },
+        { "sourceField": "avg_price", "displayName": "객단가", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 7 },
+        { "sourceField": "return_rate", "displayName": "반품률(%)", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 8 }
+      ]
+    },
+    {
+      "reportId": "rpt002",
+      "reportName": "월간 판매 요약",
+      "fields": [
+        { "sourceField": "sale_ym", "displayName": "판매월", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 1 },
+        { "sourceField": "total_sales", "displayName": "총판매액", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "total_orders", "displayName": "총주문수", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 3 },
+        { "sourceField": "total_qty", "displayName": "총판매수량", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 4 },
+        { "sourceField": "mom_rate", "displayName": "전월대비(%)", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 5 },
+        { "sourceField": "new_member_cnt", "displayName": "신규회원수", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": false, "searchable": false, "masking": false, "maskType": null, "sortOrder": 6 }
+      ]
+    },
+    {
+      "reportId": "rpt003",
+      "reportName": "채널별 판매 분석",
+      "fields": [
+        { "sourceField": "channel_name", "displayName": "채널명", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 1 },
+        { "sourceField": "sale_date", "displayName": "일자", "dataType": "Date", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "total_sales", "displayName": "판매금액", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 3 },
+        { "sourceField": "order_count", "displayName": "주문수", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 4 },
+        { "sourceField": "share_pct", "displayName": "비중(%)", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 5 }
+      ]
+    },
+    {
+      "reportId": "rpt004",
+      "reportName": "주문 상세 내역",
+      "fields": [
+        { "sourceField": "order_id", "displayName": "주문번호", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 1 },
+        { "sourceField": "order_date", "displayName": "주문일시", "dataType": "Date", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "customer_name", "displayName": "구매자명", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": true, "maskType": "name", "sortOrder": 3 },
+        { "sourceField": "customer_email", "displayName": "이메일", "dataType": "String", "visible": true, "excelInclude": false, "sortable": false, "searchable": false, "masking": true, "maskType": "email", "sortOrder": 4 },
+        { "sourceField": "customer_phone", "displayName": "연락처", "dataType": "String", "visible": false, "excelInclude": false, "sortable": false, "searchable": false, "masking": true, "maskType": "phone", "sortOrder": 5 },
+        { "sourceField": "book_title", "displayName": "도서명", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 6 },
+        { "sourceField": "publisher", "displayName": "출판사", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 7 },
+        { "sourceField": "quantity", "displayName": "수량", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 8 },
+        { "sourceField": "amount", "displayName": "결제금액", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 9 },
+        { "sourceField": "status", "displayName": "주문상태", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 10 }
+      ]
+    },
+    {
+      "reportId": "rpt005",
+      "reportName": "회원 활동 리포트",
+      "fields": [
+        { "sourceField": "member_id", "displayName": "회원ID", "dataType": "String", "visible": false, "excelInclude": false, "sortable": false, "searchable": false, "masking": true, "maskType": "email", "sortOrder": 1 },
+        { "sourceField": "member_grade", "displayName": "회원등급", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "visit_cnt", "displayName": "방문수", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 3 },
+        { "sourceField": "purchase_cnt", "displayName": "구매건수", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 4 },
+        { "sourceField": "purchase_amt", "displayName": "구매금액", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 5 },
+        { "sourceField": "last_purchase_dt", "displayName": "최근구매일", "dataType": "Date", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 6 }
+      ]
+    },
+    {
+      "reportId": "rpt006",
+      "reportName": "반품/교환 현황",
+      "fields": [
+        { "sourceField": "return_date", "displayName": "접수일", "dataType": "Date", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 1 },
+        { "sourceField": "order_id", "displayName": "주문번호", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "book_title", "displayName": "도서명", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 3 },
+        { "sourceField": "return_reason", "displayName": "반품사유", "dataType": "String", "visible": true, "excelInclude": true, "sortable": false, "searchable": true, "masking": false, "maskType": null, "sortOrder": 4 },
+        { "sourceField": "return_type", "displayName": "유형", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 5 },
+        { "sourceField": "status", "displayName": "처리상태", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 6 }
+      ]
+    },
+    {
+      "reportId": "rpt007",
+      "reportName": "베스트셀러 현황",
+      "fields": [
+        { "sourceField": "rank", "displayName": "순위", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 1 },
+        { "sourceField": "book_title", "displayName": "도서명", "dataType": "String", "visible": true, "excelInclude": true, "sortable": false, "searchable": true, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "author", "displayName": "저자", "dataType": "String", "visible": true, "excelInclude": true, "sortable": false, "searchable": true, "masking": false, "maskType": null, "sortOrder": 3 },
+        { "sourceField": "publisher", "displayName": "출판사", "dataType": "String", "visible": true, "excelInclude": true, "sortable": false, "searchable": true, "masking": false, "maskType": null, "sortOrder": 4 },
+        { "sourceField": "category", "displayName": "카테고리", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 5 },
+        { "sourceField": "sales_qty", "displayName": "판매수량", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 6 },
+        { "sourceField": "sales_amt", "displayName": "판매금액", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 7 },
+        { "sourceField": "prev_rank", "displayName": "전일순위", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": false, "searchable": false, "masking": false, "maskType": null, "sortOrder": 8 }
+      ]
+    },
+    {
+      "reportId": "rpt008",
+      "reportName": "카테고리별 판매 분석",
+      "fields": [
+        { "sourceField": "category", "displayName": "카테고리", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 1 },
+        { "sourceField": "sales_amt", "displayName": "판매금액", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "sales_qty", "displayName": "판매수량", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 3 },
+        { "sourceField": "share_pct", "displayName": "비중(%)", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 4 },
+        { "sourceField": "growth_rate", "displayName": "성장률(%)", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 5 }
+      ]
+    },
+    {
+      "reportId": "rpt009",
+      "reportName": "신간 도서 실적",
+      "fields": [
+        { "sourceField": "reg_date", "displayName": "등록일", "dataType": "Date", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 1 },
+        { "sourceField": "book_title", "displayName": "도서명", "dataType": "String", "visible": true, "excelInclude": true, "sortable": false, "searchable": true, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "author", "displayName": "저자", "dataType": "String", "visible": true, "excelInclude": true, "sortable": false, "searchable": true, "masking": false, "maskType": null, "sortOrder": 3 },
+        { "sourceField": "publisher", "displayName": "출판사", "dataType": "String", "visible": true, "excelInclude": true, "sortable": false, "searchable": true, "masking": false, "maskType": null, "sortOrder": 4 },
+        { "sourceField": "category", "displayName": "카테고리", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 5 },
+        { "sourceField": "d7_qty", "displayName": "7일판매", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 6 },
+        { "sourceField": "stock_qty", "displayName": "재고수량", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 7 }
+      ]
+    },
+    {
+      "reportId": "rpt010",
+      "reportName": "쿠폰/할인 실적",
+      "fields": [
+        { "sourceField": "coupon_name", "displayName": "쿠폰명", "dataType": "String", "visible": true, "excelInclude": true, "sortable": false, "searchable": true, "masking": false, "maskType": null, "sortOrder": 1 },
+        { "sourceField": "discount_type", "displayName": "할인유형", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "issued_cnt", "displayName": "발급수", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 3 },
+        { "sourceField": "used_cnt", "displayName": "사용수", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 4 },
+        { "sourceField": "use_rate", "displayName": "사용률(%)", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 5 },
+        { "sourceField": "discount_amt", "displayName": "할인금액", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 6 }
+      ]
+    },
+    {
+      "reportId": "rpt011",
+      "reportName": "재고 현황",
+      "fields": [
+        { "sourceField": "category", "displayName": "카테고리", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 1 },
+        { "sourceField": "publisher", "displayName": "출판사", "dataType": "String", "visible": true, "excelInclude": true, "sortable": true, "searchable": true, "masking": false, "maskType": null, "sortOrder": 2 },
+        { "sourceField": "stock_qty", "displayName": "재고수량", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 3 },
+        { "sourceField": "in_qty", "displayName": "입고수량", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 4 },
+        { "sourceField": "out_qty", "displayName": "출고수량", "dataType": "Number", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 5 },
+        { "sourceField": "last_updated", "displayName": "최종갱신", "dataType": "Date", "visible": true, "excelInclude": true, "sortable": true, "searchable": false, "masking": false, "maskType": null, "sortOrder": 6 }
+      ]
+    }
+  ]
+}

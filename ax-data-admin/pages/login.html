@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 - AX Data Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div id="app">
+    <div class="login-page">
+      <div class="login-left">
+        <div class="login-brand">
+          <div class="brand-icon">AX</div>
+          <span>AX Data Admin</span>
+        </div>
+        <blockquote class="login-quote">
+          데이터 기반 의사결정을 위한 통합 관리자 플랫폼.<br>
+          리포트 조회, 권한 관리, 스케줄 발송, AI 시각화를 하나의 시스템에서 관리합니다.
+        </blockquote>
+      </div>
+      <div class="login-right">
+        <div class="login-form-wrapper">
+          <h2>로그인</h2>
+          <p class="login-sub">내부 계정으로 로그인하세요.</p>
+          <form class="login-form" id="loginForm">
+            <div class="form-group">
+              <label class="form-label" for="email">이메일</label>
+              <input type="email" id="email" class="form-input" placeholder="name@axdata.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="password">비밀번호</label>
+              <input type="password" id="password" class="form-input" placeholder="비밀번호를 입력하세요" required>
+            </div>
+            <div id="loginError" class="alert alert-destructive" style="display:none;margin-top:0.75rem;">
+              <span class="alert-icon"></span>
+              <span id="loginErrorMsg">이메일 또는 비밀번호가 올바르지 않습니다.</span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">로그인</button>
+          </form>
+          <p class="text-muted text-sm" style="margin-top:1.5rem;text-align:center;">
+            관리자 테스트: admin@axdata.com / admin1234
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/icons.js"></script>
+  <script src="../js/common.js"></script>
+  <script src="../js/login.js"></script>
+</body>
+</html>

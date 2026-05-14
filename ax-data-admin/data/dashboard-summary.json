@@ -1,0 +1,30 @@
+{
+  "stats": {
+    "totalReports": 47,
+    "recentExecutions": 128,
+    "recentDownloads": 56,
+    "activeNotices": 3
+  },
+  "recentReports": [
+    { "id": "rpt001", "name": "일별 판매 현황", "menuPath": "판매관리 > 일별현황", "lastRun": "2026-05-14T09:30:00", "status": "success" },
+    { "id": "rpt003", "name": "채널별 판매 분석", "menuPath": "영업분석 > 채널실적", "lastRun": "2026-05-14T08:15:00", "status": "success" },
+    { "id": "rpt007", "name": "베스트셀러 현황", "menuPath": "상품관리 > 베스트셀러", "lastRun": "2026-05-13T17:45:00", "status": "success" },
+    { "id": "rpt004", "name": "주문 상세 내역", "menuPath": "판매관리 > 주문상세", "lastRun": "2026-05-13T16:20:00", "status": "failed" },
+    { "id": "rpt002", "name": "월간 판매 요약", "menuPath": "판매관리 > 월간요약", "lastRun": "2026-05-13T14:10:00", "status": "success" }
+  ],
+  "executionHistory": [
+    { "reportName": "일별 판매 현황", "user": "김관리", "executedAt": "2026-05-14T09:30:00", "status": "success", "duration": "2.3s" },
+    { "reportName": "채널별 판매 분석", "user": "이분석", "executedAt": "2026-05-14T08:15:00", "status": "success", "duration": "4.1s" },
+    { "reportName": "베스트셀러 현황", "user": "김관리", "executedAt": "2026-05-14T07:50:00", "status": "success", "duration": "1.8s" },
+    { "reportName": "주문 상세 내역", "user": "박운영", "executedAt": "2026-05-13T17:00:00", "status": "failed", "duration": "30.0s" },
+    { "reportName": "회원 활동 리포트", "user": "이분석", "executedAt": "2026-05-13T17:45:00", "status": "success", "duration": "3.5s" },
+    { "reportName": "월간 판매 요약", "user": "김관리", "executedAt": "2026-05-13T14:10:00", "status": "success", "duration": "5.2s" },
+    { "reportName": "카테고리별 판매 분석", "user": "이분석", "executedAt": "2026-05-13T10:00:00", "status": "success", "duration": "2.1s" },
+    { "reportName": "반품/교환 현황", "user": "박운영", "executedAt": "2026-05-12T16:30:00", "status": "success", "duration": "1.5s" }
+  ],
+  "notices": [
+    { "id": 1, "title": "시스템 점검 안내 (5/18 02:00~06:00)", "date": "2026-05-14", "type": "info" },
+    { "id": 2, "title": "Kimi 2.6 AI 요약 기능 업데이트 (도서 카테고리 최적화)", "date": "2026-05-12", "type": "update" },
+    { "id": 3, "title": "5월 스케줄 리포트 발송 주기 변경 안내", "date": "2026-05-10", "type": "notice" }
+  ]
+}

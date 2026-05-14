@@ -1,0 +1,27 @@
+{
+  "departments": [
+    { "id": "dept001", "name": "IT개발팀" },
+    { "id": "dept002", "name": "데이터분석팀" },
+    { "id": "dept003", "name": "경영지원팀" },
+    { "id": "dept004", "name": "매출분석팀" },
+    { "id": "dept005", "name": "채널전략팀" },
+    { "id": "dept006", "name": "CRM팀" },
+    { "id": "dept007", "name": "물류팀" },
+    { "id": "dept008", "name": "프로모션팀" },
+    { "id": "dept009", "name": "재무팀" },
+    { "id": "dept010", "name": "인사팀" }
+  ],
+  "permissions": [
+    { "menuId": "m001", "menuName": "매출관리", "departments": ["dept001", "dept002", "dept004", "dept009"] },
+    { "menuId": "m001-1", "menuName": "매출관리 > 일별현황", "departments": ["dept001", "dept002", "dept004"] },
+    { "menuId": "m001-2", "menuName": "매출관리 > 월간요약", "departments": ["dept001", "dept002", "dept004", "dept009"] },
+    { "menuId": "m001-3", "menuName": "매출관리 > 주문상세", "departments": ["dept001", "dept004"] },
+    { "menuId": "m002", "menuName": "영업분석", "departments": ["dept001", "dept002", "dept005"] },
+    { "menuId": "m002-1", "menuName": "영업분석 > 채널실적", "departments": ["dept001", "dept002", "dept005"] },
+    { "menuId": "m003", "menuName": "고객관리", "departments": ["dept001", "dept002", "dept006"] },
+    { "menuId": "m003-1", "menuName": "고객관리 > 활동현황", "departments": ["dept001", "dept002", "dept006"] },
+    { "menuId": "m004", "menuName": "물류관리", "departments": ["dept001", "dept003", "dept007"] },
+    { "menuId": "m004-1", "menuName": "물류관리 > 반품현황", "departments": ["dept001", "dept003", "dept007"] },
+    { "menuId": "m004-2", "menuName": "물류관리 > 재고현황", "departments": ["dept001", "dept007"] }
+  ]
+}

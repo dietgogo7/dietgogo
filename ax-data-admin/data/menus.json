@@ -1,0 +1,199 @@
+{
+  "menus": [
+    {
+      "id": "m001",
+      "name": "매출관리",
+      "type": "group",
+      "parentId": null,
+      "icon": "barChart",
+      "sortOrder": 1,
+      "active": true,
+      "description": "매출 관련 리포트 그룹",
+      "children": [
+        {
+          "id": "m001-1",
+          "name": "일별현황",
+          "type": "submenu",
+          "parentId": "m001",
+          "sortOrder": 1,
+          "active": true,
+          "children": [
+            {
+              "id": "m001-1-1",
+              "name": "일별 매출 현황",
+              "type": "report",
+              "parentId": "m001-1",
+              "sortOrder": 1,
+              "active": true,
+              "reportId": "rpt001",
+              "dataSource": { "type": "SP", "name": "usp_DailySales" },
+              "features": { "visualization": true, "schedule": true, "excelDownload": true }
+            }
+          ]
+        },
+        {
+          "id": "m001-2",
+          "name": "월간요약",
+          "type": "submenu",
+          "parentId": "m001",
+          "sortOrder": 2,
+          "active": true,
+          "children": [
+            {
+              "id": "m001-2-1",
+              "name": "월간 매출 요약",
+              "type": "report",
+              "parentId": "m001-2",
+              "sortOrder": 1,
+              "active": true,
+              "reportId": "rpt002",
+              "dataSource": { "type": "SP", "name": "usp_MonthlySalesSummary" },
+              "features": { "visualization": true, "schedule": true, "excelDownload": true }
+            }
+          ]
+        },
+        {
+          "id": "m001-3",
+          "name": "주문상세",
+          "type": "submenu",
+          "parentId": "m001",
+          "sortOrder": 3,
+          "active": true,
+          "children": [
+            {
+              "id": "m001-3-1",
+              "name": "주문 상세 내역",
+              "type": "report",
+              "parentId": "m001-3",
+              "sortOrder": 1,
+              "active": true,
+              "reportId": "rpt004",
+              "dataSource": { "type": "SP", "name": "usp_OrderDetails" },
+              "features": { "visualization": false, "schedule": false, "excelDownload": true }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m002",
+      "name": "영업분석",
+      "type": "group",
+      "parentId": null,
+      "icon": "fileText",
+      "sortOrder": 2,
+      "active": true,
+      "description": "영업 실적 분석 리포트 그룹",
+      "children": [
+        {
+          "id": "m002-1",
+          "name": "채널실적",
+          "type": "submenu",
+          "parentId": "m002",
+          "sortOrder": 1,
+          "active": true,
+          "children": [
+            {
+              "id": "m002-1-1",
+              "name": "채널별 실적 분석",
+              "type": "report",
+              "parentId": "m002-1",
+              "sortOrder": 1,
+              "active": true,
+              "reportId": "rpt003",
+              "dataSource": { "type": "API", "name": "/api/v1/channel-performance" },
+              "features": { "visualization": true, "schedule": true, "excelDownload": true }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m003",
+      "name": "고객관리",
+      "type": "group",
+      "parentId": null,
+      "icon": "users",
+      "sortOrder": 3,
+      "active": true,
+      "description": "고객 분석 및 관리 리포트 그룹",
+      "children": [
+        {
+          "id": "m003-1",
+          "name": "활동현황",
+          "type": "submenu",
+          "parentId": "m003",
+          "sortOrder": 1,
+          "active": true,
+          "children": [
+            {
+              "id": "m003-1-1",
+              "name": "고객 활동 리포트",
+              "type": "report",
+              "parentId": "m003-1",
+              "sortOrder": 1,
+              "active": true,
+              "reportId": "rpt005",
+              "dataSource": { "type": "API", "name": "/api/v1/customer-activity" },
+              "features": { "visualization": true, "schedule": true, "excelDownload": true }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m004",
+      "name": "물류관리",
+      "type": "group",
+      "parentId": null,
+      "icon": "folder",
+      "sortOrder": 4,
+      "active": true,
+      "description": "물류 및 재고 관리 리포트 그룹",
+      "children": [
+        {
+          "id": "m004-1",
+          "name": "반품현황",
+          "type": "submenu",
+          "parentId": "m004",
+          "sortOrder": 1,
+          "active": true,
+          "children": [
+            {
+              "id": "m004-1-1",
+              "name": "반품 현황",
+              "type": "report",
+              "parentId": "m004-1",
+              "sortOrder": 1,
+              "active": true,
+              "reportId": "rpt006",
+              "dataSource": { "type": "SP", "name": "usp_ReturnStatus" },
+              "features": { "visualization": false, "schedule": false, "excelDownload": true }
+            }
+          ]
+        },
+        {
+          "id": "m004-2",
+          "name": "재고현황",
+          "type": "submenu",
+          "parentId": "m004",
+          "sortOrder": 2,
+          "active": true,
+          "children": [
+            {
+              "id": "m004-2-1",
+              "name": "재고 현황 리포트",
+              "type": "report",
+              "parentId": "m004-2",
+              "sortOrder": 1,
+              "active": false,
+              "reportId": "rpt007",
+              "dataSource": { "type": "SP", "name": "usp_InventoryStatus" },
+              "features": { "visualization": true, "schedule": true, "excelDownload": true }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

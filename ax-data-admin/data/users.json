@@ -1,0 +1,31 @@
+{
+  "users": [
+    {
+      "id": "user001",
+      "name": "김관리",
+      "email": "admin@axdata.com",
+      "password": "admin1234",
+      "department": "IT개발팀",
+      "role": "admin",
+      "position": "팀장"
+    },
+    {
+      "id": "user002",
+      "name": "이분석",
+      "email": "analyst@axdata.com",
+      "password": "user1234",
+      "department": "데이터분석팀",
+      "role": "user",
+      "position": "과장"
+    },
+    {
+      "id": "user003",
+      "name": "박운영",
+      "email": "ops@axdata.com",
+      "password": "user1234",
+      "department": "경영지원팀",
+      "role": "user",
+      "position": "대리"
+    }
+  ]
+}
