@@ -106,6 +106,43 @@
       line-height: 1.5;
     }
 
+    .brandHeader {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 7px;
+    }
+
+    .brandLogo {
+      width: 74px;
+      height: 74px;
+      flex-shrink: 0;
+      object-fit: contain;
+      border-radius: 18px;
+      padding: 8px;
+    }
+
+    .brandText {
+      min-width: 0;
+    }
+
+    .brandText .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .brandText h1 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+
     .uploadPanel {
       min-width: 462px;
       background: var(--panel);
@@ -179,14 +216,14 @@
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 11px;
-      margin-bottom: 11px;
+      margin-bottom: 8px;
     }
 
     .statCard {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 13px;
-      padding: 18px 20px;
+      padding: 14px 16px;
       box-shadow: var(--shadow);
     }
 
@@ -198,7 +235,7 @@
     }
 
     .statCard .value {
-      font-size: 29px;
+      font-size: 24px;
       font-weight: 700;
       letter-spacing: -.03em;
       color: var(--text);
@@ -279,8 +316,8 @@
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 13px;
-      padding: 18px 20px;
-      margin-bottom: 13px;
+      padding: 14px 16px;
+      margin-bottom: 9px;
       box-shadow: var(--shadow);
     }
 
@@ -431,7 +468,7 @@
     .listHeader,
     .reqRow {
       display: grid;
-      grid-template-columns: 57px minmax(286px, 1.2fr) 132px 110px minmax(231px, 1fr) minmax(231px, 1fr) minmax(143px, 1fr) 123px 48px;
+      grid-template-columns: 57px minmax(286px, 1.2fr) 132px 110px minmax(231px, 1fr) minmax(231px, 1fr) minmax(143px, 1fr) 110px 110px 123px 48px;
       align-items: stretch;
       gap: 0;
     }
@@ -716,6 +753,135 @@
       display: block;
     }
 
+    /* ===== 업데이트 현황 패널 ===== */
+    .updatePanel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 16px 20px 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .overviewRow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(462px, 462px);
+      gap: 11px;
+      align-items: stretch;
+      margin-bottom: 11px;
+    }
+
+    .overviewStats {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 11px;
+      height: 100%;
+    }
+
+    .overviewRow .updatePanel {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0;
+      min-height: 0;
+    }
+
+    .overviewRow .updateList {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .miniStatCard {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .miniStatCard .label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .miniStatCard .value {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      color: var(--text);
+    }
+
+    .miniStatCard .hint {
+      color: var(--subtle);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .updatePanel .panelHead {
+      margin-bottom: 11px;
+    }
+
+    .updatePanel .panelHead strong {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .updatePanel .panelHead span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .updateList {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .updateItem {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #2e3440;
+    }
+
+    .updateDot {
+      flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      margin-top: 8px;
+    }
+
+    .updateItem code {
+      display: inline;
+      padding: 1px 7px;
+      border-radius: 5px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .linkLabel {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
     /* ===== 과제 분류 패널 ===== */
     .taskCategoryPanel {
       background: var(--panel);
@@ -913,7 +1079,7 @@
 
     .compact .listHeader,
     .compact .reqRow {
-      grid-template-columns: 53px minmax(319px, 1.35fr) 132px 106px minmax(264px, 1fr) minmax(264px, 1fr) minmax(143px, 1fr) 119px 44px;
+      grid-template-columns: 53px minmax(319px, 1.35fr) 132px 106px minmax(264px, 1fr) minmax(264px, 1fr) minmax(143px, 1fr) 110px 110px 119px 44px;
     }
 
     .compact .reqRow {
@@ -933,6 +1099,29 @@
     }
 
     @media (max-width:1200px) {
+      .overviewRow {
+        grid-template-columns: 1fr;
+      }
+
+      .overviewStats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: none;
+        height: auto;
+      }
+
+      .overviewRow .updatePanel {
+        height: auto;
+      }
+
+      .overviewRow .updateList {
+        overflow: visible;
+        padding-right: 0;
+      }
+
+      .miniStatCard .value {
+        font-size: 22px;
+      }
+
       .topbar {
         flex-direction: column;
       }
@@ -973,6 +1162,21 @@
     @media (max-width:760px) {
       .wrap {
         padding: 14px;
+      }
+
+      .brandHeader {
+        align-items: flex-start;
+      }
+
+      .brandLogo {
+        width: 60px;
+        height: 60px;
+        padding: 6px;
+        border-radius: 14px;
+      }
+
+      .brandText h1 {
+        font-size: 22px;
       }
 
       .toolbar {
@@ -1021,8 +1225,14 @@
   <div class="wrap compact" id="app">
     <div class="topbar">
       <div class="title">
-        <h1>AX 요구사항 뷰어</h1>
-        <p>엑셀 파일을 업로드하면 첫 번째 시트 또는 선택한 시트 기준으로 요구사항 목록과 팀 통계를 다시 구성합니다.</p>
+        <div class="brandHeader">
+          <img class="brandLogo" src="ax_logo.png" alt="AX 로고" />
+          <div class="brandText">
+            <div class="eyebrow">AX Excel Viewer</div>
+            <h1>요구사항 뷰어</h1>
+            <p>엑셀 파일을 업로드하면 첫 번째 시트 또는 선택한 시트 기준으로 요구사항 목록과 팀 통계를 다시 구성합니다.</p>
+          </div>
+        </div>
       </div>
       <div class="uploadPanel">
         <div class="fileBox">
@@ -1045,38 +1255,39 @@
       style="display:none;margin:10px 0;padding:10px 14px;border-radius:12px;border:1px solid #fca5a5;background:#fff1f2;color:#991b1b;font-size:13px;line-height:1.6;">
     </div>
 
-    <section class="statsGrid">
-      <div class="statCard">
-        <div class="label">전체 요구사항</div>
-        <div class="value" id="statTotal">0</div>
-        <div class="hint">현재 로딩된 엑셀 기준</div>
-      </div>
-      <div class="statCard">
-        <div class="label">최종 결과별 건수</div>
-        <div class="statBreakdown" id="statResults"><span class="emptyStat">업로드 전</span></div>
-        <div class="hint">업로드된 엑셀 기준</div>
-      </div>
-      <div class="statCard">
-        <div class="label">발의 팀 수</div>
-        <div class="value" id="statTeams">0</div>
-        <div class="hint">팀 단위 집계</div>
-      </div>
-      <div class="statCard">
-        <div class="label">데이터소스 유형</div>
-        <div class="value" id="statSources">0</div>
-        <div class="hint">요구사항 입력 기준</div>
-      </div>
-    </section>
+    <div class="overviewRow">
+      <section class="updatePanel">
+        <div class="panelHead">
+          <strong>AX팀 업데이트 현황</strong>
+          <span>2026. 05. 16 기준</span>
+        </div>
+        <div class="updateList">
+          <div class="updateItem"><div class="updateDot"></div><span>크레마클럽팀 요청 건 중 단순 조회성 업무는 지난주 전자책개발팀에서 대부분 처리한 것으로 파악됨. 요청부서와 잔여 필요사항 재확인 필요</span></div>
+            <div class="updateItem"><div class="updateDot"></div><span>데이터 추출 및 레포팅 업무를 체계적으로 처리하기 위해 <a class="linkLabel" href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank" rel="noopener noreferrer"><span>AX Data Admin</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a> 사이트 신설 예정</span></div>
+          <div class="updateItem"><div class="updateDot"></div><span>AX팀 파일럿 과제 수행 및 업무 효율화 기능 검증을 위한 <a class="linkLabel" href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank" rel="noopener noreferrer"><span>AX Labs</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a> 사이트 신설 예정</span></div>
+          <div class="updateItem"><div class="updateDot"></div><span><strong>외부 데이터 조사, 경쟁사 모니터링 등 크롤링 기반 과제 구현을 위해 자동화 솔루션 <code>n8n</code> 도입 검토 중</strong><br><code>n8n</code>은 오픈소스 기반 워크플로우 자동화 플랫폼으로 개발서버 지급 받은 후 온프레미스 환경으로 구축 예정</span></div>
+          <div class="updateItem"><div class="updateDot"></div><span><strong>자동화 플랫폼 연동 목적으로 <code>YES24 API</code> 구축 작업 중</strong><br><code>YES24 API</code>는 외부 고객 제공용으로 확장 예정(애드온 연계). <a class="linkLabel" href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank" rel="noopener noreferrer"><span>프로토타입</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a></span></div>
 
-    <section class="teamPanel">
-      <div class="panelHead"><strong>발의 팀 통계</strong><span>본부 기준은 제외하고 팀 단위로만 표시</span></div>
-      <div class="teamBars" id="teamBars"></div>
-    </section>
+        </div>
+      </section>
+
+      <section class="overviewStats">
+        <div class="miniStatCard">
+          <div class="label">전체 요구사항</div>
+          <div class="value" id="statTotal">0</div>
+          <div class="hint">현재 로딩된 엑셀 기준</div>
+        </div>
+        <div class="miniStatCard">
+          <div class="label">최종 결과별 건수</div>
+          <div class="statBreakdown" id="statResults"><span class="emptyStat">업로드 전</span></div>
+        </div>
+      </section>
+    </div>
 
     <!-- 과제 분류 현황 패널 -->
     <section class="taskCategoryPanel">
       <div class="panelHead">
-        <strong>AX 과제 분류 현황</strong>
+        <strong>과제 분류</strong>
       </div>
       <div class="taskCategoryGrid">
         <!-- 1. 운영 DB 직접 변경 과제 -->
@@ -1167,6 +1378,11 @@
       </div>
     </section>
 
+    <section class="teamPanel">
+      <div class="panelHead"><strong>발의 팀 통계</strong><span>본부 기준은 제외하고 팀 단위로만 표시</span></div>
+      <div class="teamBars" id="teamBars"></div>
+    </section>
+
     <section class="toolbar">
       <div class="filters">
         <input id="searchInput" type="search" placeholder="과제명, 현황, 개선 목표, 코멘트 검색" />
@@ -1181,6 +1397,9 @@
         </select>
         <select id="resultFilter">
           <option value="">전체 결과</option>
+        </select>
+        <select id="axFitnessFilter">
+          <option value="">전체 AX 적합도</option>
         </select>
         <select id="sortSelect">
           <option value="noAsc">No 오름차순</option>
@@ -1204,6 +1423,8 @@
         <div>As-Is</div>
         <div class="hide-md">To-Be</div>
         <div class="hide-md">과제구분</div>
+        <div class="hide-md">구현 난이도</div>
+        <div class="hide-md">AX 적합도</div>
         <div>최종 결과</div>
         <div></div>
       </div>
@@ -1229,7 +1450,11 @@
       effort: ['현재투입공수', '현재 투입공수', '투입공수', '공수'],
       taskType: ['과제구분', '과제 구분', '구분'],
       axJudgement: ['ChatGPT AX 과제 판단', 'AX 과제 판단', 'AX 판단'],
-      axPlan: ['ChatGPT 진행 방식', '진행 방식', '진행방식']
+      axPlan: ['ChatGPT 진행 방식', '진행 방식', '진행방식'],
+      axFitness: ['AX 과제 적합도', 'AX 적합도', '적합도'],
+      implementationDifficulty: ['구현 난이도', '구현난이도'],
+      expectedEffect: ['예상효과', '예상 효과'],
+      dataAvailability: ['데이터 확보 가능성', '데이터확보가능성']
     };
 
     let rawRows = [];
@@ -1272,6 +1497,10 @@
         taskType: firstValue(row, FIELD_MAP.taskType),
         axJudgement: firstValue(row, FIELD_MAP.axJudgement),
         axPlan: firstValue(row, FIELD_MAP.axPlan),
+        axFitness: firstValue(row, FIELD_MAP.axFitness),
+        implementationDifficulty: firstValue(row, FIELD_MAP.implementationDifficulty),
+        expectedEffect: firstValue(row, FIELD_MAP.expectedEffect),
+        dataAvailability: firstValue(row, FIELD_MAP.dataAvailability),
         original: row
       };
       item.searchText = textForSearch(item);
@@ -1307,18 +1536,22 @@
       const currentDivision = $('divisionFilter').value;
       const currentTaskType = $('taskTypeFilter').value;
       const currentResult = $('resultFilter').value;
+      const currentAxFitness = $('axFitnessFilter').value;
       const teams = uniqueSorted(rows, r => r.team);
       const divisions = uniqueSorted(rows, r => r.division);
       const taskTypes = uniqueSorted(rows, r => r.taskType);
       const results = uniqueSorted(rows, r => r.result);
+      const axFitnessValues = uniqueSorted(rows, r => r.axFitness);
       $('teamFilter').innerHTML = '<option value="">전체 팀</option>' + teams.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
       $('divisionFilter').innerHTML = '<option value="">전체 본부</option>' + divisions.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');
       $('taskTypeFilter').innerHTML = '<option value="">전체 과제구분</option>' + taskTypes.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
       $('resultFilter').innerHTML = '<option value="">전체 결과</option>' + results.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+      $('axFitnessFilter').innerHTML = '<option value="">전체 AX 적합도</option>' + axFitnessValues.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
       if (teams.includes(currentTeam)) $('teamFilter').value = currentTeam;
       if (divisions.includes(currentDivision)) $('divisionFilter').value = currentDivision;
       if (taskTypes.includes(currentTaskType)) $('taskTypeFilter').value = currentTaskType;
       if (results.includes(currentResult)) $('resultFilter').value = currentResult;
+      if (axFitnessValues.includes(currentAxFitness)) $('axFitnessFilter').value = currentAxFitness;
     }
 
     function resultBadgeClass(value) {
@@ -1326,6 +1559,14 @@
       if (v.includes('진행') && !v.includes('진행안함')) return 'go';
       if (v.includes('대기') || v.includes('재 검토') || v.includes('재검토')) return 'wait';
       if (v.includes('보류') || v.includes('진행안함')) return 'hold';
+      return 'etc';
+    }
+
+    function axFitnessBadgeClass(value) {
+      const v = normalize(value).toLowerCase();
+      if (v.includes('높음') || v.includes('high')) return 'go';
+      if (v.includes('중간') || v.includes('보통') || v.includes('medium') || v.includes('mid')) return 'wait';
+      if (v.includes('낙음') || v.includes('low')) return 'hold';
       return 'etc';
     }
 
@@ -1341,6 +1582,8 @@
         const taskType = $('taskTypeFilter').value;
         if (taskType && row.taskType !== taskType) return false;
         if (result && row.result !== result) return false;
+        const axFitness = $('axFitnessFilter').value;
+        if (axFitness && row.axFitness !== axFitness) return false;
         return true;
       });
       const sort = $('sortSelect').value;
@@ -1357,7 +1600,6 @@
 
     function renderStats() {
       const teams = countBy(rows, r => r.team);
-      const sources = uniqueSorted(rows, r => r.source);
       const results = countBy(rows, r => r.result);
       $('statTotal').textContent = rows.length.toLocaleString('ko-KR');
       $('statResults').innerHTML = results.length
@@ -1366,8 +1608,6 @@
           return '<span class="resultCountChip ' + cls + '"><span>' + escapeHtml(result) + '</span><b>' + count + '</b></span>';
         }).join('')
         : '<span class="emptyStat">업로드 전</span>';
-      $('statTeams').textContent = teams.length.toLocaleString('ko-KR');
-      $('statSources').textContent = sources.length.toLocaleString('ko-KR');
       $('viewMeta').textContent = rows.length
         ? `${filteredRows.length.toLocaleString('ko-KR')} / ${rows.length.toLocaleString('ko-KR')}건 표시`
         : '엑셀 파일을 업로드하세요';
@@ -1422,6 +1662,8 @@
               <div class="cell"><div class="summaryText" title="${escapeHtml(row.asis)}">${escapeHtml(row.asis || '-')}</div></div>
               <div class="cell hide-md"><div class="summaryText" title="${escapeHtml(row.tobe)}">${escapeHtml(row.tobe || '-')}</div></div>
               <div class="cell hide-md"><div class="sourceText" title="${escapeHtml(row.taskType)}">${escapeHtml(row.taskType || '-')}</div></div>
+              <div class="cell hide-md"><span class="badge ${axFitnessBadgeClass(row.implementationDifficulty)}">${escapeHtml(row.implementationDifficulty || '-')}</span></div>
+              <div class="cell hide-md"><span class="badge ${axFitnessBadgeClass(row.axFitness)}">${escapeHtml(row.axFitness || '-')}</span></div>
               <div class="cell mobile-hide"><span class="badge ${resultBadgeClass(row.result)}">${escapeHtml(row.result || '미정')}</span></div>
               <div class="cell"><span class="chev">⌄</span></div>
             </div>
@@ -1436,10 +1678,13 @@
 과제구분: ${escapeHtml(row.taskType || '-')}
 데이터소스: ${escapeHtml(row.source || '-')}
 유관부서: ${escapeHtml(row.related || '-')}
+AX 과제 적합도: ${escapeHtml(row.axFitness || '-')}
 최종 결과: ${escapeHtml(row.result || '-')}</p></div>
                 <div class="detailBox wide highlight"><h3>개발 코멘트</h3><p>${escapeHtml(row.devComment || '-')}</p></div>
                 <div class="detailBox ai"><h3>AX 과제 판단 <span class="aiBadge">🤖 AI 의견</span></h3><p>${escapeHtml(row.axJudgement || '-')}</p></div>
-                <div class="detailBox full ai"><h3>진행 방식 <span class="aiBadge">🤖 AI 의견</span></h3><p>${escapeHtml(row.axPlan || '-')}</p></div>
+                <div class="detailBox ai"><h3>진행 방식 <span class="aiBadge">🤖 AI 의견</span></h3><p>${escapeHtml(row.axPlan || '-')}</p></div>
+                <div class="detailBox ai"><h3>예상효과 <span class="aiBadge">🤖 AI 의견</span></h3><p>${escapeHtml(row.expectedEffect || '-')}</p></div>
+                <div class="detailBox ai"><h3>데이터 확보 가능성 <span class="aiBadge">🤖 AI 의견</span></h3><p>${escapeHtml(row.dataAvailability || '-')}</p></div>
               </div>
             </div>
           </article>
@@ -1507,7 +1752,7 @@
       loadSheet($('sheetSelect').value, file ? file.name : '업로드 파일');
     });
 
-    ['searchInput', 'teamFilter', 'divisionFilter', 'taskTypeFilter', 'resultFilter', 'sortSelect'].forEach(id => $(id).addEventListener('input', applyFilters));
+    ['searchInput', 'teamFilter', 'divisionFilter', 'taskTypeFilter', 'resultFilter', 'axFitnessFilter', 'sortSelect'].forEach(id => $(id).addEventListener('input', applyFilters));
 
     // 접기/펼치기는 chev 버튼 클릭에서만 동작 (텍스트 복사 시 접히는 이슈 방지)
     $('listBody').addEventListener('click', function (e) {
