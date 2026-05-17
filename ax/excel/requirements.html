@@ -1293,7 +1293,7 @@
         <div class="taskCategoryCard pending">
           <div class="taskCardHead">
             <span class="taskCardNum">3</span>
-            <span class="taskCardStatus s-pending">🔍 3개월+(α) 후 재검토</span>
+            <span class="taskCardStatus s-pending">🔍 2~3개월+(α) 후 재검토</span>
           </div>
           <div class="taskCardTitle">외부 데이터 조사 (크롤러/AI Agent)</div>
           <div class="taskCardDesc">외부 데이터 수집 자동화 과제는 자동화 운영 체계 준비 후 검토</div>
@@ -1304,10 +1304,10 @@
         </div>
 
         <!-- 4. 문서 초안 생성 과제 -->
-        <div class="taskCategoryCard pending">
+        <div class="taskCategoryCard info">
           <div class="taskCardHead">
             <span class="taskCardNum">4</span>
-            <span class="taskCardStatus s-pending">🔍 3개월+(α) 후 재검토</span>
+            <span class="taskCardStatus s-pending">🔍 3~4개월+(α) 후 재검토</span>
           </div>
           <div class="taskCardTitle">계약서 &amp; 보고서 초안 생성</div>
           <div class="taskCardDesc">LLM이 기존 자료 학습 후 문서 초안 자동 생성 및 제안</div>
@@ -1317,33 +1317,31 @@
           </div>
         </div>
 
-
-        <!-- 3. 트래픽/행동 데이터 연동 과제 -->
-        <div class="taskCategoryCard info">
-          <div class="taskCardHead">
-            <span class="taskCardNum">5</span>
-            <span class="taskCardStatus s-info">⏳ 6개월+(α) 후 재검토</span>
-          </div>
-          <div class="taskCardTitle">트래픽 및 사용자 행동 데이터 분석</div>
-          <div class="taskCardDesc">트래픽 및 사용자 행동 데이터 기반 분석 과제는 데이터 기반 준비 완료 후 진행</div>
-          <div class="taskCardPre">
-            <strong>선행 조건</strong>
-            GA4 데이터 샘플링 이슈 해소 및 데이터하우스 구축 이후 진행 가능
-          </div>
-        </div>
-
-
         <!-- 5. AI Chatbot -->
         <div class="taskCategoryCard info">
           <div class="taskCardHead">
             <span class="taskCardNum">6</span>
-            <span class="taskCardStatus s-info">⏳ 6개월+(α) 후 재검토</span>
+            <span class="taskCardStatus s-info">⏳ 5~6개월+(α) 후 재검토</span>
           </div>
           <div class="taskCardTitle">AI Chatbot</div>
           <div class="taskCardDesc">내부 문서 기반의 질의응답 및 업무 지원 챗봇 개발</div>
           <div class="taskCardPre">
             <strong>선행 조건</strong>
             사내 데이터하우스 구축 및 LLM의 기존 자료 학습(RAG 또는 Fine-tuning) 완료 이후 진행 가능
+          </div>
+        </div>
+
+        <!-- 3. 트래픽/행동 데이터 연동 과제 -->
+        <div class="taskCategoryCard ready">
+          <div class="taskCardHead">
+            <span class="taskCardNum">5</span>
+            <span class="taskCardStatus s-info">⏳ 미정</span>
+          </div>
+          <div class="taskCardTitle">GA4 트래픽 및 사용자 행동 데이터 분석</div>
+          <div class="taskCardDesc">트래픽 및 사용자 행동 데이터 기반 분석 과제는 데이터 기반 준비 완료 후 진행 가능</div>
+          <div class="taskCardPre">
+            <strong>선행 조건</strong>
+            GA4 데이터 샘플링 이슈 해소 및 데이터하우스 구축 
           </div>
         </div>
 
@@ -1383,22 +1381,35 @@
                 </svg></a> 사이트 신설 예정</span>
           </div>
           <div class="updateItem">
-            <div class="updateDot"></div><span><strong>외부 데이터 조사, 경쟁사 모니터링 등 크롤링 기반 과제 구현을 위해 자동화 솔루션 <code>n8n</code> 도입 검토
+            <div class="updateDot"></div><span><strong>2~3개월 후 재 검토 항목: 외부 데이터 조사, 경쟁사 모니터링 등 크롤링 기반 과제 구현을 위해 자동화 솔루션 <code>n8n</code> 도입 검토
                 중</strong><br><code>n8n</code>은 오픈소스 기반 워크플로우 자동화 플랫폼으로 개발서버 지급 받은 후 온프레미스 환경으로 구축 예정</span>
           </div>
           <div class="updateItem">
-            <div class="updateDot"></div><span><strong>자동화 플랫폼 연동 목적으로 <code>YES24 API</code> 구축 작업
-                중</strong><br><code>YES24 API</code>는 외부 고객 제공용으로 확장 예정(애드온 연계). <a class="linkLabel"
-                href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank"
+            <div class="updateDot"></div>
+            <span><strong>자동화 플랫폼 연동 목적으로 <code>YES24 API</code> 구축 작업 중</strong><br><code>YES24 API</code>는 외부 고객 제공용으로 확장 예정(애드온 연계). 
+              <a class="linkLabel" href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank"
                 rel="noopener noreferrer"><span>프로토타입</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                   stroke-linejoin="round" aria-hidden="true">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                   <polyline points="15 3 21 3 21 9"></polyline>
                   <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg></a></span>
+                </svg>
+              </a>
+            </span>
           </div>
-    
+          <div class="updateItem">
+            <div class="updateDot"></div><span><strong>6개월 후 재 검토 항목: AI Chatbot 구현을 위해서는 사내데이터 정비 및 <code>RAG</code> 구성 이후 검토 가능: 
+            <a class="linkLabel" href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank"
+              rel="noopener noreferrer"><span>프로토타입</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
         </div>
       </section>
     
