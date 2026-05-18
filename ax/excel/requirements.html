@@ -569,7 +569,7 @@
       font-size: 14px;
       line-height: 1.5;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -1040,7 +1040,7 @@
       color: var(--muted);
       line-height: 1.5;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -1257,96 +1257,91 @@
 
 
     <!-- 과제 분류 현황 패널 -->
-    <section class="taskCategoryPanel">
-      <div class="panelHead">
-        <strong>과제 분류</strong>
+<section class="taskCategoryPanel">
+  <div class="panelHead">
+    <strong>과제 분류</strong>
+  </div>
+  <div class="taskCategoryGrid">
+    <div class="taskCategoryCard review">
+      <div class="taskCardHead">
+        <span class="taskCardNum">1</span>
+        <span class="taskCardStatus s-review">🚫 범위 제외</span>
       </div>
-      <div class="taskCategoryGrid">
-        <!-- 1. 운영 DB 직접 변경 과제 -->
-        <div class="taskCategoryCard review">
-          <div class="taskCardHead">
-            <span class="taskCardNum">1</span>
-            <span class="taskCardStatus s-review">🚫 범위 제외</span>
-          </div>
-          <div class="taskCardTitle">운영 DB 직접 변경 작업</div>
-          <div class="taskCardDesc">데이터 변경 작업은 운영의 성격이 강하고, 초기 AX 팀에서 처리하는 것은 안정성 이슈로 제외</div>
-          <div class="taskCardPre">
-            <strong>제약/기준</strong>
-            운영과 격리된 네트워크 환경에서 초기 조직 세팅 예정으로 1차 범위에서 제외
-          </div>
-        </div>
-
-        <div class="taskCategoryCard review">
-          <div class="taskCardHead">
-            <span class="taskCardNum">2</span>
-            <span class="taskCardStatus s-review">🚫 범위 제외</span>
-          </div>
-          <div class="taskCardTitle">대 고객 페이지 변경</div>
-          <div class="taskCardDesc">닷컴 프론트 및 SCM 등 고객이 직접 사용하는 페이지는 AX 팀 작업범위에서 제외</div>
-          <div class="taskCardPre">
-            <strong>제약/기준</strong>
-            추후 코딩 에이전트 및 바이브코딩 활용 방법을 운영 부서에 교육하는 형태로 진행
-          </div>
-        </div>
-
-        <!-- 2. 외부 데이터 조사 과제 -->
-        <div class="taskCategoryCard pending">
-          <div class="taskCardHead">
-            <span class="taskCardNum">3</span>
-            <span class="taskCardStatus s-pending">🔍 2~3개월+(α) 후 재검토</span>
-          </div>
-          <div class="taskCardTitle">외부 데이터 조사 (크롤러/AI Agent)</div>
-          <div class="taskCardDesc">외부 데이터 수집 자동화 과제는 자동화 운영 체계 준비 후 검토</div>
-          <div class="taskCardPre">
-            <strong>선행 조건</strong>
-            크롤러 또는 AI Agent 운영을 위한 서버 구축 및 운영 체계 준비 완료 이후 진행 가능
-          </div>
-        </div>
-
-        <!-- 4. 문서 초안 생성 과제 -->
-        <div class="taskCategoryCard info">
-          <div class="taskCardHead">
-            <span class="taskCardNum">4</span>
-            <span class="taskCardStatus s-pending">🔍 3~4개월+(α) 후 재검토</span>
-          </div>
-          <div class="taskCardTitle">계약서 &amp; 보고서 초안 생성</div>
-          <div class="taskCardDesc">LLM이 기존 자료 학습 후 문서 초안 자동 생성 및 제안</div>
-          <div class="taskCardPre">
-            <strong>선행 조건</strong>
-            LLM의 기존 자료 학습(Fine-tuning 또는 RAG 구성) 단계 완료 이후 진행 가능
-          </div>
-        </div>
-
-        <!-- 5. AI Chatbot -->
-        <div class="taskCategoryCard info">
-          <div class="taskCardHead">
-            <span class="taskCardNum">6</span>
-            <span class="taskCardStatus s-info">⏳ 5~6개월+(α) 후 재검토</span>
-          </div>
-          <div class="taskCardTitle">AI Chatbot</div>
-          <div class="taskCardDesc">내부 문서 기반의 질의응답 및 업무 지원 챗봇 개발</div>
-          <div class="taskCardPre">
-            <strong>선행 조건</strong>
-            사내 데이터하우스 구축 및 LLM의 기존 자료 학습(RAG 또는 Fine-tuning) 완료 이후 진행 가능
-          </div>
-        </div>
-
-        <!-- 3. 트래픽/행동 데이터 연동 과제 -->
-        <div class="taskCategoryCard ready">
-          <div class="taskCardHead">
-            <span class="taskCardNum">5</span>
-            <span class="taskCardStatus s-info">⏳ 미정</span>
-          </div>
-          <div class="taskCardTitle">GA4 트래픽 및 사용자 행동 데이터 분석</div>
-          <div class="taskCardDesc">트래픽 및 사용자 행동 데이터 기반 분석 과제는 데이터 기반 준비 완료 후 진행 가능</div>
-          <div class="taskCardPre">
-            <strong>선행 조건</strong>
-            GA4 데이터 샘플링 이슈 해소 및 데이터하우스 구축 
-          </div>
-        </div>
-
+      <div class="taskCardTitle">운영 DB 직접 변경 작업</div>
+      <div class="taskCardDesc">장애, 데이터 정합성, 권한 관리 리스크가 큰 과제로 AX팀 초기 수행 범위에서 제외.</div>
+      <div class="taskCardPre">
+        <strong>제약/기준</strong>
+        운영과 분리된 네트워크 및 테스트 환경 기준으로 AX팀 초기 세팅 예정. 운영 DB 변경 및 실데이터 수정은 1차 범위에서 제외.
       </div>
-    </section>
+    </div>
+
+    <div class="taskCategoryCard review">
+      <div class="taskCardHead">
+        <span class="taskCardNum">2</span>
+        <span class="taskCardStatus s-review">🚫 범위 제외</span>
+      </div>
+      <div class="taskCardTitle">대 고객 페이지 변경</div>
+      <div class="taskCardDesc">닷컴 프론트, SCM 등 고객 및 협력사가 사용하는 화면 변경은 AX팀 개발 범위에서 제외.</div>
+      <div class="taskCardPre">
+        <strong>제약/기준</strong>
+        대 고객 화면은 기존 운영 조직의 개발·검수·배포 프로세스 적용 필요. AX팀은 코딩 에이전트 및 바이브코딩 활용 방안 공유 예정.
+      </div>
+    </div>
+    
+    <div class="taskCategoryCard pending">
+      <div class="taskCardHead">
+        <span class="taskCardNum">3</span>
+        <span class="taskCardStatus s-pending">🔍 3개월+(α) 후 재검토</span>
+      </div>
+      <div class="taskCardTitle">외부 데이터 조사 (크롤러/Agent)</div>
+      <div class="taskCardDesc">조사 및 수집 자동화는 자동화 실행 환경과 운영 모니터링 체계 구축 이후 검토 필요.</div>
+      <div class="taskCardPre">
+        <strong>선행 조건</strong>
+        n8n 서버 on-premise 구축, 내부 LLM 연동, 외부 호출 정책, 실행 로그 및 실패 알림 체계 필요.
+      </div>
+    </div>
+
+    <div class="taskCategoryCard info">
+      <div class="taskCardHead">
+        <span class="taskCardNum">4</span>
+        <span class="taskCardStatus s-pending">🔍 4~5개월+(α) 후 재검토</span>
+      </div>
+      <div class="taskCardTitle">계약서 &amp; 보고서 초안 생성</div>
+      <div class="taskCardDesc">기존 문서의 구조, 용어, 승인 기준을 LLM이 참조할 수 있는 검색 기반 구성 필요.</div>
+      <div class="taskCardPre">
+        <strong>선행 조건</strong>
+        내부 문서 활용을 위한 RAG 및 Vector DB 구성 필요. 문서 등급, 접근 권한, 민감정보 처리 기준 정리 필요.
+      </div>
+    </div>
+    
+    <div class="taskCategoryCard info">
+      <div class="taskCardHead">
+        <span class="taskCardNum">6</span>
+        <span class="taskCardStatus s-info">⏳ 6개월+(ααα) 후 재검토</span>
+      </div>
+      <div class="taskCardTitle">AI Chatbot</div>
+      <div class="taskCardDesc">답변 근거가 되는 사내 데이터의 수집·정리·권한 통제 체계 없이는 실서비스 구현 어려움.</div>
+      <div class="taskCardPre">
+        <strong>선행 조건</strong>
+        사내 데이터하우스, RAG, Vector DB 구성 필요. 초기에는 제한된 업무 범위의 FAQ/문서 검색형 챗봇으로 검토 필요.
+      </div>
+    </div>
+
+    <div class="taskCategoryCard ready">
+      <div class="taskCardHead">
+        <span class="taskCardNum">5</span>
+        <span class="taskCardStatus s-info">⏳ 미정</span>
+      </div>
+      <div class="taskCardTitle">GA4 트래픽 및 사용자 행동 데이터 분석</div>
+      <div class="taskCardDesc">트래픽 및 사용자 행동 분석은 데이터 품질과 분석 기준 정리 이후 진행 가능.</div>
+      <div class="taskCardPre">
+        <strong>선행 조건</strong>
+        GA4 데이터 샘플링 이슈 해소, 이벤트·전환 기준 정리, 데이터하우스 구축 및 원천 데이터 적재 체계 필요.
+      </div>
+    </div>
+
+  </div>
+</section>
     <div class="overviewRow">
       <section class="updatePanel">
         <div class="panelHead">
@@ -1360,8 +1355,9 @@
           </div>
           <div class="updateItem">
             <div class="updateDot"></div><span>데이터 추출 및 레포팅 업무를 체계적으로 처리하기 위해 <a class="linkLabel"
-                href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank"
-                rel="noopener noreferrer"><span>AX Data Admin</span><svg xmlns="http://www.w3.org/2000/svg" width="13"
+                href="https://dietgogo7.github.io/dietgogo/ax-data-admin/pages/login.html" target="_blank" rel="noopener noreferrer">
+                <span>AX Data Admin</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="13"
                   height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -1371,8 +1367,9 @@
           </div>
           <div class="updateItem">
             <div class="updateDot"></div><span>AX팀 파일럿 과제 수행 및 업무 효율화 기능 검증을 위한 <a class="linkLabel"
-                href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank"
-                rel="noopener noreferrer"><span>AX Labs</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
+                href="https://ax-labs-dev.yes24.com/" target="_blank" rel="noopener noreferrer">
+                <span>AX Labs</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                   stroke-linejoin="round" aria-hidden="true">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -1381,14 +1378,15 @@
                 </svg></a> 사이트 신설 예정</span>
           </div>
           <div class="updateItem">
-            <div class="updateDot"></div><span><strong>2~3개월 후 재 검토 항목: 외부 데이터 조사, 경쟁사 모니터링 등 크롤링 기반 과제 구현을 위해 자동화 솔루션 <code>n8n</code> 도입 검토
-                중</strong><br><code>n8n</code>은 오픈소스 기반 워크플로우 자동화 플랫폼으로 개발서버 지급 받은 후 온프레미스 환경으로 구축 예정</span>
+            <div class="updateDot"></div><span><strong>3개월 후 재 검토 항목: 외부 데이터 조사, 경쟁사 모니터링 등 크롤링 기반 과제 구현을 위해 자동화 솔루션 <code>n8n</code> 도입 검토
+                중</strong><br><code>n8n</code>은 오픈소스 기반 워크플로우 자동화 플랫폼으로 개발서버 지급 받은 후 내부에 구축 (On-Premise) 후 자체 LLM 연결 예정</span>
           </div>
           <div class="updateItem">
             <div class="updateDot"></div>
             <span><strong>자동화 플랫폼 연동 목적으로 <code>YES24 API</code> 구축 작업 중</strong><br><code>YES24 API</code>는 외부 고객 제공용으로 확장 예정(애드온 연계). 
-              <a class="linkLabel" href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank"
-                rel="noopener noreferrer"><span>프로토타입</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
+              <a class="linkLabel" href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank" rel="noopener noreferrer">
+                <span>프로토타입</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                   stroke-linejoin="round" aria-hidden="true">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -1399,9 +1397,10 @@
             </span>
           </div>
           <div class="updateItem">
-            <div class="updateDot"></div><span><strong>6개월 후 재 검토 항목: AI Chatbot 구현을 위해서는 사내데이터 정비 및 <code>RAG</code> 구성 이후 검토 가능: 
-            <a class="linkLabel" href="https://dietgogo7.github.io/dietgogo/openAPI/guide.html" target="_blank"
-              rel="noopener noreferrer"><span>프로토타입</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
+            <div class="updateDot"></div><span><strong>6개월 후 재 검토 항목: AI Chatbot 구현을 위해서는 사내 데이터 정비 및 <code>RAG</code> 구성 이후 검토 가능: 
+            <a class="linkLabel" href="https://ax-labs-dev.yes24.com/chat/" target="_blank" rel="noopener noreferrer">
+              <span>프로토타입</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                 stroke-linejoin="round" aria-hidden="true">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
