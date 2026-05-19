@@ -1,5 +1,5 @@
 /* ============================================================
-   AX Data Admin - Common Module
+   AX DataHub - Common Module
    Layout, Auth, Sidebar, Utilities
    ============================================================ */
 
@@ -163,7 +163,7 @@ const App = (function () {
 
     render() {
       const currentPage = this.getCurrentPage();
-      const user = Auth.currentUser || { name: 'Admin', email: 'admin@axdata.com', department: 'IT' };
+      const user = Auth.currentUser || { name: 'Admin', email: 'admin@yes24.com', department: 'IT' };
 
       let menuHTML = '';
       this.menuData.forEach(function (group) {
@@ -207,7 +207,7 @@ const App = (function () {
       return '<aside id="sidebar" class="sidebar' + (this.collapsed ? ' collapsed' : '') + '">' +
         '<div class="sidebar-header">' +
           '<div class="logo-icon">AX</div>' +
-          '<span class="logo-text">AX Data Admin</span>' +
+          '<span class="logo-text">DataHub</span>' +
         '</div>' +
         '<nav class="sidebar-content">' + menuHTML + '</nav>' +
         '<div class="sidebar-footer">' +
@@ -254,7 +254,7 @@ const App = (function () {
   // --- Layout Renderer ---
   function renderLayout(options) {
     options = options || {};
-    const pageTitle = options.title || 'AX Data Admin';
+    const pageTitle = options.title || 'AX DataHub';
     const pageSubtitle = options.subtitle || '';
     const breadcrumbs = options.breadcrumbs || [];
     const headerActions = options.headerActions || '';

@@ -2,8 +2,8 @@
   "users": [
     {
       "id": "user001",
-      "name": "김관리",
-      "email": "admin@axdata.com",
+      "name": "최승호",
+      "email": "admin@yes24.com",
       "password": "admin1234",
       "department": "IT개발팀",
       "role": "admin",
