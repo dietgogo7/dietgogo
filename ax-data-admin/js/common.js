@@ -206,7 +206,7 @@ const App = (function () {
 
       return '<aside id="sidebar" class="sidebar' + (this.collapsed ? ' collapsed' : '') + '">' +
         '<div class="sidebar-header">' +
-          '<div class="logo-icon">AX</div>' +
+          '<div class="logo-icon"><img src="https://image.yes24.com/sysimage/renew/gnb/ax-logo.png" alt="AX 로고" class="logo-icon-img"></div>' +
           '<span class="logo-text">DataHub</span>' +
         '</div>' +
         '<nav class="sidebar-content">' + menuHTML + '</nav>' +
