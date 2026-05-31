@@ -1,0 +1,75 @@
+@{
+    ViewData["Title"] = "배지 획득 통계";
+}
+@section Styles {
+  <style>
+    .top-bar-admin { font-size:13px; color:#475569; font-weight:500; }
+    .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .update-info { font-size:14px; color:#64748b; }
+    .grid-4col { grid-template-columns:repeat(4,1fr); margin-bottom:24px; }
+    .sv-blue { color:#1565c0; }
+    .sv-primary { color:#a51818; }
+    .sv-orange { color:#e65100; }
+    .sv-danger { color:#c62828; }
+    .card-header-title { font-size:13px; font-weight:600; color:#374151; }
+    .filter-group { display:flex; gap:8px; align-items:center; }
+    .w-150 { width:150px; }
+    .table-wrap { overflow-x:auto; }
+  </style>
+}
+
+<div class="main-wrap">
+  <div class="top-bar">
+    <div class="breadcrumb">리워드관리 &gt; <strong>배지 획득 통계</strong></div>
+    <div class="top-bar-admin">관리자</div>
+  </div>
+  <div class="content-wrap">
+
+    <div class="page-header">
+      <h1 class="page-title">배지 획득 통계</h1>
+      <div class="update-info">정보 업데이트일 : <strong>2026-04-11 09:00</strong> 기준</div>
+    </div>
+
+    <!-- 요약 카드 -->
+    <div class="section-title">배지 타입별 요약</div>
+    <div class="grid-stat grid-4col">
+      <div class="stat-card"><div class="stat-label">총 배지 종류</div><div class="stat-value sv-blue" id="valBadgeType">-</div><div class="stat-unit">종</div></div>
+      <div class="stat-card"><div class="stat-label">총 배지 획득</div><div class="stat-value sv-primary" id="valBadgeTotal">-</div><div class="stat-unit">회</div></div>
+      <div class="stat-card"><div class="stat-label">총 상품권 종류</div><div class="stat-value sv-orange" id="valGiftType">-</div><div class="stat-unit">종</div></div>
+      <div class="stat-card"><div class="stat-label">총 상품권 발급</div><div class="stat-value sv-danger" id="valGiftTotal">-</div><div class="stat-unit">회</div></div>
+    </div>
+
+    <!-- 필터 + 테이블 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-header-title">배지별 획득 현황</span>
+        <div class="filter-group">
+          <select id="fType" class="form-select w-150" onchange="doFilter()">
+            <option value="">전체 타입</option>
+            <option value="BADGE">BADGE (배지)</option>
+            <option value="GIFT">GIFT (상품권)</option>
+          </select>
+          <button class="btn btn-success" onclick="BO.toast('엑셀 다운로드 요청되었습니다.','success')">↓ 엑셀 다운로드</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>순위</th><th>배지 코드</th><th>배지명</th><th>타입</th>
+              <th>획득 횟수</th><th>획득 회원 수</th><th>최근 획득일</th><th>사용 여부</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div id="pagination"></div>
+    </div>
+
+  </div>
+</div>
+
+@section Scripts {
+  <script src="~/js/badge-stats.js" asp-append-version="true"></script>
+  <script>loadSidebar('badge-stats');</script>
+}
