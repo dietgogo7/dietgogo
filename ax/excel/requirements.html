@@ -637,7 +637,7 @@
     }
 
     .reqRow {
-      cursor: default;
+      cursor: pointer;
     }
 
     .detail {
@@ -1789,17 +1789,17 @@ AX 과제 적합도: ${escapeHtml(row.axFitness || '-')}
 
     ['searchInput', 'teamFilter', 'divisionFilter', 'taskTypeFilter', 'resultFilter', 'axFitnessFilter', 'sortSelect'].forEach(id => $(id).addEventListener('input', applyFilters));
 
-    // 접기/펼치기는 chev 버튼 클릭에서만 동작 (텍스트 복사 시 접히는 이슈 방지)
+    // row 전체 클릭 시 접기/펼치기
     $('listBody').addEventListener('click', function (e) {
-      var chevEl = e.target.closest('.chev');
-      if (!chevEl) return;
-      var item = chevEl.closest('.reqItem');
+      var rowEl = e.target.closest('.reqRow');
+      if (!rowEl) return;
+      if (e.target.closest('button, a, input, select, textarea')) return;
+      var item = rowEl.closest('.reqItem');
       if (!item) return;
       var id = item.dataset.id;
       if (opened.has(id)) { opened.delete(id); } else { opened.add(id); }
       item.classList.toggle('open');
-      var row = item.querySelector('.reqRow');
-      if (row) { row.setAttribute('aria-expanded', item.classList.contains('open')); }
+      rowEl.setAttribute('aria-expanded', item.classList.contains('open'));
     });
 
     $('expandAll').addEventListener('click', () => {
