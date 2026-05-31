@@ -1,0 +1,144 @@
+@{
+    ViewData["Title"] = "배지 관리";
+    ViewData["ActivePage"] = "badge-list";
+}
+
+@section PageStyles {
+<style>
+.top-bar-admin { font-size:13px; color:#475569; font-weight:500; }
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.btn-icon { display:inline-flex; align-items:center; gap:4px; }
+.header-actions { display:flex; align-items:center; gap:12px; }
+.card-header-text { font-size:13px; color:#475569; }
+.btn-delete-sel { font-size:12px; padding:4px 12px; }
+.table-wrap { overflow-x:auto; }
+.th-check { width:36px; }
+.modal-sm { max-width:460px; }
+.modal-form { display:flex; flex-direction:column; gap:14px; }
+.required { color:#dc2626; }
+.form-full { width:100%; }
+.form-textarea { width:100%; resize:vertical; }
+.form-readonly { width:100%; background:#f1f5f9; }
+.check-row { display:flex; align-items:center; gap:8px; }
+.check-label { font-size:13px; }
+</style>
+}
+
+<div class="top-bar">
+  <div class="breadcrumb">리워드관리 &gt; <strong>배지 관리</strong></div>
+  <div class="top-bar-admin">관리자</div>
+</div>
+<div class="content-wrap">
+
+  <div class="page-header">
+    <h1 class="page-title">배지 관리</h1>
+    <button class="btn btn-primary btn-icon" onclick="openRegisterModal()">+ 배지 등록</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="header-actions">
+        <span class="card-header-text">총 <strong id="totalCnt">0</strong>건</span>
+        <button id="btnDeleteSel" class="btn btn-danger btn-delete-sel hidden" onclick="deleteSelected()">선택 삭제</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr>
+          <th class="th-check"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"/></th>
+          <th>번호</th><th>배지 ID</th><th>배지명</th><th>타입</th><th>설명</th><th>리워드 값</th><th>사용</th><th>등록일시</th><th>수정일시</th><th>관리</th>
+        </tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div id="pagination"></div>
+  </div>
+
+</div>
+
+<!-- 등록 팝업 -->
+<div id="regModal" class="modal-overlay">
+  <div class="modal-box modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">배지 등록</div>
+      <button class="close-btn" onclick="$('#regModal').removeClass('active')">×</button>
+    </div>
+    <div class="modal-body modal-form">
+      <div>
+        <label class="form-label"><span class="required">*</span> 배지명</label>
+        <input type="text" id="regName" class="form-input form-full" placeholder="배지명을 입력하세요" maxlength="100"/>
+      </div>
+      <div>
+        <label class="form-label">리워드 타입</label>
+        <select id="regType" class="form-select form-full"><option value="BADGE">BADGE (배지)</option><option value="GIFT">GIFT (상품권)</option></select>
+      </div>
+      <div>
+        <label class="form-label">배지 코드</label>
+        <input type="text" id="regCode" class="form-input form-full" placeholder="예: BG012" maxlength="50"/>
+      </div>
+      <div>
+        <label class="form-label">설명</label>
+        <textarea id="regDesc" class="form-input form-textarea" rows="2" placeholder="배지 설명" maxlength="300"></textarea>
+      </div>
+      <div>
+        <label class="form-label">메시지</label>
+        <textarea id="regMsg" class="form-input form-textarea" rows="2" placeholder="획득 메시지" maxlength="300"></textarea>
+      </div>
+      <div>
+        <label class="form-label">리워드 값 (상품권 금액)</label>
+        <input type="number" id="regVal" class="form-input form-full" placeholder="배지는 비워두세요"/>
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="regUse" checked/><label for="regUse" class="check-label">사용 여부</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="$('#regModal').removeClass('active')">취소</button>
+      <button class="btn btn-primary" onclick="confirmRegister()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- 수정 팝업 -->
+<div id="editModal" class="modal-overlay">
+  <div class="modal-box modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">배지 수정</div>
+      <button class="close-btn" onclick="$('#editModal').removeClass('active')">×</button>
+    </div>
+    <div class="modal-body modal-form">
+      <input type="hidden" id="editSeq"/>
+      <div>
+        <label class="form-label">배지 ID (수정 불가)</label>
+        <input type="text" id="editCode" class="form-input form-readonly" readonly/>
+      </div>
+      <div>
+        <label class="form-label"><span class="required">*</span> 배지명</label>
+        <input type="text" id="editName" class="form-input form-full" maxlength="100"/>
+      </div>
+      <div>
+        <label class="form-label">설명</label>
+        <textarea id="editDesc" class="form-input form-textarea" rows="2" maxlength="300"></textarea>
+      </div>
+      <div>
+        <label class="form-label">메시지</label>
+        <textarea id="editMsg" class="form-input form-textarea" rows="2" maxlength="300"></textarea>
+      </div>
+      <div>
+        <label class="form-label">리워드 값</label>
+        <input type="number" id="editVal" class="form-input form-full"/>
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="editUse"/><label for="editUse" class="check-label">사용 여부</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="$('#editModal').removeClass('active')">취소</button>
+      <button class="btn btn-primary" onclick="confirmEdit()">수정</button>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script src="~/js/badge-list.js"></script>
+}
